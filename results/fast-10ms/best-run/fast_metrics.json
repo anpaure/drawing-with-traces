@@ -1,0 +1,14 @@
+{
+  "bins": 20,
+  "feature": "mean_abs",
+  "feature_sign": -1.0,
+  "loss_before_update": 0.9977169632911682,
+  "measurement": "ChipWhisperer normalized ADC activity; not calibrated watts",
+  "normalized_mae": 0.02398448631320232,
+  "normalized_rmse": 0.02941973507536079,
+  "pearson_r": 0.9968324027485099,
+  "r_squared": 0.9932859281687472,
+  "requested_duration_ms": 10.0,
+  "shape_accuracy_percent": 97.05802649246392,
+  "smoothing_sigma_points": 0.8
+}

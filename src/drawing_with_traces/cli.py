@@ -296,7 +296,9 @@ def run_fast(args: argparse.Namespace) -> dict:
     if points == 120:  # argparse's generic default; choose a realizable fast resolution.
         points = 40 if short else 60
     sample_rate = args.sample_rate or ("10MHz" if short else "1.5MHz")
-    calibration_bin_ms = args.calibration_bin_ms or (1.0 if short else 2.0)
+    calibration_bin_ms = args.calibration_bin_ms or (
+        args.duration_ms / points if short else 2.0
+    )
     lead_ms = args.lead_ms if args.lead_ms is not None else (1.0 if short else 2.0)
     tail_ms = args.tail_ms if args.tail_ms is not None else (1.0 if short else 2.0)
     margin_ms = args.margin_ms if args.margin_ms is not None else (3.0 if short else 5.0)
@@ -314,7 +316,11 @@ def run_fast(args: argparse.Namespace) -> dict:
     )
     widths = np.asarray([0, 32, 64, 128, 256, 512, 1024, 2048, args.hidden_size], dtype=np.int64)
     widths = np.unique(widths[widths <= args.hidden_size])
-    calibration_commands = np.concatenate([widths, widths[-2::-1]])
+    calibration_commands = (
+        np.repeat(widths, 4)
+        if short
+        else np.concatenate([widths, widths[-2::-1]])
+    )
     calibration_root = parent / "calibration"
     calibration_workload = TiledLinearTrainingWorkload(
         calibration_commands,

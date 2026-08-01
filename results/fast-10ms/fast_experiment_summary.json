@@ -1,0 +1,1110 @@
+{
+  "best_iteration": 0,
+  "best_metrics": {
+    "bins": 20,
+    "feature": "mean_abs",
+    "feature_sign": -1.0,
+    "loss_before_update": 0.9977169632911682,
+    "measurement": "ChipWhisperer normalized ADC activity; not calibrated watts",
+    "normalized_mae": 0.02398448631320232,
+    "normalized_rmse": 0.02941973507536079,
+    "pearson_r": 0.9968324027485099,
+    "r_squared": 0.9932859281687472,
+    "requested_duration_ms": 10.0,
+    "shape_accuracy_percent": 97.05802649246392,
+    "smoothing_sigma_points": 0.8
+  },
+  "best_plot": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_00/fast_measured_silhouette.png",
+  "calibration": {
+    "capture": {
+      "capture_plan": {
+        "bits_per_sample": 12,
+        "decimation": 15,
+        "details": {
+          "gain_db": 10.0,
+          "max_samples_hw": 327828,
+          "max_samples_safe": 213088,
+          "max_stream_rate_hz": 10000000.0,
+          "stream_arm_settle_s": null,
+          "stream_fast_fifo": null,
+          "stream_segment_size": null,
+          "trigger": "gpio",
+          "usb_read_mode": "auto"
+        },
+        "duration_s": 0.023,
+        "mode": "burst",
+        "pretrigger_samples": 0,
+        "raw_sample_rate_hz": 150000000.0,
+        "sample_rate_hz": 10000000.0,
+        "samples": 230000,
+        "warnings": []
+      },
+      "elapsed_s": 6.575260061770678,
+      "loss_after_update": 0.8364247679710388,
+      "loss_before_update": 0.9977169632911682,
+      "record": {
+        "attempt": 2,
+        "health": {
+          "issues": [],
+          "metrics": {
+            "annotations.out_of_bounds": 0,
+            "power.finite_fraction": 1.0,
+            "primary.adc_rail_fraction": 0.0,
+            "primary.adc_robust_high": 0.06689453125,
+            "primary.adc_robust_low": -0.054443359375,
+            "primary.adc_robust_span": 0.121337890625,
+            "primary.expected_samples": 230000,
+            "primary.max_equal_run_fraction": 2.608695652173913e-05,
+            "primary.samples": 230000,
+            "primary.std": 0.029333924318247346
+          },
+          "ok": true
+        },
+        "index": 0,
+        "labels": {
+          "loss_before_update": 0.9977169632911682,
+          "max_bin_overrun_us": 387.353,
+          "model_parameters": 16777216,
+          "profile_bins": 36,
+          "profile_duration_s": 0.018000000000000002,
+          "task": "chipwhisperer-tiled-linear-training",
+          "tiled_gradient_operations": 64
+        }
+      },
+      "run": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/calibration"
+    },
+    "curve": {
+      "feature_name": "mean_abs",
+      "feature_sign": -1.0,
+      "maximum_activity": -0.01190162318968769,
+      "measured_feature": [
+        0.029373046421425804,
+        0.029185564406883753,
+        0.029550871750720444,
+        0.029038208650362204,
+        0.02493428227607654,
+        0.019553048951043,
+        0.0193103100293279,
+        0.012878864757301434,
+        0.01190162318968769
+      ],
+      "minimum_activity": -0.029373046421425804,
+      "monotonic_activity": [
+        -0.029373046421425804,
+        -0.0293682180788021,
+        -0.0293682180788021,
+        -0.029038208650362204,
+        -0.02493428227607654,
+        -0.019553048951043,
+        -0.0193103100293279,
+        -0.012878864757301434,
+        -0.01190162318968769
+      ],
+      "widths": [
+        0.0,
+        32.0,
+        64.0,
+        128.0,
+        256.0,
+        512.0,
+        1024.0,
+        2048.0,
+        4096.0
+      ],
+      "within_width_std": [
+        2.890605989631675e-05,
+        0.00027709640471208606,
+        0.00033712845560760277,
+        0.0005323354787228526,
+        0.0005091469460724612,
+        0.000567807774310064,
+        0.0003263999860668825,
+        0.0005528288995261225,
+        0.0003358728458177042
+      ]
+    },
+    "file": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/calibration/fast_calibration.json",
+    "plot": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/calibration/fast_calibration.png"
+  },
+  "duration_ms": 10.0,
+  "iterations": [
+    {
+      "capture": {
+        "capture_plan": {
+          "bits_per_sample": 12,
+          "decimation": 15,
+          "details": {
+            "gain_db": 10.0,
+            "max_samples_hw": 327828,
+            "max_samples_safe": 213088,
+            "max_stream_rate_hz": 10000000.0,
+            "stream_arm_settle_s": null,
+            "stream_fast_fifo": null,
+            "stream_segment_size": null,
+            "trigger": "gpio",
+            "usb_read_mode": "auto"
+          },
+          "duration_s": 0.015,
+          "mode": "burst",
+          "pretrigger_samples": 0,
+          "raw_sample_rate_hz": 150000000.0,
+          "sample_rate_hz": 10000000.0,
+          "samples": 150000,
+          "warnings": []
+        },
+        "elapsed_s": 2.295589916408062,
+        "loss_after_update": 0.8364248275756836,
+        "loss_before_update": 0.9977169632911682,
+        "record": {
+          "attempt": 1,
+          "health": {
+            "issues": [],
+            "metrics": {
+              "annotations.out_of_bounds": 0,
+              "power.finite_fraction": 1.0,
+              "primary.adc_rail_fraction": 0.0,
+              "primary.adc_robust_high": 0.068603515625,
+              "primary.adc_robust_low": -0.0537109375,
+              "primary.adc_robust_span": 0.122314453125,
+              "primary.expected_samples": 150000,
+              "primary.max_equal_run_fraction": 4e-05,
+              "primary.samples": 150000,
+              "primary.std": 0.02934899329297118
+            },
+            "ok": true
+          },
+          "index": 0,
+          "labels": {
+            "loss_before_update": 0.9977169632911682,
+            "max_bin_overrun_us": 365.964,
+            "model_parameters": 16777216,
+            "profile_bins": 20,
+            "profile_duration_s": 0.01,
+            "task": "chipwhisperer-tiled-linear-training",
+            "tiled_gradient_operations": 40
+          }
+        },
+        "run": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_00"
+      },
+      "commands": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        4096,
+        2048,
+        2048,
+        2048,
+        1024,
+        512,
+        256,
+        256,
+        128,
+        128,
+        0,
+        64,
+        128
+      ],
+      "iteration": 0,
+      "metrics": {
+        "bins": 20,
+        "feature": "mean_abs",
+        "feature_sign": -1.0,
+        "loss_before_update": 0.9977169632911682,
+        "measurement": "ChipWhisperer normalized ADC activity; not calibrated watts",
+        "normalized_mae": 0.02398448631320232,
+        "normalized_rmse": 0.02941973507536079,
+        "pearson_r": 0.9968324027485099,
+        "r_squared": 0.9932859281687472,
+        "requested_duration_ms": 10.0,
+        "shape_accuracy_percent": 97.05802649246392,
+        "smoothing_sigma_points": 0.8
+      },
+      "plot": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_00/fast_measured_silhouette.png"
+    },
+    {
+      "capture": {
+        "capture_plan": {
+          "bits_per_sample": 12,
+          "decimation": 15,
+          "details": {
+            "gain_db": 10.0,
+            "max_samples_hw": 327828,
+            "max_samples_safe": 213088,
+            "max_stream_rate_hz": 10000000.0,
+            "stream_arm_settle_s": null,
+            "stream_fast_fifo": null,
+            "stream_segment_size": null,
+            "trigger": "gpio",
+            "usb_read_mode": "auto"
+          },
+          "duration_s": 0.015,
+          "mode": "burst",
+          "pretrigger_samples": 0,
+          "raw_sample_rate_hz": 150000000.0,
+          "sample_rate_hz": 10000000.0,
+          "samples": 150000,
+          "warnings": []
+        },
+        "elapsed_s": 7.695024639368057,
+        "loss_after_update": 0.8364249467849731,
+        "loss_before_update": 0.9977169632911682,
+        "record": {
+          "attempt": 3,
+          "health": {
+            "issues": [],
+            "metrics": {
+              "annotations.out_of_bounds": 0,
+              "power.finite_fraction": 1.0,
+              "primary.adc_rail_fraction": 0.0,
+              "primary.adc_robust_high": 0.071044921875,
+              "primary.adc_robust_low": -0.05615234375,
+              "primary.adc_robust_span": 0.127197265625,
+              "primary.expected_samples": 150000,
+              "primary.max_equal_run_fraction": 3.3333333333333335e-05,
+              "primary.samples": 150000,
+              "primary.std": 0.028977525335294834
+            },
+            "ok": true
+          },
+          "index": 0,
+          "labels": {
+            "loss_before_update": 0.9977169632911682,
+            "max_bin_overrun_us": 257.605,
+            "model_parameters": 16777216,
+            "profile_bins": 20,
+            "profile_duration_s": 0.01,
+            "task": "chipwhisperer-tiled-linear-training",
+            "tiled_gradient_operations": 36
+          }
+        },
+        "run": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_01"
+      },
+      "commands": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        4096,
+        2048,
+        2048,
+        2048,
+        1024,
+        512,
+        256,
+        256,
+        128,
+        128,
+        0,
+        64,
+        128
+      ],
+      "iteration": 1,
+      "metrics": {
+        "bins": 20,
+        "feature": "mean_abs",
+        "feature_sign": -1.0,
+        "loss_before_update": 0.9977169632911682,
+        "measurement": "ChipWhisperer normalized ADC activity; not calibrated watts",
+        "normalized_mae": 0.179087666117989,
+        "normalized_rmse": 0.20629281790979961,
+        "pearson_r": 0.8208307114596747,
+        "r_squared": 0.6698763147240684,
+        "requested_duration_ms": 10.0,
+        "shape_accuracy_percent": 79.37071820902004,
+        "smoothing_sigma_points": 0.8
+      },
+      "plot": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_01/fast_measured_silhouette.png"
+    },
+    {
+      "capture": {
+        "capture_plan": {
+          "bits_per_sample": 12,
+          "decimation": 15,
+          "details": {
+            "gain_db": 10.0,
+            "max_samples_hw": 327828,
+            "max_samples_safe": 213088,
+            "max_stream_rate_hz": 10000000.0,
+            "stream_arm_settle_s": null,
+            "stream_fast_fifo": null,
+            "stream_segment_size": null,
+            "trigger": "gpio",
+            "usb_read_mode": "auto"
+          },
+          "duration_s": 0.015,
+          "mode": "burst",
+          "pretrigger_samples": 0,
+          "raw_sample_rate_hz": 150000000.0,
+          "sample_rate_hz": 10000000.0,
+          "samples": 150000,
+          "warnings": []
+        },
+        "elapsed_s": 2.2963183037936687,
+        "loss_after_update": 0.8364248871803284,
+        "loss_before_update": 0.9977169632911682,
+        "record": {
+          "attempt": 1,
+          "health": {
+            "issues": [],
+            "metrics": {
+              "annotations.out_of_bounds": 0,
+              "power.finite_fraction": 1.0,
+              "primary.adc_rail_fraction": 0.0,
+              "primary.adc_robust_high": 0.064697265625,
+              "primary.adc_robust_low": -0.055419921875,
+              "primary.adc_robust_span": 0.1201171875,
+              "primary.expected_samples": 150000,
+              "primary.max_equal_run_fraction": 3.3333333333333335e-05,
+              "primary.samples": 150000,
+              "primary.std": 0.02944791204347987
+            },
+            "ok": true
+          },
+          "index": 0,
+          "labels": {
+            "loss_before_update": 0.9977169632911682,
+            "max_bin_overrun_us": 408.178,
+            "model_parameters": 16777216,
+            "profile_bins": 20,
+            "profile_duration_s": 0.01,
+            "task": "chipwhisperer-tiled-linear-training",
+            "tiled_gradient_operations": 38
+          }
+        },
+        "run": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_02"
+      },
+      "commands": [
+        128,
+        512,
+        1024,
+        2048,
+        4096,
+        4096,
+        4096,
+        4096,
+        2048,
+        2048,
+        1024,
+        512,
+        128,
+        64,
+        64,
+        32,
+        32,
+        0,
+        64,
+        128
+      ],
+      "iteration": 2,
+      "metrics": {
+        "bins": 20,
+        "feature": "mean_abs",
+        "feature_sign": -1.0,
+        "loss_before_update": 0.9977169632911682,
+        "measurement": "ChipWhisperer normalized ADC activity; not calibrated watts",
+        "normalized_mae": 0.3303689920526056,
+        "normalized_rmse": 0.38019546281538785,
+        "pearson_r": 0.18265372014379275,
+        "r_squared": -0.12130130512326365,
+        "requested_duration_ms": 10.0,
+        "shape_accuracy_percent": 61.98045371846121,
+        "smoothing_sigma_points": 0.8
+      },
+      "plot": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_02/fast_measured_silhouette.png"
+    },
+    {
+      "capture": {
+        "capture_plan": {
+          "bits_per_sample": 12,
+          "decimation": 15,
+          "details": {
+            "gain_db": 10.0,
+            "max_samples_hw": 327828,
+            "max_samples_safe": 213088,
+            "max_stream_rate_hz": 10000000.0,
+            "stream_arm_settle_s": null,
+            "stream_fast_fifo": null,
+            "stream_segment_size": null,
+            "trigger": "gpio",
+            "usb_read_mode": "auto"
+          },
+          "duration_s": 0.015,
+          "mode": "burst",
+          "pretrigger_samples": 0,
+          "raw_sample_rate_hz": 150000000.0,
+          "sample_rate_hz": 10000000.0,
+          "samples": 150000,
+          "warnings": []
+        },
+        "elapsed_s": 2.2883563116192818,
+        "loss_after_update": 0.8364248871803284,
+        "loss_before_update": 0.9977169632911682,
+        "record": {
+          "attempt": 1,
+          "health": {
+            "issues": [],
+            "metrics": {
+              "annotations.out_of_bounds": 0,
+              "power.finite_fraction": 1.0,
+              "primary.adc_rail_fraction": 0.0,
+              "primary.adc_robust_high": 0.060791015625,
+              "primary.adc_robust_low": -0.051513671875,
+              "primary.adc_robust_span": 0.1123046875,
+              "primary.expected_samples": 150000,
+              "primary.max_equal_run_fraction": 6e-05,
+              "primary.samples": 150000,
+              "primary.std": 0.0284856538733845
+            },
+            "ok": true
+          },
+          "index": 0,
+          "labels": {
+            "loss_before_update": 0.9977169632911682,
+            "max_bin_overrun_us": 384.277,
+            "model_parameters": 16777216,
+            "profile_bins": 20,
+            "profile_duration_s": 0.01,
+            "task": "chipwhisperer-tiled-linear-training",
+            "tiled_gradient_operations": 21
+          }
+        },
+        "run": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_03"
+      },
+      "commands": [
+        256,
+        512,
+        2048,
+        4096,
+        4096,
+        4096,
+        4096,
+        4096,
+        4096,
+        4096,
+        2048,
+        512,
+        32,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "iteration": 3,
+      "metrics": {
+        "bins": 20,
+        "feature": "mean_abs",
+        "feature_sign": -1.0,
+        "loss_before_update": 0.9977169632911682,
+        "measurement": "ChipWhisperer normalized ADC activity; not calibrated watts",
+        "normalized_mae": 0.16388989607536972,
+        "normalized_rmse": 0.21883220601883846,
+        "pearson_r": 0.8864639676891732,
+        "r_squared": 0.6285238421756759,
+        "requested_duration_ms": 10.0,
+        "shape_accuracy_percent": 78.11677939811615,
+        "smoothing_sigma_points": 0.8
+      },
+      "plot": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_03/fast_measured_silhouette.png"
+    },
+    {
+      "capture": {
+        "capture_plan": {
+          "bits_per_sample": 12,
+          "decimation": 15,
+          "details": {
+            "gain_db": 10.0,
+            "max_samples_hw": 327828,
+            "max_samples_safe": 213088,
+            "max_stream_rate_hz": 10000000.0,
+            "stream_arm_settle_s": null,
+            "stream_fast_fifo": null,
+            "stream_segment_size": null,
+            "trigger": "gpio",
+            "usb_read_mode": "auto"
+          },
+          "duration_s": 0.015,
+          "mode": "burst",
+          "pretrigger_samples": 0,
+          "raw_sample_rate_hz": 150000000.0,
+          "sample_rate_hz": 10000000.0,
+          "samples": 150000,
+          "warnings": []
+        },
+        "elapsed_s": 2.2908101584762335,
+        "loss_after_update": 0.8364248275756836,
+        "loss_before_update": 0.9977169632911682,
+        "record": {
+          "attempt": 1,
+          "health": {
+            "issues": [],
+            "metrics": {
+              "annotations.out_of_bounds": 0,
+              "power.finite_fraction": 1.0,
+              "primary.adc_rail_fraction": 0.0,
+              "primary.adc_robust_high": 0.0634765625,
+              "primary.adc_robust_low": -0.052978515625,
+              "primary.adc_robust_span": 0.116455078125,
+              "primary.expected_samples": 150000,
+              "primary.max_equal_run_fraction": 5.333333333333333e-05,
+              "primary.samples": 150000,
+              "primary.std": 0.03016740255865061
+            },
+            "ok": true
+          },
+          "index": 0,
+          "labels": {
+            "loss_before_update": 0.9977169632911682,
+            "max_bin_overrun_us": 407.177,
+            "model_parameters": 16777216,
+            "profile_bins": 20,
+            "profile_duration_s": 0.01,
+            "task": "chipwhisperer-tiled-linear-training",
+            "tiled_gradient_operations": 32
+          }
+        },
+        "run": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_04"
+      },
+      "commands": [
+        128,
+        64,
+        128,
+        256,
+        512,
+        2048,
+        4096,
+        4096,
+        2048,
+        2048,
+        1024,
+        512,
+        128,
+        128,
+        64,
+        32,
+        0,
+        0,
+        0,
+        0
+      ],
+      "iteration": 4,
+      "metrics": {
+        "bins": 20,
+        "feature": "mean_abs",
+        "feature_sign": -1.0,
+        "loss_before_update": 0.9977169632911682,
+        "measurement": "ChipWhisperer normalized ADC activity; not calibrated watts",
+        "normalized_mae": 0.11206766191414616,
+        "normalized_rmse": 0.1530606132370947,
+        "pearson_r": 0.9588945332030502,
+        "r_squared": 0.8182663429235605,
+        "requested_duration_ms": 10.0,
+        "shape_accuracy_percent": 84.69393867629054,
+        "smoothing_sigma_points": 0.8
+      },
+      "plot": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_04/fast_measured_silhouette.png"
+    },
+    {
+      "capture": {
+        "capture_plan": {
+          "bits_per_sample": 12,
+          "decimation": 15,
+          "details": {
+            "gain_db": 10.0,
+            "max_samples_hw": 327828,
+            "max_samples_safe": 213088,
+            "max_stream_rate_hz": 10000000.0,
+            "stream_arm_settle_s": null,
+            "stream_fast_fifo": null,
+            "stream_segment_size": null,
+            "trigger": "gpio",
+            "usb_read_mode": "auto"
+          },
+          "duration_s": 0.015,
+          "mode": "burst",
+          "pretrigger_samples": 0,
+          "raw_sample_rate_hz": 150000000.0,
+          "sample_rate_hz": 10000000.0,
+          "samples": 150000,
+          "warnings": []
+        },
+        "elapsed_s": 2.2960550440475345,
+        "loss_after_update": 0.8364247679710388,
+        "loss_before_update": 0.9977169632911682,
+        "record": {
+          "attempt": 1,
+          "health": {
+            "issues": [],
+            "metrics": {
+              "annotations.out_of_bounds": 0,
+              "power.finite_fraction": 1.0,
+              "primary.adc_rail_fraction": 0.0,
+              "primary.adc_robust_high": 0.066162109375,
+              "primary.adc_robust_low": -0.054443359375,
+              "primary.adc_robust_span": 0.12060546875,
+              "primary.expected_samples": 150000,
+              "primary.max_equal_run_fraction": 4e-05,
+              "primary.samples": 150000,
+              "primary.std": 0.02890866840007336
+            },
+            "ok": true
+          },
+          "index": 0,
+          "labels": {
+            "loss_before_update": 0.9977169632911682,
+            "max_bin_overrun_us": 386.615,
+            "model_parameters": 16777216,
+            "profile_bins": 20,
+            "profile_duration_s": 0.01,
+            "task": "chipwhisperer-tiled-linear-training",
+            "tiled_gradient_operations": 33
+          }
+        },
+        "run": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_05"
+      },
+      "commands": [
+        256,
+        128,
+        512,
+        1024,
+        1024,
+        2048,
+        4096,
+        4096,
+        2048,
+        2048,
+        2048,
+        1024,
+        512,
+        512,
+        256,
+        64,
+        0,
+        0,
+        0,
+        0
+      ],
+      "iteration": 5,
+      "metrics": {
+        "bins": 20,
+        "feature": "mean_abs",
+        "feature_sign": -1.0,
+        "loss_before_update": 0.9977169632911682,
+        "measurement": "ChipWhisperer normalized ADC activity; not calibrated watts",
+        "normalized_mae": 0.050314460891150006,
+        "normalized_rmse": 0.06354758886958059,
+        "pearson_r": 0.9909387178469224,
+        "r_squared": 0.9686738789058786,
+        "requested_duration_ms": 10.0,
+        "shape_accuracy_percent": 93.64524111304195,
+        "smoothing_sigma_points": 0.8
+      },
+      "plot": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_05/fast_measured_silhouette.png"
+    },
+    {
+      "capture": {
+        "capture_plan": {
+          "bits_per_sample": 12,
+          "decimation": 15,
+          "details": {
+            "gain_db": 10.0,
+            "max_samples_hw": 327828,
+            "max_samples_safe": 213088,
+            "max_stream_rate_hz": 10000000.0,
+            "stream_arm_settle_s": null,
+            "stream_fast_fifo": null,
+            "stream_segment_size": null,
+            "trigger": "gpio",
+            "usb_read_mode": "auto"
+          },
+          "duration_s": 0.015,
+          "mode": "burst",
+          "pretrigger_samples": 0,
+          "raw_sample_rate_hz": 150000000.0,
+          "sample_rate_hz": 10000000.0,
+          "samples": 150000,
+          "warnings": []
+        },
+        "elapsed_s": 2.29115179926157,
+        "loss_after_update": 0.8364248275756836,
+        "loss_before_update": 0.9977169632911682,
+        "record": {
+          "attempt": 1,
+          "health": {
+            "issues": [],
+            "metrics": {
+              "annotations.out_of_bounds": 0,
+              "power.finite_fraction": 1.0,
+              "primary.adc_rail_fraction": 0.0,
+              "primary.adc_robust_high": 0.06640625,
+              "primary.adc_robust_low": -0.054443359375,
+              "primary.adc_robust_span": 0.120849609375,
+              "primary.expected_samples": 150000,
+              "primary.max_equal_run_fraction": 4e-05,
+              "primary.samples": 150000,
+              "primary.std": 0.029596988221365528
+            },
+            "ok": true
+          },
+          "index": 0,
+          "labels": {
+            "loss_before_update": 0.9977169632911682,
+            "max_bin_overrun_us": 372.224,
+            "model_parameters": 16777216,
+            "profile_bins": 20,
+            "profile_duration_s": 0.01,
+            "task": "chipwhisperer-tiled-linear-training",
+            "tiled_gradient_operations": 34
+          }
+        },
+        "run": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_06"
+      },
+      "commands": [
+        256,
+        128,
+        256,
+        1024,
+        1024,
+        2048,
+        4096,
+        4096,
+        2048,
+        1024,
+        1024,
+        1024,
+        256,
+        256,
+        128,
+        64,
+        0,
+        0,
+        0,
+        0
+      ],
+      "iteration": 6,
+      "metrics": {
+        "bins": 20,
+        "feature": "mean_abs",
+        "feature_sign": -1.0,
+        "loss_before_update": 0.9977169632911682,
+        "measurement": "ChipWhisperer normalized ADC activity; not calibrated watts",
+        "normalized_mae": 0.05392828028426568,
+        "normalized_rmse": 0.07820843878828064,
+        "pearson_r": 0.9858459257329204,
+        "r_squared": 0.952552241438355,
+        "requested_duration_ms": 10.0,
+        "shape_accuracy_percent": 92.17915612117193,
+        "smoothing_sigma_points": 0.8
+      },
+      "plot": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_06/fast_measured_silhouette.png"
+    },
+    {
+      "capture": {
+        "capture_plan": {
+          "bits_per_sample": 12,
+          "decimation": 15,
+          "details": {
+            "gain_db": 10.0,
+            "max_samples_hw": 327828,
+            "max_samples_safe": 213088,
+            "max_stream_rate_hz": 10000000.0,
+            "stream_arm_settle_s": null,
+            "stream_fast_fifo": null,
+            "stream_segment_size": null,
+            "trigger": "gpio",
+            "usb_read_mode": "auto"
+          },
+          "duration_s": 0.015,
+          "mode": "burst",
+          "pretrigger_samples": 0,
+          "raw_sample_rate_hz": 150000000.0,
+          "sample_rate_hz": 10000000.0,
+          "samples": 150000,
+          "warnings": []
+        },
+        "elapsed_s": 2.2873383034020662,
+        "loss_after_update": 0.8364248275756836,
+        "loss_before_update": 0.9977169632911682,
+        "record": {
+          "attempt": 1,
+          "health": {
+            "issues": [],
+            "metrics": {
+              "annotations.out_of_bounds": 0,
+              "power.finite_fraction": 1.0,
+              "primary.adc_rail_fraction": 0.0,
+              "primary.adc_robust_high": 0.0654296875,
+              "primary.adc_robust_low": -0.052734375,
+              "primary.adc_robust_span": 0.1181640625,
+              "primary.expected_samples": 150000,
+              "primary.max_equal_run_fraction": 4e-05,
+              "primary.samples": 150000,
+              "primary.std": 0.028805473097743353
+            },
+            "ok": true
+          },
+          "index": 0,
+          "labels": {
+            "loss_before_update": 0.9977169632911682,
+            "max_bin_overrun_us": 358.704,
+            "model_parameters": 16777216,
+            "profile_bins": 20,
+            "profile_duration_s": 0.01,
+            "task": "chipwhisperer-tiled-linear-training",
+            "tiled_gradient_operations": 31
+          }
+        },
+        "run": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_07"
+      },
+      "commands": [
+        256,
+        128,
+        256,
+        1024,
+        1024,
+        2048,
+        4096,
+        4096,
+        2048,
+        2048,
+        4096,
+        2048,
+        256,
+        512,
+        256,
+        64,
+        0,
+        0,
+        0,
+        0
+      ],
+      "iteration": 7,
+      "metrics": {
+        "bins": 20,
+        "feature": "mean_abs",
+        "feature_sign": -1.0,
+        "loss_before_update": 0.9977169632911682,
+        "measurement": "ChipWhisperer normalized ADC activity; not calibrated watts",
+        "normalized_mae": 0.06951914091935196,
+        "normalized_rmse": 0.09524380406179703,
+        "pearson_r": 0.9777431752646838,
+        "r_squared": 0.9296309101485469,
+        "requested_duration_ms": 10.0,
+        "shape_accuracy_percent": 90.4756195938203,
+        "smoothing_sigma_points": 0.8
+      },
+      "plot": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_07/fast_measured_silhouette.png"
+    },
+    {
+      "capture": {
+        "capture_plan": {
+          "bits_per_sample": 12,
+          "decimation": 15,
+          "details": {
+            "gain_db": 10.0,
+            "max_samples_hw": 327828,
+            "max_samples_safe": 213088,
+            "max_stream_rate_hz": 10000000.0,
+            "stream_arm_settle_s": null,
+            "stream_fast_fifo": null,
+            "stream_segment_size": null,
+            "trigger": "gpio",
+            "usb_read_mode": "auto"
+          },
+          "duration_s": 0.015,
+          "mode": "burst",
+          "pretrigger_samples": 0,
+          "raw_sample_rate_hz": 150000000.0,
+          "sample_rate_hz": 10000000.0,
+          "samples": 150000,
+          "warnings": []
+        },
+        "elapsed_s": 2.274782072752714,
+        "loss_after_update": 0.8364248275756836,
+        "loss_before_update": 0.9977169632911682,
+        "record": {
+          "attempt": 1,
+          "health": {
+            "issues": [],
+            "metrics": {
+              "annotations.out_of_bounds": 0,
+              "power.finite_fraction": 1.0,
+              "primary.adc_rail_fraction": 0.0,
+              "primary.adc_robust_high": 0.06201171875,
+              "primary.adc_robust_low": -0.0537109375,
+              "primary.adc_robust_span": 0.11572265625,
+              "primary.expected_samples": 150000,
+              "primary.max_equal_run_fraction": 3.3333333333333335e-05,
+              "primary.samples": 150000,
+              "primary.std": 0.028005644173582214
+            },
+            "ok": true
+          },
+          "index": 0,
+          "labels": {
+            "loss_before_update": 0.9977169632911682,
+            "max_bin_overrun_us": 308.317,
+            "model_parameters": 16777216,
+            "profile_bins": 20,
+            "profile_duration_s": 0.01,
+            "task": "chipwhisperer-tiled-linear-training",
+            "tiled_gradient_operations": 68
+          }
+        },
+        "run": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_08"
+      },
+      "commands": [
+        256,
+        128,
+        512,
+        1024,
+        1024,
+        2048,
+        4096,
+        4096,
+        2048,
+        1024,
+        1024,
+        512,
+        128,
+        256,
+        128,
+        64,
+        0,
+        0,
+        0,
+        0
+      ],
+      "iteration": 8,
+      "metrics": {
+        "bins": 20,
+        "feature": "mean_abs",
+        "feature_sign": -1.0,
+        "loss_before_update": 0.9977169632911682,
+        "measurement": "ChipWhisperer normalized ADC activity; not calibrated watts",
+        "normalized_mae": 0.1706986528155134,
+        "normalized_rmse": 0.23448140172790333,
+        "pearson_r": 0.9431639576556712,
+        "r_squared": 0.573493875975721,
+        "requested_duration_ms": 10.0,
+        "shape_accuracy_percent": 76.55185982720967,
+        "smoothing_sigma_points": 0.8
+      },
+      "plot": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_08/fast_measured_silhouette.png"
+    },
+    {
+      "capture": {
+        "capture_plan": {
+          "bits_per_sample": 12,
+          "decimation": 15,
+          "details": {
+            "gain_db": 10.0,
+            "max_samples_hw": 327828,
+            "max_samples_safe": 213088,
+            "max_stream_rate_hz": 10000000.0,
+            "stream_arm_settle_s": null,
+            "stream_fast_fifo": null,
+            "stream_segment_size": null,
+            "trigger": "gpio",
+            "usb_read_mode": "auto"
+          },
+          "duration_s": 0.015,
+          "mode": "burst",
+          "pretrigger_samples": 0,
+          "raw_sample_rate_hz": 150000000.0,
+          "sample_rate_hz": 10000000.0,
+          "samples": 150000,
+          "warnings": []
+        },
+        "elapsed_s": 2.2749912161380053,
+        "loss_after_update": 0.8364248871803284,
+        "loss_before_update": 0.9977169632911682,
+        "record": {
+          "attempt": 1,
+          "health": {
+            "issues": [],
+            "metrics": {
+              "annotations.out_of_bounds": 0,
+              "power.finite_fraction": 1.0,
+              "primary.adc_rail_fraction": 0.0,
+              "primary.adc_robust_high": 0.065185546875,
+              "primary.adc_robust_low": -0.0556640625,
+              "primary.adc_robust_span": 0.120849609375,
+              "primary.expected_samples": 150000,
+              "primary.max_equal_run_fraction": 4e-05,
+              "primary.samples": 150000,
+              "primary.std": 0.030723214001873018
+            },
+            "ok": true
+          },
+          "index": 0,
+          "labels": {
+            "loss_before_update": 0.9977169632911682,
+            "max_bin_overrun_us": 166.715,
+            "model_parameters": 16777216,
+            "profile_bins": 20,
+            "profile_duration_s": 0.01,
+            "task": "chipwhisperer-tiled-linear-training",
+            "tiled_gradient_operations": 82
+          }
+        },
+        "run": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_09"
+      },
+      "commands": [
+        64,
+        64,
+        128,
+        64,
+        64,
+        256,
+        2048,
+        2048,
+        512,
+        128,
+        256,
+        512,
+        256,
+        512,
+        256,
+        64,
+        0,
+        0,
+        0,
+        0
+      ],
+      "iteration": 9,
+      "metrics": {
+        "bins": 20,
+        "feature": "mean_abs",
+        "feature_sign": -1.0,
+        "loss_before_update": 0.9977169632911682,
+        "measurement": "ChipWhisperer normalized ADC activity; not calibrated watts",
+        "normalized_mae": 0.22804541265155728,
+        "normalized_rmse": 0.2885062067763905,
+        "pearson_r": 0.7795000666640055,
+        "r_squared": 0.3543178362421645,
+        "requested_duration_ms": 10.0,
+        "shape_accuracy_percent": 71.14937932236096,
+        "smoothing_sigma_points": 0.8
+      },
+      "plot": "/home/amodo/drawing_with_traces_curve/runs/fast-10ms-v6/iteration_09/fast_measured_silhouette.png"
+    }
+  ],
+  "model": {
+    "batch_size": 512,
+    "hidden_size": 4096,
+    "parameters": 16777216,
+    "type": "exact tiled linear gradient"
+  },
+  "points": 20,
+  "sample_rate": "10MHz"
+}

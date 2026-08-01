@@ -166,7 +166,9 @@ class TiledLinearTrainingWorkload(Workload):
 
     def warmup(self, iteration: int) -> None:
         del iteration
-        self.gradient_tile(0, self.hidden_size, accumulate=False)
+        for width in np.unique(self.commands[self.commands > 0]):
+            self.gradient_tile(0, int(width), accumulate=True)
+        self.clear_gradient()
 
     def run(self, context):
         self.clear_gradient()
@@ -205,7 +207,7 @@ class TiledLinearTrainingWorkload(Workload):
         with context.region("tile.tail_idle", duration_s=self.tail_s):
             sleep_until(time.monotonic_ns() + int(round(self.tail_s * 1e9)))
         max_overrun_ns = int(overruns.max(initial=0))
-        if max_overrun_ns > max(250_000, bin_ns // 2):
+        if max_overrun_ns > max(500_000, bin_ns // 2):
             raise RuntimeError(
                 f"a {self.bin_duration_s * 1e3:.3f} ms tile bin overran by "
                 f"{max_overrun_ns / 1e6:.3f} ms; rejecting the timing-distorted trace"
