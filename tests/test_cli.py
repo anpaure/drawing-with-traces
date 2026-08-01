@@ -108,6 +108,10 @@ def test_draw_png_exposes_fable_style_residual_mlp_controls():
     assert args.residual_depth == 14
     assert args.residual_scale == pytest.approx(0.125)
     assert args.residual_learning_rate == pytest.approx(0.002)
+    assert args.ilc_feedback_reference == "best"
+    assert args.drawing_layer_count is None
+    assert args.fresh_training_batches is False
+    assert args.training_batch_pool_size == 32
 
 
 def test_residual_mlp_rejects_non_timed_engines_before_hardware_access():

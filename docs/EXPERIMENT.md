@@ -14,7 +14,7 @@ PNG alpha mask
   → dense tile-width calibration
   → persistent tiled training workload
   → SideCapture/Husky burst acquisition
-  → annotated per-bin RMS activity
+  → annotated per-bin calibrated activity (`diff_rms` in the current model result)
   → target-independent normalization
   → multiscale scoring and ILC
 ```
@@ -54,10 +54,23 @@ unvisited columns are completed after acquisition. A full untiled gradient is al
 numerical verification and no-drawing timing. BF16 matmuls plus FP32 accumulation/master weights explain
 the small nonzero equivalence error.
 
+`TiledResidualMLPTrainingWorkload` instead trains square residual layers:
+
+```text
+h[l + 1] = h[l] + scale × relu(h[l] W[l])
+gradient[l] = h[l].T @ delta[l]
+```
+
+Its profile can repeat real output-column blocks from one or more layers. Missing blocks across every
+layer are completed after capture, repeated visits are averaged, and all layers are updated. The current
+hardware result uses all 112 layers, batch 2048, and 1.879B parameters; carrier-layer ablations are
+supported but did not improve measured fidelity.
+
 ## Timing and active baseline
 
 The verified 100 ms trace contains 120 equal-duration bins. Unlike the early idle-floor implementation,
-every target bin executes a nonzero gradient tile. Target zero maps to 128 columns. The same tile runs in
+every target bin executes a nonzero gradient tile. Target zero maps to 32 columns for the 112-layer result
+(128 in the earlier linear and 14-layer results). The same tile runs in
 the 2 ms lead region so the H100 enters the profile from the correct low-work state rather than an idle
 345 MHz clock state. The 2 ms tail remains idle to expose the end boundary.
 
@@ -66,28 +79,33 @@ count, tile-width sum, FLOPs, and wall time are explicitly included in performan
 
 ## Calibration
 
-Timed mode predeclares RMS as its measurement feature. It measures an interleaved random ordering of
-dense tile widths, repeated in different transition contexts. The current width grid is dense in the
-control-sensitive range and adds high-width anchors. Isotonic regression produces a monotonic activity
-curve and truncates widths beyond the measured peak.
+Timed mode predeclares a measurement feature before drawing. It measures an interleaved random ordering
+of dense tile widths, repeated in different transition contexts. Available features include RMS,
+standard deviation, mean absolute activity, adjacent-sample `diff_rms`, and percentile span. The current
+112-layer result prospectively uses `diff_rms`; no target trace participates in that choice. The width
+grid is dense in the control-sensitive range and adds high-width anchors. Isotonic regression produces a
+monotonic activity curve and truncates widths beyond the measured peak.
 
 Calibration is performed before drawing, without looking at the target error. The resulting feature,
 sign, widths, measured values, within-width standard deviations, and monotonic curve are saved.
 
 ## Feedback
 
-The feed-forward command is the inverse calibration evaluated at the image envelope. ILC then retains
-the best delivered command and adds a calibration-scaled correction:
+The feed-forward command is the inverse calibration evaluated at the image envelope. ILC adds a
+calibration-scaled correction from either the best trace or the latest median trace:
 
 ```text
 error        = target - measured
 delta_width  = inverse(target + gain × error) - inverse(target)
-next_command = best_command + delta_width
+next_command = reference_command + delta_width
 ```
 
 Corrections are quantized to 32-column Tensor Core-compatible widths and clipped to the calibrated range.
 Optional correction smoothing acts only on the learned residual, never on the target baseline. It is off
 by default because the hardware ablation reduced fidelity.
+
+`--ilc-feedback-reference latest` is useful when identical commands drift as GPU operating state changes;
+best-trace promotion remains independent, so a worse tracking capture cannot replace stronger evidence.
 
 With multiple replicates, each replicate is a separate accepted trace and optimizer step. Pointwise median
 curves drive feedback, but only a single physical trace may be promoted as the result.
@@ -109,7 +127,7 @@ This prevents a scope failure or retry from applying an update twice.
 
 ## Saved evidence
 
-The published directory contains the complete `sidecapture.dataset/v1` store:
+The full linear-result directory contains a complete `sidecapture.dataset/v1` store:
 
 - `captures/channels`: raw float16 ADC samples;
 - `captures/records`: capture plan, labels, health, provenance, and workload metadata;
@@ -118,6 +136,11 @@ The published directory contains the complete `sidecapture.dataset/v1` store:
 - per-replicate derived arrays and plots;
 - calibration and training-comparison plots;
 - full and compact experiment summaries.
+
+The larger residual models are published as compact promoted-trace bundles: the selected raw channel,
+record, annotations, commands, visit counts, operation counts, derived arrays, plots, full experiment
+summary, and a checksum manifest. All refinement records remain on the capture host; the committed bundle
+contains everything needed to audit and independently rescore the promoted physical trace.
 
 ## Claims and non-claims
 
@@ -134,4 +157,4 @@ Not claimed:
 - calibrated watts (the Husky path is AC-coupled);
 - bit-for-bit FP32 equivalence;
 - identical throughput to ordinary training;
-- a literal 14-layer residual-MLP Fable reproduction.
+- an exact reproduction of another implementation or its analog measurement chain.

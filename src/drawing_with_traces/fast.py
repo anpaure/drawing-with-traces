@@ -826,6 +826,9 @@ class TiledResidualMLPTrainingWorkload(TiledLinearTrainingWorkload):
         learning_rate: float = 0.002,
         validation_batch_size: int = 128,
         residual_scale: float = 0.125,
+        drawing_layer_count: int | None = None,
+        fresh_batch_each_step: bool = False,
+        training_batch_pool_size: int = 32,
         verify_autograd: bool = True,
         lead_s: float = 0.002,
         tail_s: float = 0.002,
@@ -842,6 +845,17 @@ class TiledResidualMLPTrainingWorkload(TiledLinearTrainingWorkload):
             raise ValueError("residual_scale must be greater than zero and at most one")
         self.depth = int(depth)
         self.residual_scale = float(residual_scale)
+        if drawing_layer_count is None:
+            drawing_layer_count = self.depth
+        if not 1 <= drawing_layer_count <= self.depth:
+            raise ValueError(
+                "drawing_layer_count must be between one and the residual MLP depth"
+            )
+        self.drawing_layer_count = int(drawing_layer_count)
+        if fresh_batch_each_step and training_batch_pool_size < 2:
+            raise ValueError("training_batch_pool_size must be at least two")
+        self.fresh_batch_each_step = bool(fresh_batch_each_step)
+        self.training_batch_pool_size = int(training_batch_pool_size)
         self.verify_autograd = bool(verify_autograd)
         super().__init__(
             commands,
@@ -865,6 +879,8 @@ class TiledResidualMLPTrainingWorkload(TiledLinearTrainingWorkload):
         self.deltas = None
         self.state_prepare_wall_s = None
         self.autograd_equivalence = None
+        self.training_batches = None
+        self.training_batch_cursor = 0
 
     @property
     def parameter_count(self) -> int:
@@ -923,6 +939,17 @@ class TiledResidualMLPTrainingWorkload(TiledLinearTrainingWorkload):
                 self.validation_inputs,
                 teacher_weight,
             )[0]
+            if self.fresh_batch_each_step:
+                self.training_batches = [(self.inputs, self.targets)]
+                for _ in range(1, self.training_batch_pool_size):
+                    inputs = torch.randn(
+                        self.batch_size,
+                        self.hidden_size,
+                        device="cuda",
+                        dtype=torch.bfloat16,
+                    )
+                    targets = self._forward_with_weights(inputs, teacher_weight)[0]
+                    self.training_batches.append((inputs, targets))
         del teacher_weight
         self.master_weight = torch.randn(
             self.depth,
@@ -979,6 +1006,16 @@ class TiledResidualMLPTrainingWorkload(TiledLinearTrainingWorkload):
         self.activations = activations
         self.deltas = deltas
         self.state_prepare_wall_s = (time.monotonic_ns() - started_ns) / 1e9
+
+    def _advance_training_batch(self) -> None:
+        if not self.fresh_batch_each_step:
+            return
+        if not self.training_batches:
+            raise RuntimeError("fresh training batches were not prepared during setup")
+        self.training_batch_cursor = (self.training_batch_cursor + 1) % len(
+            self.training_batches
+        )
+        self.inputs, self.targets = self.training_batches[self.training_batch_cursor]
 
     def _full_weight_gradient(self):
         torch = self.require_setup()
@@ -1042,13 +1079,13 @@ class TiledResidualMLPTrainingWorkload(TiledLinearTrainingWorkload):
         width = min(int(requested_width), self.output_size)
         if self.cursor + width > self.output_size:
             self.cursor = 0
-            self.layer_cursor = (self.layer_cursor + 1) % self.depth
+            self.layer_cursor = (self.layer_cursor + 1) % self.drawing_layer_count
         layer = self.layer_cursor
         start = self.cursor
         self.cursor = start + width
         if self.cursor == self.output_size:
             self.cursor = 0
-            self.layer_cursor = (self.layer_cursor + 1) % self.depth
+            self.layer_cursor = (self.layer_cursor + 1) % self.drawing_layer_count
         return layer, start, width
 
     def next_tile(self, requested_width: int) -> None:
@@ -1225,7 +1262,11 @@ class TiledResidualMLPTrainingWorkload(TiledLinearTrainingWorkload):
             },
         }
         del reference_gradient, difference, average_gradient, visits
-        self.current_performance = after
+        if self.fresh_batch_each_step:
+            self._advance_training_batch()
+            self.current_performance = self.evaluate_performance()
+        else:
+            self.current_performance = after
         self.accepted_training_steps += 1
         self.clear_gradient()
         self._prepare_training_state()
@@ -1233,6 +1274,7 @@ class TiledResidualMLPTrainingWorkload(TiledLinearTrainingWorkload):
     def teardown(self) -> None:
         self.activations = None
         self.deltas = None
+        self.training_batches = None
         super().teardown()
 
     def metadata(self) -> dict[str, Any]:
@@ -1254,6 +1296,12 @@ class TiledResidualMLPTrainingWorkload(TiledLinearTrainingWorkload):
             "hidden_size": self.hidden_size,
             "depth": self.depth,
             "residual_scale": self.residual_scale,
+            "drawing_layer_count": self.drawing_layer_count,
+            "drawing_layers": list(range(self.drawing_layer_count)),
+            "fresh_batch_each_step": self.fresh_batch_each_step,
+            "training_batch_pool_size": (
+                self.training_batch_pool_size if self.fresh_batch_each_step else 1
+            ),
             "batch_size": self.batch_size,
             "validation_batch_size": self.validation_batch_size,
             "parameter_count": self.parameter_count,
@@ -1265,7 +1313,7 @@ class TiledResidualMLPTrainingWorkload(TiledLinearTrainingWorkload):
             "active_lead_width": self.active_lead_width,
             "seed": self.seed,
             "transactional_update": True,
-            "training_task": "teacher-student 14-layer residual MLP regression",
+            "training_task": "teacher-student residual MLP regression",
             "accepted_training_steps": self.accepted_training_steps,
             "autograd_equivalence": self.autograd_equivalence,
         }
@@ -1341,6 +1389,7 @@ class FastRefinementController:
         total_width: int | None = None,
         minimum_width: int = 0,
         correction_smoothing_sigma_points: float = 0.0,
+        feedback_reference: str = "best",
     ):
         target = np.asarray(target, dtype=np.float64)
         if target.ndim != 1 or target.size < 2 or not np.all(np.isfinite(target)):
@@ -1359,6 +1408,8 @@ class FastRefinementController:
             raise ValueError("improvement_tolerance cannot be negative")
         if correction_smoothing_sigma_points < 0:
             raise ValueError("correction_smoothing_sigma_points cannot be negative")
+        if feedback_reference not in {"best", "latest"}:
+            raise ValueError("feedback_reference must be best or latest")
         self.target = target
         self.calibration = calibration
         self.target_accuracy_percent = target_accuracy_percent
@@ -1372,6 +1423,7 @@ class FastRefinementController:
         self.correction_smoothing_sigma_points = float(
             correction_smoothing_sigma_points
         )
+        self.feedback_reference = feedback_reference
         if total_width is not None:
             project_commands_to_total(
                 np.full(target.size, total_width / target.size),
@@ -1384,6 +1436,8 @@ class FastRefinementController:
         self.best_accuracy_percent = 0.0
         self.best_commands: np.ndarray | None = None
         self.best_measured: np.ndarray | None = None
+        self.latest_commands: np.ndarray | None = None
+        self.latest_measured: np.ndarray | None = None
         self.observations = 0
 
     @property
@@ -1425,6 +1479,8 @@ class FastRefinementController:
             raise ValueError("commands, measured values, and target must have matching shapes")
         if not np.all(np.isfinite(measured)) or not math.isfinite(normalized_rmse):
             raise ValueError("refinement measurements must be finite")
+        self.latest_commands = commands.copy()
+        self.latest_measured = measured.copy()
         improved = normalized_rmse < self.best_rmse
         if improved:
             had_best = self.best_commands is not None
@@ -1443,15 +1499,23 @@ class FastRefinementController:
     def next_commands(self) -> np.ndarray:
         if self.best_commands is None or self.best_measured is None:
             return self.initial_commands()
-        error = self.target - self.best_measured
+        if self.feedback_reference == "latest":
+            reference_commands = self.latest_commands
+            reference_measured = self.latest_measured
+        else:
+            reference_commands = self.best_commands
+            reference_measured = self.best_measured
+        if reference_commands is None or reference_measured is None:
+            raise RuntimeError("refinement feedback is unavailable after observation")
+        error = self.target - reference_measured
         corrected_target = np.clip(self.target + self.gain * error, 0, 1)
         baseline_commands = self.calibration.commands_for(self.target)
         corrected_commands = self.calibration.commands_for(corrected_target)
-        # True iterative learning control: retain the best delivered command and
-        # add the calibration-derived correction. Recomputing from the baseline
-        # on every round discards prior successful corrections and oscillates.
+        # True iterative learning control: retain the selected delivered command
+        # (best or latest) and add the calibration-derived correction. Recomputing
+        # from the baseline on every round discards prior corrections and oscillates.
         correction = (
-            self.best_commands - baseline_commands
+            reference_commands - baseline_commands
             + corrected_commands - baseline_commands
         ).astype(np.float64)
         if self.correction_smoothing_sigma_points:
@@ -1503,6 +1567,7 @@ class FastRefinementController:
             "total_width": self.total_width,
             "minimum_width": self.minimum_width,
             "correction_smoothing_sigma_points": self.correction_smoothing_sigma_points,
+            "feedback_reference": self.feedback_reference,
         }
 
 
@@ -1627,12 +1692,12 @@ def calibrate_fast(
         for item in candidates
         if item["widths"].size >= 3 and item["span"] > max(1e-9, 2 * item["noise"])
     ]
+    diagnostics = "; ".join(
+        f"{item['name']}: span={item['span']:.4g}, noise={item['noise']:.4g}, "
+        f"snr={item['snr']:.2f}, widths={item['widths'].size}"
+        for item in candidates
+    )
     if not valid:
-        diagnostics = "; ".join(
-            f"{item['name']}: span={item['span']:.4g}, noise={item['noise']:.4g}, "
-            f"snr={item['snr']:.2f}, widths={item['widths'].size}"
-            for item in candidates
-        )
         raise ConfigurationError(
             "tile-width calibration has no separable feature; " + diagnostics
         )

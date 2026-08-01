@@ -13,6 +13,7 @@ sigma-2 RMSE, so a visually smooth but locally oscillating trace cannot win only
 | Active floor + active lead, three-replicate ILC | **120** | **94.26%** | Best verified single physical trace |
 | Active floor + active lead | 100 | 91.06% | Longer bins alone do not compensate for a poorer calibration state |
 | 14-layer residual MLP, RMS control | 120 | 93.08% | Exact autograd parity and 13.77× rather than 184× slowdown |
+| 112-layer residual MLP, `diff_rms`, latest-feedback ILC | **120** | **93.66%** | 1.879B parameters, exact gradients, and only 1.74× slowdown |
 
 ## Why 120 won
 
@@ -43,6 +44,10 @@ Calibration context repeats and ILC replicates serve different purposes:
 4. Both teacher–student tasks approach convergence after many captures, changing operating state.
 5. The pointwise controller cannot distinguish stable response error from stochastic native-bin noise.
 
+The new `latest` feedback mode partially tracks slow response drift. It improved the best physical trace
+from 92.60% to 93.66%, but identical commands still degraded over later captures, so thermal/DVFS state
+remains an unresolved plant variable.
+
 ## Residual-MLP efficiency result
 
 The residual engine has 14 square 4096-wide layers (234,881,024 parameters). Its handwritten reverse
@@ -58,3 +63,21 @@ it is the stronger demonstration that a substantial model can genuinely train wh
 A post-hoc feature ablation found one 94.84% `mean_abs` trace, but a fresh prospectively selected
 `mean_abs` run produced an unstable calibration range and only 70.47%. That run is not promoted. RMS
 remains the reproducible control feature.
+
+## 112-layer efficiency/fidelity result
+
+The strongest practical configuration uses 112 square 4096-wide residual layers, batch 2048, residual
+scale `0.04419417382415922`, and 1,879,048,192 trainable parameters. It was selected from a geometry
+sweep rather than by merely scaling the 14-layer workload:
+
+- 56 layers / batch 4096 made even a 32-column GEMM too electrically active;
+- restricting repeated profile work to 1, 4, or 14 carrier layers did not improve fidelity;
+- 112 layers / batch 2048 restored tile-width separability while keeping ordinary training heavy;
+- `diff_rms` supplied a full 32–3072-column control range and was substantially more stable than RMS or
+  percentile span in this geometry.
+
+The first unrefined trace reached 89.62%. Median-of-three ILC with latest-trace feedback promoted one
+unaveraged trace at 93.66% multiscale fidelity (92.97% native, 94.43% smoothed, Pearson 0.9791). Every
+accepted step matched both PyTorch autograd and the ordinary untiled gradient exactly in the tested BF16
+path. Median throughput was 4.93 drawing versus 8.61 ordinary optimizer steps/s: 57.3% retained, or
+1.74× slowdown.

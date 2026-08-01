@@ -108,6 +108,12 @@ def add_fast_arguments(
     parser.add_argument("--ilc-gain-decay", type=float, default=0.5)
     parser.add_argument("--ilc-gain-growth", type=float, default=1.05)
     parser.add_argument(
+        "--ilc-feedback-reference",
+        choices=("best", "latest"),
+        default="best",
+        help="correct from the best trace, or track drift from the latest median trace",
+    )
+    parser.add_argument(
         "--ilc-correction-smoothing",
         type=float,
         help="Gaussian sigma for the ILC command correction, in control points",
@@ -129,6 +135,20 @@ def add_fast_arguments(
     parser.add_argument("--residual-depth", type=int, default=14)
     parser.add_argument("--residual-scale", type=float, default=0.125)
     parser.add_argument("--residual-learning-rate", type=float, default=0.002)
+    parser.add_argument(
+        "--drawing-layer-count",
+        type=int,
+        help=(
+            "number of leading residual layers used for repeated in-profile gradient "
+            "tiles; all layers are still completed and updated after capture"
+        ),
+    )
+    parser.add_argument(
+        "--fresh-training-batches",
+        action="store_true",
+        help="cycle through a precomputed teacher-labeled batch pool after accepted steps",
+    )
+    parser.add_argument("--training-batch-pool-size", type=int, default=32)
     parser.add_argument(
         "--skip-autograd-verification",
         action="store_true",
@@ -514,6 +534,9 @@ def run_draw_png_timed(args: argparse.Namespace) -> dict:
             calibration_commands,
             depth=args.residual_depth,
             residual_scale=args.residual_scale,
+            drawing_layer_count=args.drawing_layer_count,
+            fresh_batch_each_step=args.fresh_training_batches,
+            training_batch_pool_size=args.training_batch_pool_size,
             verify_autograd=not args.skip_autograd_verification,
             learning_rate=args.residual_learning_rate,
             **common_workload,
@@ -571,6 +594,7 @@ def run_draw_png_timed(args: argparse.Namespace) -> dict:
             gain_growth=args.ilc_gain_growth,
             minimum_width=minimum_tile_width,
             correction_smoothing_sigma_points=correction_smoothing,
+            feedback_reference=args.ilc_feedback_reference,
         )
         commands = controller.initial_commands()
         for iteration in range(args.iterations):
@@ -738,6 +762,13 @@ def run_draw_png_timed(args: argparse.Namespace) -> dict:
                 {
                     "depth": args.residual_depth,
                     "residual_scale": args.residual_scale,
+                    "drawing_layer_count": workload.drawing_layer_count,
+                    "fresh_batch_each_step": args.fresh_training_batches,
+                    "training_batch_pool_size": (
+                        args.training_batch_pool_size
+                        if args.fresh_training_batches
+                        else 1
+                    ),
                     "autograd_verification": workload.autograd_equivalence,
                 }
                 if args.training_model == "residual-mlp"
@@ -768,6 +799,7 @@ def run_draw_png_timed(args: argparse.Namespace) -> dict:
             "active_lead_width": minimum_tile_width,
             "correction_smoothing_sigma_points": correction_smoothing,
             "correction_smoothing_ms": correction_smoothing * bin_duration_ms,
+            "feedback_reference": args.ilc_feedback_reference,
             "preserves_unsmoothed_target_baseline": True,
         },
         "captures_dataset": str(captures_root),
@@ -917,6 +949,7 @@ def run_draw_png(args: argparse.Namespace) -> dict:
         total_width=output_size,
         minimum_width=minimum_tile_width,
         correction_smoothing_sigma_points=correction_smoothing,
+        feedback_reference=args.ilc_feedback_reference,
     )
     commands = controller.initial_commands()
     workload = TiledLinearTrainingWorkload(
@@ -1250,6 +1283,7 @@ def run_fast(args: argparse.Namespace) -> dict:
         gain_decay=args.ilc_gain_decay,
         gain_growth=args.ilc_gain_growth,
         correction_smoothing_sigma_points=correction_smoothing,
+        feedback_reference=args.ilc_feedback_reference,
     )
     commands = controller.initial_commands()
     history = []

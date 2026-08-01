@@ -1,0 +1,329 @@
+{
+  "capture_plan": {
+    "bits_per_sample": 12,
+    "decimation": 100,
+    "details": {
+      "gain_db": 10.0,
+      "max_samples_hw": 327828,
+      "max_samples_safe": 213088,
+      "max_stream_rate_hz": 10000000.0,
+      "stream_arm_settle_s": null,
+      "stream_fast_fifo": null,
+      "stream_segment_size": null,
+      "trigger": "gpio",
+      "usb_read_mode": "auto"
+    },
+    "duration_s": 0.11,
+    "mode": "burst",
+    "pretrigger_samples": 0,
+    "raw_sample_rate_hz": 150000000.0,
+    "sample_rate_hz": 1500000.0,
+    "samples": 165000,
+    "warnings": []
+  },
+  "control_policy": {
+    "active_lead_width": 32,
+    "algorithm": "cumulative iterative learning control",
+    "correction_smoothing_ms": 0.5833333333333334,
+    "correction_smoothing_sigma_points": 0.7,
+    "feedback_aggregation": "pointwise median",
+    "feedback_reference": "latest",
+    "preserves_unsmoothed_target_baseline": true,
+    "promoted_result_is_single_physical_trace": true,
+    "replicates_per_refinement": 3
+  },
+  "drawing_vs_no_drawing": {
+    "comparison_plot": "/home/amodo/drawing_with_traces_logo_20260801_1218/runs/logo-resmlp-depth112-b2048-min32-diffrms-latest-ilc8x3-100ms-120/training_performance.png",
+    "drawing_median_steps_per_s": 4.93429630894989,
+    "drawing_slowdown_x": 1.7445054821432806,
+    "drawing_throughput_fraction": 0.5732283505188019,
+    "no_drawing_median_steps_per_s": 8.607906961482438
+  },
+  "measurement_policy": {
+    "feature_sign": -1.0,
+    "maximum_requested_tile_width": 3072,
+    "minimum_tile_width": 32,
+    "normalization": "robust",
+    "normalization_quantiles": [
+      0.02,
+      0.98
+    ],
+    "preferred_feature": "diff_rms",
+    "resolved_feature": "diff_rms",
+    "selected_before_drawing": true,
+    "selection_accuracy_key": "multiscale_shape_accuracy_percent",
+    "selection_rmse_key": "multiscale_normalized_rmse",
+    "smoothing_sigma_points": 2.0,
+    "uses_target_for_feature_selection": false
+  },
+  "model": {
+    "autograd_verification": {
+      "manual_vs_autograd_gradient_max_absolute_error": 0.0,
+      "manual_vs_autograd_gradient_relative_l2": 0.0
+    },
+    "batch_size": 2048,
+    "depth": 112,
+    "drawing_layer_count": 112,
+    "fresh_batch_each_step": false,
+    "input_size": 4096,
+    "output_size": 4096,
+    "parameters": 1879048192,
+    "persistent_across_captures": true,
+    "residual_scale": 0.04419417382415922,
+    "training_batch_pool_size": 1,
+    "training_model": "residual-mlp",
+    "type": "teacher-student residual MLP training"
+  },
+  "promoted_trace": {
+    "files": {
+      "annotations.json": {
+        "bytes": 51315,
+        "file_sha256": "ad0e70e7586ec73ad29cdaca07cb85ff6004a284e5f06105e0859a9f2710fb10"
+      },
+      "fast_bin_center_ms.npy": {
+        "bytes": 608,
+        "dtype": "float32",
+        "file_sha256": "58fc7cc3ccc3ab8cef6265b40f28fd15a4314b164a7e23297385104aaf85e5c2",
+        "payload_sha256": "813ab2cb76c085b31cb916bc06addcc668b0ca11f7bd317fda0c82cb1ca8bbdd",
+        "shape": [
+          120
+        ]
+      },
+      "fast_feature_raw.npy": {
+        "bytes": 608,
+        "dtype": "float32",
+        "file_sha256": "d9863f99505c391895f7f1c4fc595b1c837830e9f927956fd976a17745b8fb7a",
+        "payload_sha256": "b7fe9aa1256faab7f6bc788a44c0a9a1dcec048d45fb0ddfeeda60cfcf62bef4",
+        "shape": [
+          120
+        ]
+      },
+      "fast_measured_raw.npy": {
+        "bytes": 608,
+        "dtype": "float32",
+        "file_sha256": "0527c83b04e80e2913341beb338860d3274c534edea45cfe31b5f1bb39133639",
+        "payload_sha256": "b4065af2d9cfe26bf1e942bd99c96901757fe0c9fcf419598651223d768ab765",
+        "shape": [
+          120
+        ]
+      },
+      "fast_measured_smoothed.npy": {
+        "bytes": 608,
+        "dtype": "float32",
+        "file_sha256": "8b9b7181715b7016bf1310c03275e1c3bfc8349e231ed0a02bba490f29f515cd",
+        "payload_sha256": "eefdca58dcd2c1a589e8828b749067772f1e3ccb3299f77515eae5a147ff2975",
+        "shape": [
+          120
+        ]
+      },
+      "fast_metrics.json": {
+        "bytes": 1016,
+        "file_sha256": "289a2b230a9e8ac336c53545ed413ce0bfa33679908cd7756587c1e474ec095d"
+      },
+      "fast_target.npy": {
+        "bytes": 608,
+        "dtype": "float32",
+        "file_sha256": "e359009c05a9b1ff923748df96346ed734410f95c5bc3c7d289a866cc8c3718f",
+        "payload_sha256": "a8915781156497f4bf98edaecf290fde4ddca24234b0ca49027de890319c6daf",
+        "shape": [
+          120
+        ]
+      },
+      "gradient_column_visits.npy": {
+        "bytes": 1835136,
+        "dtype": "int32",
+        "file_sha256": "5ce7f119e899c386c4ee99bf00f158319726ee4d9c11478773cde4e5bc05948a",
+        "payload_sha256": "2a83893d59bb26a3c712912d96fd7b54d18ef3ff91cee290cb839fcc10cee3a0",
+        "shape": [
+          112,
+          4096
+        ]
+      },
+      "record.json": {
+        "bytes": 7116,
+        "file_sha256": "b1e851bc79f4c4c81ba7d2061da3123a485688274d1197c10c66c2870365c993"
+      },
+      "target_envelope.npy": {
+        "bytes": 608,
+        "dtype": "float32",
+        "file_sha256": "e359009c05a9b1ff923748df96346ed734410f95c5bc3c7d289a866cc8c3718f",
+        "payload_sha256": "a8915781156497f4bf98edaecf290fde4ddca24234b0ca49027de890319c6daf",
+        "shape": [
+          120
+        ]
+      },
+      "tile_operations_per_bin.npy": {
+        "bytes": 1088,
+        "dtype": "int64",
+        "file_sha256": "018aeb138040906646beb7faa5f78092473c83fdd1419c5ef2a770b352a405e6",
+        "payload_sha256": "00e0097af2f8ea073e6dcc09db9aa9c02a8c5cf91b2d55bbcb355eac1043e638",
+        "shape": [
+          120
+        ]
+      },
+      "tile_width_commands.npy": {
+        "bytes": 608,
+        "dtype": "int32",
+        "file_sha256": "aaec93c76bb5c7d5327f86d8fc8af2e9906ac8eb7adfc6fca532778133b64228",
+        "payload_sha256": "760e8c3b4d1a2b5eb0dadfa9aee79624dda1a285d209f7c28f970f44ef0e6983",
+        "shape": [
+          120
+        ]
+      },
+      "trace.npy": {
+        "bytes": 330128,
+        "dtype": "float16",
+        "file_sha256": "64ece9876b60b214ecf54bb8c34cd8552918d6efeb181bbd8a409cac62d585e7",
+        "payload_sha256": "ddeb207003d112495e152e6700dc612755d88df9d287221eec10b4bc73191b0a",
+        "shape": [
+          165000
+        ]
+      },
+      "training_performance.json": {
+        "bytes": 2315,
+        "file_sha256": "5c550f5cf2d0649cb87dd0a33b127c2b2adf82fd5e2d5dfa2eba4dd727d742bc"
+      }
+    },
+    "health": {
+      "issues": [],
+      "metrics": {
+        "annotations.out_of_bounds": 0,
+        "power.finite_fraction": 1.0,
+        "primary.adc_rail_fraction": 0.0,
+        "primary.adc_robust_high": 0.08642578125,
+        "primary.adc_robust_low": -0.068359375,
+        "primary.adc_robust_span": 0.15478515625,
+        "primary.expected_samples": 165000,
+        "primary.max_equal_run_fraction": 1.8181818181818182e-05,
+        "primary.samples": 165000,
+        "primary.std": 0.03070726969464602
+      },
+      "ok": true
+    },
+    "metrics": {
+      "actual_profile_duration_ms": 100.03666666666666,
+      "bins": 120,
+      "feature": "diff_rms",
+      "feature_sign": -1.0,
+      "loss_before_update": 0.27690908312797546,
+      "measurement": "ChipWhisperer normalized ADC activity; not calibrated watts",
+      "multiscale_normalized_rmse": 0.06339284174039483,
+      "multiscale_score_definition": "100 * (1 - RMS(raw normalized RMSE, smoothed normalized RMSE))",
+      "multiscale_shape_accuracy_percent": 93.66071582596052,
+      "normalization": "robust",
+      "normalization_bounds": [
+        -0.0327173187095895,
+        -0.00824495737833423
+      ],
+      "normalized_mae": 0.044738475888415175,
+      "normalized_rmse": 0.055663440811188854,
+      "pearson_r": 0.9790967469826998,
+      "r_squared": 0.9503793583367022,
+      "raw_normalized_mae": 0.05592660796099595,
+      "raw_normalized_rmse": 0.07027720914282784,
+      "raw_pearson_r": 0.9765723832653649,
+      "raw_shape_accuracy_percent": 92.97227908571722,
+      "requested_duration_ms": 100.0,
+      "shape_accuracy_percent": 94.43365591888112,
+      "smoothing_sigma_points": 2.0
+    },
+    "record_index": 6,
+    "refinement_round": 1,
+    "replicate": 2,
+    "training_performance": {
+      "after": {
+        "train_half_mse": 0.2768266201019287,
+        "train_objective": 1133.8818359375,
+        "validation_half_mse": 0.2772437334060669
+      },
+      "arithmetic": {
+        "controlled_profile_tile_operations": 1538,
+        "controlled_profile_tile_width_sum": 531840,
+        "coverage_after_completion": {
+          "columns_visited_once": 323584,
+          "maximum_visits": 3,
+          "minimum_visits": 1,
+          "unvisited_columns": 0
+        },
+        "coverage_before_completion": {
+          "columns_visited_once": 284416,
+          "maximum_visits": 2,
+          "minimum_visits": 0,
+          "unvisited_columns": 50624
+        },
+        "executed_forward_backward_flops": 25373056172032,
+        "executed_tile_width_sum": 594848,
+        "gradient_completion_tile_operations": 246,
+        "gradient_completion_tile_width_sum": 62976,
+        "lead_stabilization_tile_operations": 1,
+        "lead_stabilization_tile_width_sum": 32,
+        "redundancy_ratio": 1.2966657366071428,
+        "tile_operations": 1785,
+        "useful_forward_backward_flops": 23089744183296,
+        "useful_output_width": 458752
+      },
+      "before": {
+        "train_half_mse": 0.27690908312797546,
+        "train_objective": 1134.2196044921875,
+        "validation_half_mse": 0.277316689491272
+      },
+      "equivalence": {
+        "drawing_vs_no_drawing_gradient_max_absolute_error": 0.0,
+        "drawing_vs_no_drawing_gradient_relative_l2": 0.0,
+        "manual_vs_autograd_gradient_max_absolute_error": 0.0,
+        "manual_vs_autograd_gradient_relative_l2": 0.0
+      },
+      "throughput": {
+        "common_forward_and_delta_wall_s": 0.053785958,
+        "controlled_profile_gradient_wall_s": 0.100063323,
+        "drawing_control_wall_s": 0.105983385,
+        "drawing_examples_per_s": 10127.17636877195,
+        "drawing_gradient_wall_s": 0.120558716,
+        "drawing_slowdown_x": 1.7318851900347658,
+        "drawing_step_wall_s": 0.202228136,
+        "drawing_steps_per_s": 4.944910336314429,
+        "drawing_throughput_fraction": 0.5774054803135802,
+        "gradient_completion_wall_s": 0.020495393,
+        "no_drawing_examples_per_s": 17539.106769946196,
+        "no_drawing_gradient_wall_s": 0.041018276,
+        "no_drawing_step_wall_s": 0.11676763400000001,
+        "no_drawing_steps_per_s": 8.564016977512791,
+        "optimizer_update_wall_s": 0.0219634
+      },
+      "train_improvement_percent": 0.02977981982940081,
+      "training_step": 6,
+      "validation_improvement_percent": 0.026307859559016045
+    }
+  },
+  "refinement": {
+    "accepted_training_steps": 25,
+    "physical_drawing_captures": 24,
+    "rounds_completed": 8,
+    "stop_reason": "maximum_refinements_reached"
+  },
+  "result": "real H100 112-layer residual-MLP training silhouette captured by SideCapture and ChipWhisperer",
+  "verification": {
+    "all_capture_health_ok": true,
+    "all_promoted_samples_finite": true,
+    "gradient_matches_pytorch_autograd": true,
+    "gradient_matches_untiled": true,
+    "independent_metric_recompute": {
+      "multiscale_normalized_rmse": 0.06339284050721938,
+      "multiscale_score_definition": "100 * (1 - RMS(raw normalized RMSE, smoothed normalized RMSE))",
+      "multiscale_shape_accuracy_percent": 93.66071594927806,
+      "normalized_mae": 0.04473847631985942,
+      "normalized_rmse": 0.055663440267371425,
+      "pearson_r": 0.9790967466843232,
+      "r_squared": 0.9503793593062638,
+      "raw_normalized_mae": 0.055926606501452626,
+      "raw_normalized_rmse": 0.07027720734881461,
+      "raw_pearson_r": 0.9765723833431678,
+      "raw_shape_accuracy_percent": 92.97227926511854,
+      "shape_accuracy_percent": 94.43365597326286
+    },
+    "metric_recompute_note": "derived curves are persisted as float32; original scorer used float64",
+    "metric_recompute_tolerance": 1e-07,
+    "promoted_dtype": "float16",
+    "promoted_samples": 165000
+  }
+}

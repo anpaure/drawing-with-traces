@@ -1,11 +1,13 @@
 import numpy as np
 import pytest
+from sidecapture.errors import ConfigurationError
 
 from drawing_with_traces.fast import (
     FastCalibration,
     FastRefinementController,
     TiledLinearTrainingWorkload,
     TiledResidualMLPTrainingWorkload,
+    calibrate_fast,
     dense_calibration_widths,
     interleaved_calibration_commands,
     normalized_curve_metrics,
@@ -57,6 +59,26 @@ def test_dense_calibration_avoids_idle_and_resolves_control_range():
     assert 0 not in widths
     assert np.all(np.diff(widths[widths <= 1280]) == 64)
     assert {1536, 2048, 3072, 4096}.issubset(set(widths))
+
+
+def test_calibration_reports_diagnostics_when_preferred_feature_is_not_separable(
+    monkeypatch,
+):
+    commands = np.array([32, 64, 128, 32, 64, 128])
+    features = {
+        "rms": np.array([1.0, 1.1, 1.0, 1.0, 1.1, 1.0]),
+        "std": np.array([1.0, 2.0, 3.0, 1.0, 2.0, 3.0]),
+    }
+    monkeypatch.setattr(
+        "drawing_with_traces.fast.measured_bin_features",
+        lambda *args, **kwargs: (features, commands, {}),
+    )
+
+    with pytest.raises(
+        ConfigurationError,
+        match=r"preferred calibration feature 'rms'.*rms: span=.*std: span=",
+    ):
+        calibrate_fast("unused", preferred_feature="rms")
 
 
 def test_silhouette_commands_form_an_exact_quantized_partition():
@@ -133,7 +155,45 @@ def test_residual_mlp_metadata_and_parameter_count_without_cuda():
     assert workload.task_label == "chipwhisperer-tiled-residual-mlp-training"
     assert workload.metadata()["depth"] == 14
     assert workload.metadata()["residual_scale"] == pytest.approx(0.125)
+    assert workload.metadata()["drawing_layer_count"] == 14
+    assert workload.metadata()["drawing_layers"] == list(range(14))
+    assert workload.metadata()["fresh_batch_each_step"] is False
+    assert workload.metadata()["training_batch_pool_size"] == 1
     assert "layers" in workload.metadata()["gradient"]
+
+
+def test_residual_mlp_fresh_batch_mode_cycles_precomputed_pool():
+    workload = TiledResidualMLPTrainingWorkload(
+        np.array([128, 256]),
+        profile_duration_s=0.01,
+        hidden_size=256,
+        depth=2,
+        batch_size=8,
+        fresh_batch_each_step=True,
+        training_batch_pool_size=3,
+    )
+    workload.training_batches = [("x0", "y0"), ("x1", "y1"), ("x2", "y2")]
+    workload.inputs, workload.targets = workload.training_batches[0]
+
+    workload._advance_training_batch()
+    assert (workload.inputs, workload.targets) == ("x1", "y1")
+    workload._advance_training_batch()
+    assert (workload.inputs, workload.targets) == ("x2", "y2")
+    workload._advance_training_batch()
+    assert (workload.inputs, workload.targets) == ("x0", "y0")
+
+
+def test_residual_mlp_rejects_too_small_training_batch_pool():
+    with pytest.raises(ValueError, match="pool_size"):
+        TiledResidualMLPTrainingWorkload(
+            np.array([128, 256]),
+            profile_duration_s=0.01,
+            hidden_size=256,
+            depth=2,
+            batch_size=8,
+            fresh_batch_each_step=True,
+            training_batch_pool_size=1,
+        )
 
 
 def test_residual_mlp_scheduler_walks_distinct_blocks_and_layers(monkeypatch):
@@ -162,6 +222,51 @@ def test_residual_mlp_scheduler_walks_distinct_blocks_and_layers(monkeypatch):
         (2, 128, 128),
         (0, 0, 128),
     ]
+
+
+def test_residual_mlp_scheduler_limits_profile_to_drawing_layers(monkeypatch):
+    workload = TiledResidualMLPTrainingWorkload(
+        np.array([128, 128]),
+        profile_duration_s=0.01,
+        hidden_size=256,
+        depth=4,
+        drawing_layer_count=2,
+        batch_size=8,
+    )
+    visited = []
+
+    def fake_gradient_tile(start, width, **kwargs):
+        visited.append((kwargs["layer_index"], start, width))
+
+    monkeypatch.setattr(workload, "gradient_tile", fake_gradient_tile)
+    for _ in range(10):
+        workload.next_tile(128)
+
+    assert visited == [
+        (0, 0, 128),
+        (0, 128, 128),
+        (1, 0, 128),
+        (1, 128, 128),
+        (0, 0, 128),
+        (0, 128, 128),
+        (1, 0, 128),
+        (1, 128, 128),
+        (0, 0, 128),
+        (0, 128, 128),
+    ]
+
+
+@pytest.mark.parametrize("drawing_layer_count", [0, 4])
+def test_residual_mlp_rejects_invalid_drawing_layer_count(drawing_layer_count):
+    with pytest.raises(ValueError, match="drawing_layer_count"):
+        TiledResidualMLPTrainingWorkload(
+            np.array([128, 256]),
+            profile_duration_s=0.01,
+            hidden_size=256,
+            depth=3,
+            drawing_layer_count=drawing_layer_count,
+            batch_size=8,
+        )
 
 
 def test_residual_mlp_warmup_first_touches_every_layer_and_width(monkeypatch):
@@ -294,6 +399,43 @@ def test_refinement_uses_best_trace_and_reduces_gain_after_regression():
     assert controller.gain == pytest.approx(0.2)
     assert controller.best_rmse == pytest.approx(0.15)
     assert refined[-2] >= commands[-2]
+
+
+def test_refinement_can_track_latest_trace_after_plant_drift():
+    target = np.linspace(0, 1, 5)
+    best = FastRefinementController(
+        target,
+        calibration(),
+        initial_gain=0.4,
+        feedback_reference="best",
+    )
+    latest = FastRefinementController(
+        target,
+        calibration(),
+        initial_gain=0.4,
+        feedback_reference="latest",
+    )
+    initial = best.initial_commands()
+    first_measured = np.clip(target - 0.1, 0, 1)
+    for controller in (best, latest):
+        controller.observe(
+            initial,
+            first_measured,
+            normalized_rmse=0.1,
+            shape_accuracy_percent=90,
+        )
+    delivered = latest.next_commands()
+    drifted = np.clip(target - 0.35, 0, 1)
+    for controller in (best, latest):
+        controller.observe(
+            delivered,
+            drifted,
+            normalized_rmse=0.35,
+            shape_accuracy_percent=65,
+        )
+
+    assert latest.metadata()["feedback_reference"] == "latest"
+    assert latest.next_commands().sum() > best.next_commands().sum()
 
 
 def test_refinement_accumulates_corrections_from_best_delivered_command():

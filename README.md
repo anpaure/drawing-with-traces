@@ -6,9 +6,33 @@ This is a standalone experiment built on [SideCapture](https://github.com/anpaur
 It uses a ChipWhisperer Husky Plus to capture an H100 PCIe while a hand-tiled training gradient changes
 GEMM width over time. The plotted result is measured data: it is not synthesized, shifted, or warped.
 
-![Best measured silhouette](results/logo-100ms-120-active-lead/measured_silhouette.png)
+![Best practical model-training silhouette](results/resmlp-depth112-100ms-120/measured_silhouette.png)
 
-## Best verified hardware result
+## Best practical model-training result
+
+The current result trains a genuine **112-layer, 1,879,048,192-parameter residual MLP**. Lowering the
+batch from 4096 to 2048 makes narrow gradient tiles electrically distinct again; doubling model depth
+keeps ordinary training substantial, so the fixed 100 ms drawing window costs only 1.74× throughput.
+
+| Property | 112-layer residual-MLP result |
+|---|---:|
+| Profile duration | **100.037 ms measured** |
+| Distinct target positions | **120** (0.833 ms each) |
+| ChipWhisperer capture | **1.5 MSPS burst**, 165,000 samples |
+| Multiscale / native / smoothed fidelity | **93.66% / 92.97% / 94.43%** |
+| Pearson correlation / R² | **0.9791 / 0.9504** |
+| PyTorch autograd gradient error | **exactly zero** in BF16 |
+| Tiled versus untiled gradient error | **exactly zero** |
+| Train loss for promoted step | **0.276909 → 0.276827** |
+| Held-out loss for promoted step | **0.277317 → 0.277244** |
+| Drawing / ordinary training | **4.93 / 8.61 steps/s** (median) |
+| Drawing slowdown | **1.74×**; **57.3%** throughput retained |
+
+The promoted picture is one unaveraged physical trace, not the median feedback curve. All 25 accepted
+captures passed SideCapture health checks. The curated raw evidence and independent recomputation are in
+[`results/resmlp-depth112-100ms-120`](results/resmlp-depth112-100ms-120).
+
+## Highest absolute waveform score (linear workload)
 
 | Property | Result |
 |---|---:|
@@ -33,7 +57,7 @@ metrics, and a compact [`published_summary.json`](results/logo-100ms-120-active-
 The promoted result is capture **5**, accepted on its first attempt with all 165,000 samples present,
 no ADC clipping, no annotation bounds errors, and no health issues.
 
-## 14-layer residual-MLP result
+## Earlier 14-layer residual-MLP result
 
 The repository now also contains a closer Fable-style workload: a genuine **14-layer, 234,881,024
 parameter residual MLP** with a handwritten tiled forward/backward pass.
@@ -50,10 +74,11 @@ parameter residual MLP** with a handwritten tiled forward/backward pass.
 | Drawing / ordinary training | **9.10 / 125.31 steps/s** (median) |
 | Drawing slowdown | **13.77×**, versus 184.39× for the linear workload |
 
-This is currently the strongest *real-model/training-efficiency* result, while the linear workload still
-has the strongest absolute waveform score. The curated residual result includes the promoted physical
-trace, annotations, commands, layer/column coverage, health record, plots, and independently recomputed
-checksums under [`results/resmlp-v1-100ms-120`](results/resmlp-v1-100ms-120).
+This was the first substantial residual-model result. The 112-layer workload now improves its fidelity
+from 93.08% to 93.66% and reduces slowdown from 13.77× to 1.74×. The curated 14-layer result includes the
+promoted physical trace, annotations, commands, layer/column coverage, health record, plots, and
+independently recomputed checksums under
+[`results/resmlp-v1-100ms-120`](results/resmlp-v1-100ms-120).
 
 ## One-command reproduction
 
@@ -61,22 +86,30 @@ checksums under [`results/resmlp-v1-100ms-120`](results/resmlp-v1-100ms-120).
 python -m pip install -e .
 
 draw-power-png assets/logo-top.png \
-  --output runs/logo-100ms \
+  --output runs/logo-resmlp-depth112-100ms \
   --engine timed \
+  --training-model residual-mlp \
+  --residual-depth 112 \
+  --drawing-layer-count 112 \
+  --residual-scale 0.04419417382415922 \
+  --residual-learning-rate 0.0000002 \
   --silhouette-mode upper-boundary \
   --points 120 \
   --duration-ms 100 \
   --capture-window-ms 110 \
   --sample-rate 1.5MHz \
-  --batch-size 512 \
-  --target-accuracy 95 \
+  --batch-size 2048 \
+  --minimum-tile-width 32 \
+  --maximum-tile-width 3072 \
+  --trace-feature diff_rms \
+  --target-accuracy 96 \
   --max-refinements 8 \
   --replicates-per-refinement 3 \
-  --ilc-gain 0.10 \
-  --minimum-ilc-gain 0.0125
+  --ilc-feedback-reference latest \
+  --ilc-correction-smoothing 0.7
 ```
 
-For the 14-layer residual MLP, add:
+For the earlier 14-layer residual MLP, use:
 
 ```bash
   --training-model residual-mlp \
@@ -108,35 +141,35 @@ untiled BF16 gradient to approximately `7.4e-7` relative L2 for the promoted ste
 The residual engine trains
 
 ```text
-h[l + 1] = h[l] + 0.125 × relu(h[l] W[l]),  l = 0…13
-loss       = 0.5 / batch × ||h[14] − Y||²
+h[l + 1] = h[l] + scale × relu(h[l] W[l])
+loss       = 0.5 / batch × ||h[depth] − Y||²
 ```
 
-It prepares the real reverse-mode delta for every layer, then schedules true blocks of
-`h[l].T @ delta[l]` across the 100 ms profile. The scheduler traverses layers and output columns rather
-than replaying a fake burner kernel. Repeated visits are averaged, missing blocks are completed after
-capture, and the accepted update is compared with both an untiled handwritten gradient and PyTorch
-autograd. Both comparisons were bit-for-bit exact in the verified H100 run.
+The promoted 112-layer run uses width 4096, scale `0.04419417382415922`, and batch 2048. It prepares the
+real reverse-mode delta for every layer, then schedules true blocks of `h[l].T @ delta[l]` across the 100
+ms profile. The scheduler traverses layers and output columns rather than replaying a fake burner kernel.
+Repeated visits are averaged, missing blocks are completed after capture, and the accepted update is
+compared with both an untiled handwritten gradient and PyTorch autograd. Both comparisons were
+bit-for-bit exact in the verified H100 run.
 
 ### Why drawing is slower
 
-An ordinary residual-MLP optimizer step takes about **8 ms** once warm. A 100 ms requested waveform has
-an unavoidable ceiling near 10 drawing steps/s before setup, completion, and update overhead. To keep
-all 120 levels physically present, the GPU also computes roughly 24 traversals' worth of gradient-column
-work in the promoted step. This is useful gradient arithmetic, but repeated visits must be averaged to
-preserve the same update. The resulting measured step is about 110 ms, or 13.77× slower than the same
-model without drawing. The earlier linear model's ordinary step is only about 0.57 ms, which is why its
-fixed 100 ms drawing window creates the much larger 184× ratio.
+The fixed 100 ms profile imposes a hard throughput ceiling near 10 steps/s. The 14-layer model's ordinary
+step was only about 8 ms, so drawing made it 13.77× slower. The 112-layer model deliberately performs
+substantial ordinary training: its measured no-drawing step is about 116 ms, versus about 202 ms while
+drawing. Narrower batch geometry restores waveform control, while extra depth keeps useful training
+compute high. Repeated visits are averaged and missing blocks are completed, yielding 1.74× median
+slowdown rather than 13.77× or the linear workload's 184×.
 
 ## Why the active baseline matters
 
 Earlier versions mapped target zero to GPU idle. That allowed H100 SM clocks to collapse between low
-bins and made the next power level depend on DVFS history. The verified path instead:
+bins and made the next power level depend on DVFS history. The verified linear and 14-layer paths use a
+128-column active floor. The 112-layer geometry remains separable down to a real 32-column gradient tile:
 
-- maps the lowest target level to a real **128-column gradient tile**;
+- maps the lowest target level to a real **32-column gradient tile**;
 - runs that same narrow tile during the 2 ms lead period;
-- sweeps 23 candidate widths from 128 through 4096 (the measured monotonic range retained 22 through
-  3072);
+- calibrates widths from 32 through 3072;
 - uses 120 **distinct target positions**, with no repeated target block inside the trace.
 
 `--replicates-per-refinement 3` means three separate physical training captures are used to form robust
@@ -146,8 +179,9 @@ The published picture and score belong to one unaveraged capture.
 ## Measurement and score
 
 The Husky input is AC-coupled, so this experiment reports normalized ChipWhisperer activity rather than
-calibrated watts. Timed mode preselects RMS activity before seeing a drawing trace and uses target-free
-2nd/98th-percentile normalization. No target-aware affine fitting is applied.
+calibrated watts. The new result preselects `diff_rms`—RMS of adjacent ADC-sample differences inside each
+bin—based only on calibration, before seeing a drawing trace. It uses target-free 2nd/98th-percentile
+normalization. No target-aware affine fitting is applied.
 
 To prevent display smoothing from hiding bin-scale ripple, the primary fidelity combines native and
 smoothed errors:
@@ -179,6 +213,7 @@ reported FLOPs and drawing-vs-no-drawing timing.
 - [Experiment and implementation guide](docs/EXPERIMENT.md)
 - [Resolution and controller ablations](docs/RESULTS.md)
 - [Compact published metrics](results/logo-100ms-120-active-lead/published_summary.json)
+- [112-layer residual-MLP compact metrics](results/resmlp-depth112-100ms-120/published_summary.json)
 - [Residual-MLP compact metrics](results/resmlp-v1-100ms-120/published_summary.json)
 
 ## Earlier modes
