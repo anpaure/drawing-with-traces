@@ -25,6 +25,7 @@ class PowerEnvelope:
     source_size: tuple[int, int]
     crop_bbox: tuple[int, int, int, int]
     background_rgb: tuple[float, float, float]
+    extraction_mode: str
     smoothing_sigma_points: float
 
     def metadata(self) -> dict[str, Any]:
@@ -69,8 +70,16 @@ def extract_envelope(
     points: int = 120,
     foreground_distance: float = 32.0,
     smoothing_sigma_points: float = 1.5,
+    extraction_mode: str = "height",
 ) -> PowerEnvelope:
-    """Flatten each foreground column to a baseline and retain its height."""
+    """Convert a filled image into a normalized one-dimensional power target.
+
+    ``height`` lowers every foreground column to a common baseline and retains
+    its thickness. ``upper-boundary`` preserves the vertical position of the
+    top edge relative to the crop's bottom edge. ``lower-boundary`` does the
+    same for the bottom edge. Transparent images use alpha as their foreground
+    mask, including black artwork whose RGB channels contain no contrast.
+    """
 
     if points < 8:
         raise ValueError("points must be at least 8")
@@ -78,6 +87,10 @@ def extract_envelope(
         raise ValueError("foreground_distance must be positive")
     if smoothing_sigma_points < 0:
         raise ValueError("smoothing_sigma_points cannot be negative")
+    valid_modes = {"height", "upper-boundary", "lower-boundary"}
+    if extraction_mode not in valid_modes:
+        choices = ", ".join(sorted(valid_modes))
+        raise ValueError(f"extraction_mode must be one of: {choices}")
     path = Path(path).expanduser().resolve()
     if not path.is_file():
         raise ConfigurationError(f"silhouette image does not exist or is not a file: {path}")
@@ -107,28 +120,35 @@ def extract_envelope(
         )
     left, top, right, bottom = int(x.min()), int(y.min()), int(x.max()) + 1, int(y.max()) + 1
     crop = foreground[top:bottom, left:right]
-    raw_height = np.zeros(crop.shape[1], dtype=np.float64)
+    raw_profile = np.full(crop.shape[1], np.nan, dtype=np.float64)
     for column in range(crop.shape[1]):
         rows = np.flatnonzero(crop[:, column])
         if rows.size:
-            raw_height[column] = rows[-1] - rows[0] + 1
-    nonzero = np.flatnonzero(raw_height > 0)
-    if not nonzero.size:
+            if extraction_mode == "height":
+                raw_profile[column] = rows[-1] - rows[0] + 1
+            elif extraction_mode == "upper-boundary":
+                raw_profile[column] = crop.shape[0] - rows[0]
+            else:
+                raw_profile[column] = crop.shape[0] - rows[-1]
+    present = np.flatnonzero(np.isfinite(raw_profile))
+    if not present.size:
         raise ConfigurationError("foreground extraction produced no non-empty columns")
-    raw_height = np.interp(
-        np.arange(raw_height.size, dtype=np.float64),
-        nonzero.astype(np.float64),
-        raw_height[nonzero],
+    raw_profile = np.interp(
+        np.arange(raw_profile.size, dtype=np.float64),
+        present.astype(np.float64),
+        raw_profile[present],
     )
     resampled = np.interp(
-        np.linspace(0, raw_height.size - 1, points),
-        np.arange(raw_height.size),
-        raw_height,
+        np.linspace(0, raw_profile.size - 1, points),
+        np.arange(raw_profile.size),
+        raw_profile,
     )
     smoothed = _gaussian_smooth(resampled, smoothing_sigma_points)
     span = float(smoothed.max() - smoothed.min())
     if span <= 0:
-        raise ConfigurationError("silhouette has constant column height and cannot define a power curve")
+        raise ConfigurationError(
+            f"silhouette has a constant {extraction_mode} profile and cannot define a power curve"
+        )
     values = np.ascontiguousarray((smoothed - smoothed.min()) / span, dtype=np.float32)
     return PowerEnvelope(
         values=values,
@@ -137,6 +157,7 @@ def extract_envelope(
         source_size=(width, height),
         crop_bbox=(left, top, right, bottom),
         background_rgb=tuple(float(value) for value in background),
+        extraction_mode=extraction_mode,
         smoothing_sigma_points=float(smoothing_sigma_points),
     )
 
@@ -177,5 +198,6 @@ def load_envelope(root: str | Path) -> PowerEnvelope:
         source_size=tuple(metadata["source_size"]),
         crop_bbox=tuple(metadata["crop_bbox"]),
         background_rgb=tuple(metadata["background_rgb"]),
+        extraction_mode=str(metadata.get("extraction_mode", "height")),
         smoothing_sigma_points=float(metadata["smoothing_sigma_points"]),
     )

@@ -1,0 +1,2216 @@
+[
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282192968016,
+    "end_sample": 4072,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "duration_s": 0.002,
+      "requested_width": 128
+    },
+    "name": "tile.lead_baseline",
+    "start": 4318282190970080,
+    "start_sample": 1075,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282193866688,
+    "end_sample": 5420,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 0,
+      "requested_width": 128
+    },
+    "name": "tile.bin",
+    "start": 4318282193007516,
+    "start_sample": 4131,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282194658850,
+    "end_sample": 6608,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 1,
+      "requested_width": 384
+    },
+    "name": "tile.bin",
+    "start": 4318282193875201,
+    "start_sample": 5433,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282195508819,
+    "end_sample": 7883,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 2,
+      "requested_width": 832
+    },
+    "name": "tile.bin",
+    "start": 4318282194666832,
+    "start_sample": 6620,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282196378087,
+    "end_sample": 9187,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 3,
+      "requested_width": 864
+    },
+    "name": "tile.bin",
+    "start": 4318282195515980,
+    "start_sample": 7894,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282197265633,
+    "end_sample": 10518,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 4,
+      "requested_width": 960
+    },
+    "name": "tile.bin",
+    "start": 4318282196385168,
+    "start_sample": 9197,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282198043112,
+    "end_sample": 11684,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 5,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282197272523,
+    "start_sample": 10529,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282198823316,
+    "end_sample": 12855,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 6,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282198050133,
+    "start_sample": 11695,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282199758764,
+    "end_sample": 14258,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 7,
+      "requested_width": 1056
+    },
+    "name": "tile.bin",
+    "start": 4318282198829936,
+    "start_sample": 12865,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282200580931,
+    "end_sample": 15491,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 8,
+      "requested_width": 1088
+    },
+    "name": "tile.bin",
+    "start": 4318282199765384,
+    "start_sample": 14268,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282201463839,
+    "end_sample": 16815,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 9,
+      "requested_width": 1184
+    },
+    "name": "tile.bin",
+    "start": 4318282200588112,
+    "start_sample": 15502,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282202219316,
+    "end_sample": 17949,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 10,
+      "requested_width": 1216
+    },
+    "name": "tile.bin",
+    "start": 4318282201471461,
+    "start_sample": 16827,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282203026661,
+    "end_sample": 19160,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 11,
+      "requested_width": 1312
+    },
+    "name": "tile.bin",
+    "start": 4318282202226577,
+    "start_sample": 17960,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282203889329,
+    "end_sample": 20454,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 12,
+      "requested_width": 1376
+    },
+    "name": "tile.bin",
+    "start": 4318282203033892,
+    "start_sample": 19171,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282204768371,
+    "end_sample": 21772,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 13,
+      "requested_width": 1440
+    },
+    "name": "tile.bin",
+    "start": 4318282203896490,
+    "start_sample": 20464,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282205494744,
+    "end_sample": 22862,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 14,
+      "requested_width": 1504
+    },
+    "name": "tile.bin",
+    "start": 4318282204775773,
+    "start_sample": 21783,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282206466297,
+    "end_sample": 24319,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 15,
+      "requested_width": 1632
+    },
+    "name": "tile.bin",
+    "start": 4318282205502326,
+    "start_sample": 22873,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282207292529,
+    "end_sample": 25559,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 16,
+      "requested_width": 1760
+    },
+    "name": "tile.bin",
+    "start": 4318282206474729,
+    "start_sample": 24332,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282208185223,
+    "end_sample": 26898,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 17,
+      "requested_width": 1920
+    },
+    "name": "tile.bin",
+    "start": 4318282207300412,
+    "start_sample": 25570,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282208879698,
+    "end_sample": 27939,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 18,
+      "requested_width": 2016
+    },
+    "name": "tile.bin",
+    "start": 4318282208193996,
+    "start_sample": 26911,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282209854564,
+    "end_sample": 29402,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 19,
+      "requested_width": 2144
+    },
+    "name": "tile.bin",
+    "start": 4318282208887600,
+    "start_sample": 27951,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282210605274,
+    "end_sample": 30528,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 20,
+      "requested_width": 2240
+    },
+    "name": "tile.bin",
+    "start": 4318282209862386,
+    "start_sample": 29413,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282211419159,
+    "end_sample": 31748,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 21,
+      "requested_width": 2368
+    },
+    "name": "tile.bin",
+    "start": 4318282210613286,
+    "start_sample": 30540,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282212256759,
+    "end_sample": 33005,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 22,
+      "requested_width": 2464
+    },
+    "name": "tile.bin",
+    "start": 4318282211427731,
+    "start_sample": 31761,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282213099117,
+    "end_sample": 34268,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 23,
+      "requested_width": 2528
+    },
+    "name": "tile.bin",
+    "start": 4318282212265262,
+    "start_sample": 33018,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282213961855,
+    "end_sample": 35562,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 24,
+      "requested_width": 2624
+    },
+    "name": "tile.bin",
+    "start": 4318282213107709,
+    "start_sample": 34281,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282214836951,
+    "end_sample": 36875,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 25,
+      "requested_width": 2688
+    },
+    "name": "tile.bin",
+    "start": 4318282213969746,
+    "start_sample": 35574,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282215744086,
+    "end_sample": 38236,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 26,
+      "requested_width": 2784
+    },
+    "name": "tile.bin",
+    "start": 4318282214844422,
+    "start_sample": 36886,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282216368546,
+    "end_sample": 39173,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 27,
+      "requested_width": 2848
+    },
+    "name": "tile.bin",
+    "start": 4318282215752579,
+    "start_sample": 38249,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282217304764,
+    "end_sample": 40577,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 28,
+      "requested_width": 2912
+    },
+    "name": "tile.bin",
+    "start": 4318282216376938,
+    "start_sample": 39185,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282218250527,
+    "end_sample": 41996,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 29,
+      "requested_width": 2976
+    },
+    "name": "tile.bin",
+    "start": 4318282217312907,
+    "start_sample": 40589,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282218891522,
+    "end_sample": 42957,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 30,
+      "requested_width": 3040
+    },
+    "name": "tile.bin",
+    "start": 4318282218258840,
+    "start_sample": 42008,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282219868863,
+    "end_sample": 44423,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 31,
+      "requested_width": 3072
+    },
+    "name": "tile.bin",
+    "start": 4318282218899945,
+    "start_sample": 42970,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282220501314,
+    "end_sample": 45372,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 32,
+      "requested_width": 2976
+    },
+    "name": "tile.bin",
+    "start": 4318282219877155,
+    "start_sample": 44435,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282221546537,
+    "end_sample": 46940,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 33,
+      "requested_width": 2304
+    },
+    "name": "tile.bin",
+    "start": 4318282220509016,
+    "start_sample": 45383,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282222248062,
+    "end_sample": 47992,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 34,
+      "requested_width": 1376
+    },
+    "name": "tile.bin",
+    "start": 4318282221554899,
+    "start_sample": 46952,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282222988887,
+    "end_sample": 49103,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 35,
+      "requested_width": 1088
+    },
+    "name": "tile.bin",
+    "start": 4318282222255804,
+    "start_sample": 48003,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282223861300,
+    "end_sample": 50412,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 36,
+      "requested_width": 1056
+    },
+    "name": "tile.bin",
+    "start": 4318282222996549,
+    "start_sample": 49115,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282224718910,
+    "end_sample": 51698,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 37,
+      "requested_width": 1056
+    },
+    "name": "tile.bin",
+    "start": 4318282223868711,
+    "start_sample": 50423,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282225580606,
+    "end_sample": 52991,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 38,
+      "requested_width": 1056
+    },
+    "name": "tile.bin",
+    "start": 4318282224726632,
+    "start_sample": 51710,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282226434321,
+    "end_sample": 54271,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 39,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282225588038,
+    "start_sample": 53002,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282227266163,
+    "end_sample": 55519,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 40,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282226442884,
+    "start_sample": 54284,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282228036492,
+    "end_sample": 56674,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 41,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282227273324,
+    "start_sample": 55530,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282228889956,
+    "end_sample": 57955,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 42,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282228044023,
+    "start_sample": 56686,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282229751392,
+    "end_sample": 59247,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 43,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282228897677,
+    "start_sample": 57966,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282230592708,
+    "end_sample": 60509,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 44,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282229758903,
+    "start_sample": 59258,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282231430479,
+    "end_sample": 61765,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 45,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282230600520,
+    "start_sample": 60520,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282232158043,
+    "end_sample": 62857,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 46,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282231438170,
+    "start_sample": 61777,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282232994792,
+    "end_sample": 64112,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 47,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282232165645,
+    "start_sample": 62868,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282233944251,
+    "end_sample": 65536,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 48,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282233009074,
+    "start_sample": 64133,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282234733098,
+    "end_sample": 66719,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 49,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282233951662,
+    "start_sample": 65547,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282235524519,
+    "end_sample": 67906,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 50,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282234740769,
+    "start_sample": 66731,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282236434448,
+    "end_sample": 69271,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 51,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282235532050,
+    "start_sample": 67918,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282237230015,
+    "end_sample": 70465,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 52,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282236442440,
+    "start_sample": 69283,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282238057630,
+    "end_sample": 71706,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 53,
+      "requested_width": 1088
+    },
+    "name": "tile.bin",
+    "start": 4318282237237336,
+    "start_sample": 70476,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282238854349,
+    "end_sample": 72901,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 54,
+      "requested_width": 1344
+    },
+    "name": "tile.bin",
+    "start": 4318282238065141,
+    "start_sample": 71717,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282239745960,
+    "end_sample": 74239,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 55,
+      "requested_width": 1536
+    },
+    "name": "tile.bin",
+    "start": 4318282238861399,
+    "start_sample": 72912,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282240613385,
+    "end_sample": 75540,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 56,
+      "requested_width": 1472
+    },
+    "name": "tile.bin",
+    "start": 4318282239753151,
+    "start_sample": 74249,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282241411617,
+    "end_sample": 76737,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 57,
+      "requested_width": 1344
+    },
+    "name": "tile.bin",
+    "start": 4318282240620987,
+    "start_sample": 75551,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282242162737,
+    "end_sample": 77864,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 58,
+      "requested_width": 1216
+    },
+    "name": "tile.bin",
+    "start": 4318282241419138,
+    "start_sample": 76748,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282243045505,
+    "end_sample": 79188,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 59,
+      "requested_width": 1184
+    },
+    "name": "tile.bin",
+    "start": 4318282242169998,
+    "start_sample": 77875,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282243914973,
+    "end_sample": 80492,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 60,
+      "requested_width": 1184
+    },
+    "name": "tile.bin",
+    "start": 4318282243052706,
+    "start_sample": 79199,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282244786214,
+    "end_sample": 81799,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 61,
+      "requested_width": 1184
+    },
+    "name": "tile.bin",
+    "start": 4318282243922264,
+    "start_sample": 80503,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282245521871,
+    "end_sample": 82903,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 62,
+      "requested_width": 1216
+    },
+    "name": "tile.bin",
+    "start": 4318282244793815,
+    "start_sample": 81810,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282246323437,
+    "end_sample": 84105,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 63,
+      "requested_width": 1344
+    },
+    "name": "tile.bin",
+    "start": 4318282245530103,
+    "start_sample": 82915,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282247200647,
+    "end_sample": 85421,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 64,
+      "requested_width": 1504
+    },
+    "name": "tile.bin",
+    "start": 4318282246332571,
+    "start_sample": 84119,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282248062814,
+    "end_sample": 86714,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 65,
+      "requested_width": 1472
+    },
+    "name": "tile.bin",
+    "start": 4318282247208499,
+    "start_sample": 85432,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282248941857,
+    "end_sample": 88033,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 66,
+      "requested_width": 1216
+    },
+    "name": "tile.bin",
+    "start": 4318282248070766,
+    "start_sample": 86726,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282249767279,
+    "end_sample": 89271,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 67,
+      "requested_width": 1056
+    },
+    "name": "tile.bin",
+    "start": 4318282248949238,
+    "start_sample": 88044,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282250558870,
+    "end_sample": 90458,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 68,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282249775221,
+    "start_sample": 89283,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282251342449,
+    "end_sample": 91633,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 69,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282250566281,
+    "start_sample": 90469,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282252258988,
+    "end_sample": 93008,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 70,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282251350000,
+    "start_sample": 91645,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282253036648,
+    "end_sample": 94175,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 71,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282252266559,
+    "start_sample": 93020,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282253946818,
+    "end_sample": 95540,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 72,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282253044019,
+    "start_sample": 94186,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282254734923,
+    "end_sample": 96722,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 73,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282253954779,
+    "start_sample": 95552,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282255520375,
+    "end_sample": 97900,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 74,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282254742274,
+    "start_sample": 96733,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282256426238,
+    "end_sample": 99259,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 75,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282255528067,
+    "start_sample": 97912,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282257211520,
+    "end_sample": 100437,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 76,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282256435342,
+    "start_sample": 99273,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282258008859,
+    "end_sample": 101633,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 77,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282257219071,
+    "start_sample": 100448,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282258916195,
+    "end_sample": 102994,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 78,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282258016130,
+    "start_sample": 101644,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282259708236,
+    "end_sample": 104182,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 79,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282258923846,
+    "start_sample": 103005,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282260502902,
+    "end_sample": 105374,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 80,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282259716138,
+    "start_sample": 104194,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282261417628,
+    "end_sample": 106746,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 81,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282260510714,
+    "start_sample": 105386,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282262211092,
+    "end_sample": 107936,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 82,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282261425100,
+    "start_sample": 106757,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282262996534,
+    "end_sample": 109115,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 83,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282262218553,
+    "start_sample": 107948,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282263824380,
+    "end_sample": 110356,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 84,
+      "requested_width": 1056
+    },
+    "name": "tile.bin",
+    "start": 4318282263010445,
+    "start_sample": 109135,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282264782461,
+    "end_sample": 111793,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 85,
+      "requested_width": 1056
+    },
+    "name": "tile.bin",
+    "start": 4318282263832161,
+    "start_sample": 110368,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282265502725,
+    "end_sample": 112874,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 86,
+      "requested_width": 1152
+    },
+    "name": "tile.bin",
+    "start": 4318282264790804,
+    "start_sample": 111806,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282266343580,
+    "end_sample": 114135,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 87,
+      "requested_width": 1376
+    },
+    "name": "tile.bin",
+    "start": 4318282265510006,
+    "start_sample": 112885,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282267396354,
+    "end_sample": 115714,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 88,
+      "requested_width": 2336
+    },
+    "name": "tile.bin",
+    "start": 4318282266351522,
+    "start_sample": 114147,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282268028615,
+    "end_sample": 116663,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 89,
+      "requested_width": 2976
+    },
+    "name": "tile.bin",
+    "start": 4318282267404536,
+    "start_sample": 115727,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282268987448,
+    "end_sample": 118101,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 90,
+      "requested_width": 3040
+    },
+    "name": "tile.bin",
+    "start": 4318282268036447,
+    "start_sample": 116674,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282269952861,
+    "end_sample": 119549,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 91,
+      "requested_width": 3008
+    },
+    "name": "tile.bin",
+    "start": 4318282268995510,
+    "start_sample": 118113,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282270591402,
+    "end_sample": 120507,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 92,
+      "requested_width": 2944
+    },
+    "name": "tile.bin",
+    "start": 4318282269963006,
+    "start_sample": 119564,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282271535833,
+    "end_sample": 121923,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 93,
+      "requested_width": 2848
+    },
+    "name": "tile.bin",
+    "start": 4318282270599424,
+    "start_sample": 120519,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282272163517,
+    "end_sample": 122865,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 94,
+      "requested_width": 2784
+    },
+    "name": "tile.bin",
+    "start": 4318282271546278,
+    "start_sample": 121939,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282273057612,
+    "end_sample": 124206,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 95,
+      "requested_width": 2688
+    },
+    "name": "tile.bin",
+    "start": 4318282272173342,
+    "start_sample": 122880,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282273926570,
+    "end_sample": 125510,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 96,
+      "requested_width": 2592
+    },
+    "name": "tile.bin",
+    "start": 4318282273066886,
+    "start_sample": 124220,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282274773344,
+    "end_sample": 126780,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 97,
+      "requested_width": 2528
+    },
+    "name": "tile.bin",
+    "start": 4318282273935483,
+    "start_sample": 125523,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282275582742,
+    "end_sample": 127994,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 98,
+      "requested_width": 2432
+    },
+    "name": "tile.bin",
+    "start": 4318282274782368,
+    "start_sample": 126793,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282276363296,
+    "end_sample": 129165,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 99,
+      "requested_width": 2304
+    },
+    "name": "tile.bin",
+    "start": 4318282275591655,
+    "start_sample": 128007,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282277345594,
+    "end_sample": 130638,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 100,
+      "requested_width": 2208
+    },
+    "name": "tile.bin",
+    "start": 4318282276371609,
+    "start_sample": 129177,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282278053619,
+    "end_sample": 131700,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 101,
+      "requested_width": 2112
+    },
+    "name": "tile.bin",
+    "start": 4318282277353777,
+    "start_sample": 130650,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282278951090,
+    "end_sample": 133046,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 102,
+      "requested_width": 1984
+    },
+    "name": "tile.bin",
+    "start": 4318282278061251,
+    "start_sample": 131712,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282279793948,
+    "end_sample": 134311,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 103,
+      "requested_width": 1856
+    },
+    "name": "tile.bin",
+    "start": 4318282278959412,
+    "start_sample": 133059,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282280591168,
+    "end_sample": 135506,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 104,
+      "requested_width": 1728
+    },
+    "name": "tile.bin",
+    "start": 4318282279801339,
+    "start_sample": 134322,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282281340115,
+    "end_sample": 136630,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 105,
+      "requested_width": 1600
+    },
+    "name": "tile.bin",
+    "start": 4318282280598709,
+    "start_sample": 135518,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282282203183,
+    "end_sample": 137924,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 106,
+      "requested_width": 1504
+    },
+    "name": "tile.bin",
+    "start": 4318282281347415,
+    "start_sample": 136641,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282283050318,
+    "end_sample": 139195,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 107,
+      "requested_width": 1440
+    },
+    "name": "tile.bin",
+    "start": 4318282282210484,
+    "start_sample": 137935,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282283879575,
+    "end_sample": 140439,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 108,
+      "requested_width": 1376
+    },
+    "name": "tile.bin",
+    "start": 4318282283059421,
+    "start_sample": 139209,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282284797356,
+    "end_sample": 141816,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 109,
+      "requested_width": 1280
+    },
+    "name": "tile.bin",
+    "start": 4318282283886456,
+    "start_sample": 140449,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282285535968,
+    "end_sample": 142924,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 110,
+      "requested_width": 1216
+    },
+    "name": "tile.bin",
+    "start": 4318282284804717,
+    "start_sample": 141827,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282286409923,
+    "end_sample": 144235,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 111,
+      "requested_width": 1184
+    },
+    "name": "tile.bin",
+    "start": 4318282285543729,
+    "start_sample": 142935,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282287240783,
+    "end_sample": 145481,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 112,
+      "requested_width": 1088
+    },
+    "name": "tile.bin",
+    "start": 4318282286417584,
+    "start_sample": 144246,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282288045143,
+    "end_sample": 146687,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 113,
+      "requested_width": 1056
+    },
+    "name": "tile.bin",
+    "start": 4318282287248294,
+    "start_sample": 145492,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282288836083,
+    "end_sample": 147874,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 114,
+      "requested_width": 1024
+    },
+    "name": "tile.bin",
+    "start": 4318282288051994,
+    "start_sample": 146698,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282289740584,
+    "end_sample": 149231,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 115,
+      "requested_width": 992
+    },
+    "name": "tile.bin",
+    "start": 4318282288843204,
+    "start_sample": 147885,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282290514579,
+    "end_sample": 150392,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 116,
+      "requested_width": 960
+    },
+    "name": "tile.bin",
+    "start": 4318282289747635,
+    "start_sample": 149241,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282291387642,
+    "end_sample": 151701,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 117,
+      "requested_width": 864
+    },
+    "name": "tile.bin",
+    "start": 4318282290522661,
+    "start_sample": 150404,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282292185533,
+    "end_sample": 152898,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 118,
+      "requested_width": 640
+    },
+    "name": "tile.bin",
+    "start": 4318282291395915,
+    "start_sample": 151714,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282293077425,
+    "end_sample": 154236,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "index": 119,
+      "requested_width": 320
+    },
+    "name": "tile.bin",
+    "start": 4318282292194366,
+    "start_sample": 152911,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282293087139,
+    "end_sample": 154250,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "bins": 120,
+      "duration_s": 0.1,
+      "schedule_mode": "timed-repeat"
+    },
+    "name": "tile.profile",
+    "start": 4318282192993495,
+    "start_sample": 4110,
+    "sync": "none"
+  },
+  {
+    "clock_domain": "host_monotonic",
+    "end": 4318282295180920,
+    "end_sample": 157391,
+    "kind": "interval",
+    "mapping": {
+      "method": "host_monotonic_trigger_delta",
+      "trigger_source": "chipwhisperer.tio4"
+    },
+    "metadata": {
+      "duration_s": 0.002
+    },
+    "name": "tile.tail_idle",
+    "start": 4318282293178287,
+    "start_sample": 154387,
+    "sync": "none"
+  }
+]

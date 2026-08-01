@@ -1,0 +1,24 @@
+{
+  "background_rgb": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "crop_bbox": [
+    136,
+    305,
+    3702,
+    1850
+  ],
+  "envelope_sha256": "a8915781156497f4bf98edaecf290fde4ddca24234b0ca49027de890319c6daf",
+  "extraction_mode": "upper-boundary",
+  "maximum": 1.0,
+  "minimum": 0.0,
+  "points": 120,
+  "smoothing_sigma_points": 1.0,
+  "source_sha256": "9a3753f8904683a61f77584849faf9f80d2fdad022a38a117bdc9f33246e6903",
+  "source_size": [
+    3840,
+    2160
+  ]
+}

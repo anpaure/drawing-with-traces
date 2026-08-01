@@ -174,11 +174,12 @@ def render_target_preview(envelope: PowerEnvelope, output: str | Path) -> Path:
     axis.set_xlim(0, 1)
     axis.set_ylim(0, 1.05)
     axis.axis("off")
-    axis.set_title(
-        "Silhouette lowered to a common baseline · column height becomes target power",
-        fontsize=13,
-        color="#101828",
-    )
+    descriptions = {
+        "height": "Silhouette lowered to a common baseline · column height becomes target power",
+        "upper-boundary": "Upper image boundary lowered to a baseline · edge position becomes target power",
+        "lower-boundary": "Lower image boundary lowered to a baseline · edge position becomes target power",
+    }
+    axis.set_title(descriptions[envelope.extraction_mode], fontsize=13, color="#101828")
     output.parent.mkdir(parents=True, exist_ok=True)
     figure.savefig(output, dpi=180, facecolor="white", bbox_inches="tight")
     plt.close(figure)

@@ -2,7 +2,7 @@
 
 from .analysis import CalibrationCurve, analyze_drawing, render_drawing
 from .envelope import PowerEnvelope, extract_envelope, load_envelope, save_envelope
-from .fast import FastCalibration, TiledLinearTrainingWorkload
+from .fast import FastCalibration, FastRefinementController, TiledLinearTrainingWorkload
 from .workload import AdaptiveTrainingPowerWorkload, TrainingDutyWorkload
 
 __all__ = [
@@ -10,6 +10,7 @@ __all__ = [
     "AdaptiveTrainingPowerWorkload",
     "PowerEnvelope",
     "FastCalibration",
+    "FastRefinementController",
     "TiledLinearTrainingWorkload",
     "TrainingDutyWorkload",
     "analyze_drawing",

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "drawing-with-traces"
-version = "0.1.0"
+version = "0.2.0"
 description = "Draw silhouettes with measured GPU training power traces"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -23,12 +23,19 @@ dev = ["pytest>=8", "ruff>=0.9,<0.16"]
 
 [project.scripts]
 drawing-with-traces = "drawing_with_traces.cli:main"
+draw-power-png = "drawing_with_traces.cli:draw_png_main"
 
 [project.urls]
 Repository = "https://github.com/anpaure/drawing-with-traces"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/drawing_with_traces"]
+
+[tool.hatch.build]
+exclude = [
+  "/assets",
+  "/results",
+]
 
 [tool.hatch.metadata]
 allow-direct-references = true

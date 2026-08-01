@@ -1,0 +1,61 @@
+{
+  "after": {
+    "train_half_mse": 0.07582539319992065,
+    "train_objective": 310.580810546875,
+    "validation_half_mse": 0.8872390389442444
+  },
+  "arithmetic": {
+    "controlled_profile_tile_operations": 624,
+    "controlled_profile_tile_width_sum": 822240,
+    "coverage_after_completion": {
+      "columns_visited_once": 0,
+      "maximum_visits": 251,
+      "minimum_visits": 27,
+      "unvisited_columns": 0
+    },
+    "coverage_before_completion": {
+      "columns_visited_once": 0,
+      "maximum_visits": 251,
+      "minimum_visits": 27,
+      "unvisited_columns": 0
+    },
+    "executed_forward_backward_flops": 6933956263936,
+    "executed_tile_width_sum": 826592,
+    "gradient_completion_tile_operations": 0,
+    "gradient_completion_tile_width_sum": 0,
+    "lead_stabilization_tile_operations": 34,
+    "lead_stabilization_tile_width_sum": 4352,
+    "redundancy_ratio": 201.8046875,
+    "tile_operations": 658,
+    "useful_forward_backward_flops": 34359738368,
+    "useful_output_width": 4096
+  },
+  "before": {
+    "train_half_mse": 0.0870470404624939,
+    "train_objective": 356.544677734375,
+    "validation_half_mse": 0.8889307379722595
+  },
+  "equivalence": {
+    "drawing_vs_no_drawing_gradient_max_absolute_error": 1.944601535797119e-06,
+    "drawing_vs_no_drawing_gradient_relative_l2": 1.1712016127854187e-06
+  },
+  "throughput": {
+    "controlled_profile_gradient_wall_s": 0.100078673,
+    "drawing_control_wall_s": 0.104355248,
+    "drawing_examples_per_s": 4896.157332201684,
+    "drawing_gradient_wall_s": 0.10020907000000001,
+    "drawing_slowdown_x": 180.62944224690372,
+    "drawing_step_wall_s": 0.10457180299999999,
+    "drawing_steps_per_s": 9.562807289456414,
+    "drawing_throughput_fraction": 0.005536196024085002,
+    "gradient_completion_wall_s": 0.000130397,
+    "no_drawing_examples_per_s": 884390.1680686784,
+    "no_drawing_gradient_wall_s": 0.000362375,
+    "no_drawing_step_wall_s": 0.0005789300000000001,
+    "no_drawing_steps_per_s": 1727.3245470091374,
+    "optimizer_update_wall_s": 0.000216555
+  },
+  "train_improvement_percent": 12.89147477381305,
+  "training_step": 15,
+  "validation_improvement_percent": 0.1903071809479906
+}

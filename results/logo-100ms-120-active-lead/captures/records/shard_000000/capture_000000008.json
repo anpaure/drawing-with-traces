@@ -1,0 +1,191 @@
+{
+  "annotations": {
+    "count": 123,
+    "path": "annotations/shard_000000/capture_000000008.json"
+  },
+  "artifacts": {
+    "gradient_column_visits": {
+      "format": "npy",
+      "path": "artifacts/shard_000000/capture_000000008.gradient_column_visits.npy",
+      "shape": [
+        4096
+      ]
+    },
+    "tile_operations_per_bin": {
+      "format": "npy",
+      "path": "artifacts/shard_000000/capture_000000008.tile_operations_per_bin.npy",
+      "shape": [
+        120
+      ]
+    },
+    "tile_width_commands": {
+      "format": "npy",
+      "path": "artifacts/shard_000000/capture_000000008.tile_width_commands.npy",
+      "shape": [
+        120
+      ]
+    }
+  },
+  "attempt": 1,
+  "batch_metadata": {
+    "adc_errors": 0,
+    "scope_info": {
+      "bits_per_sample": 12,
+      "decimation": 100,
+      "details": {
+        "gain_db": 10.0,
+        "max_samples_hw": 327828,
+        "max_samples_safe": 213088,
+        "max_stream_rate_hz": 10000000.0,
+        "stream_arm_settle_s": null,
+        "stream_fast_fifo": null,
+        "stream_segment_size": null,
+        "trigger": "gpio",
+        "usb_read_mode": "auto"
+      },
+      "duration_s": 0.11,
+      "mode": "burst",
+      "pretrigger_samples": 0,
+      "raw_sample_rate_hz": 150000000.0,
+      "sample_rate_hz": 1500000.0,
+      "samples": 165000,
+      "warnings": []
+    }
+  },
+  "captured_at": "2026-08-01T13:32:27.177063+00:00",
+  "channels": {
+    "power": {
+      "dtype": "float16",
+      "metadata": {
+        "bits_per_sample": 12,
+        "calibrated": false,
+        "gain_db": 10.0
+      },
+      "path": "channels/power/shard_000000/capture_000000008.npy",
+      "sample_rate_hz": 1500000.0,
+      "shape": [
+        165000
+      ],
+      "unit": "normalized_adc"
+    }
+  },
+  "health": {
+    "issues": [],
+    "metrics": {
+      "annotations.out_of_bounds": 0,
+      "power.finite_fraction": 1.0,
+      "primary.adc_rail_fraction": 0.0,
+      "primary.adc_robust_high": 0.07080078125,
+      "primary.adc_robust_low": -0.06689453125,
+      "primary.adc_robust_span": 0.1376953125,
+      "primary.expected_samples": 165000,
+      "primary.max_equal_run_fraction": 3.0303030303030302e-05,
+      "primary.samples": 165000,
+      "primary.std": 0.02109325176308906
+    },
+    "ok": true
+  },
+  "index": 8,
+  "labels": {
+    "active_lead_width": 128,
+    "executed_tile_width_sum": 830944,
+    "gradient_compute_wall_s": 0.100086204,
+    "gradient_unvisited_columns": 0,
+    "lead_stabilization_operations": 33,
+    "loss_before_update": 0.24724321067333221,
+    "max_bin_overrun_us": 306.75,
+    "model_parameters": 16777216,
+    "profile_bins": 120,
+    "profile_duration_s": 0.1,
+    "reference_gradient_operations": 0,
+    "reference_width_sum": 0,
+    "schedule_mode": "timed-repeat",
+    "task": "chipwhisperer-tiled-linear-training",
+    "tiled_gradient_operations": 629,
+    "train_half_mse_before": 0.24724321067333221,
+    "training_step": 8,
+    "validation_half_mse_before": 0.9109753370285034
+  },
+  "primary_channel": "power",
+  "result_summary": {
+    "executed_tile_width_sum": 830944,
+    "gradient_compute_wall_s": 0.100086204,
+    "loss_before_update": 0.24724321067333221,
+    "max_bin_overrun_us": 306.75,
+    "reference_gradient_operations": 0,
+    "reference_width_sum": 0,
+    "tiled_gradient_operations": 629
+  },
+  "sampler_metadata": {
+    "backend": "chipwhisperer",
+    "chipwhisperer_version": "6.0.0+isl.1",
+    "clock_hz": 150000000.0,
+    "max_stream_rate_hz": 10000000.0,
+    "product_id": "0xace6",
+    "resolved": {
+      "bits_per_sample": 12,
+      "decimation": 100,
+      "details": {
+        "gain_db": 10.0,
+        "max_samples_hw": 327828,
+        "max_samples_safe": 213088,
+        "max_stream_rate_hz": 10000000.0,
+        "stream_arm_settle_s": null,
+        "stream_fast_fifo": null,
+        "stream_segment_size": null,
+        "trigger": "gpio",
+        "usb_read_mode": "auto"
+      },
+      "duration_s": 0.11,
+      "mode": "burst",
+      "pretrigger_samples": 0,
+      "raw_sample_rate_hz": 150000000.0,
+      "sample_rate_hz": 1500000.0,
+      "samples": 165000,
+      "warnings": []
+    },
+    "safe_memory_fraction": 0.65,
+    "serial_number": null,
+    "stream_arm_settle_s": 0.001,
+    "stream_fast_fifo": false,
+    "stream_segment_size": null,
+    "trigger": "auto",
+    "usb_read_mode": "auto"
+  },
+  "schema_version": "sidecapture.dataset/v1",
+  "trigger": {
+    "host_monotonic_ns": 4318277792230440,
+    "metadata": {
+      "mode": "gpio"
+    },
+    "source": "chipwhisperer.tio4"
+  },
+  "workload_metadata": {
+    "accepted_training_steps": 8,
+    "active_lead_width": 128,
+    "batch_size": 512,
+    "bin_duration_s": 0.0008333333333333334,
+    "commands_sha256": "d087a37c60a7652b69230f8bac29444d479733e00692d40f157432b2bb0dc383",
+    "dtype": "bfloat16 matmuls, float32 gradient accumulation/master weights",
+    "gradient": "X.T @ (XW - Y) / batch, tiled over output columns",
+    "hidden_size": 4096,
+    "lead_s": 0.002,
+    "learning_rate": 0.01,
+    "objective": "0.5 / batch * ||XW - Y||^2",
+    "optimizer": "exact deferred SGD",
+    "output_size": 4096,
+    "parameter_count": 16777216,
+    "profile_bins": 120,
+    "profile_duration_s": 0.1,
+    "reference_repeats": 0,
+    "reference_widths": [],
+    "schedule_mode": "timed-repeat",
+    "seed": 1729,
+    "tail_s": 0.002,
+    "tile_repeats": 1,
+    "training_task": "teacher-student linear regression with held-out validation batch",
+    "transactional_update": true,
+    "type": "drawing_with_traces.exact_tiled_linear_gradient",
+    "validation_batch_size": 128
+  }
+}

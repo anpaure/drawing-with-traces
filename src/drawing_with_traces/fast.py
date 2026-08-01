@@ -27,6 +27,118 @@ def array_hash(values: np.ndarray, dtype: str) -> str:
     return hashlib.sha256(np.ascontiguousarray(values, dtype=dtype).tobytes()).hexdigest()
 
 
+def interleaved_calibration_commands(
+    widths: np.ndarray,
+    *,
+    repeats: int = 4,
+    seed: int = 1729,
+) -> np.ndarray:
+    """Repeat every width in varied transition contexts, never in blocks."""
+
+    widths = np.unique(np.asarray(widths, dtype=np.int64))
+    if widths.ndim != 1 or widths.size < 3:
+        raise ValueError("calibration requires at least three unique widths")
+    if repeats < 2:
+        raise ValueError("calibration repeats must be at least two")
+    rng = np.random.default_rng(seed)
+    orders = []
+    previous = None
+    for _ in range(repeats):
+        order = rng.permutation(widths)
+        if previous is not None and order[0] == previous:
+            order = np.roll(order, 1)
+        orders.append(order)
+        previous = int(order[-1])
+    return np.concatenate(orders)
+
+
+def dense_calibration_widths(
+    minimum_width: int,
+    maximum_width: int,
+    *,
+    dense_step: int = 64,
+    dense_until: int = 1280,
+) -> np.ndarray:
+    """Build a dense low/mid-range calibration with sparse high-width anchors."""
+
+    if minimum_width < 32 or minimum_width % 32:
+        raise ValueError("minimum calibration width must be a multiple of 32 and at least 32")
+    if maximum_width <= minimum_width or maximum_width % 32:
+        raise ValueError("maximum calibration width must exceed the minimum and be a multiple of 32")
+    if dense_step < 32 or dense_step % 32:
+        raise ValueError("dense calibration step must be a multiple of 32 and at least 32")
+    dense_stop = min(maximum_width, dense_until)
+    dense = np.arange(minimum_width, dense_stop + 1, dense_step, dtype=np.int64)
+    anchors = np.asarray([dense_stop, 1536, 2048, 3072, 4096, maximum_width], dtype=np.int64)
+    widths = np.unique(np.concatenate([dense, anchors]))
+    widths = widths[(widths >= minimum_width) & (widths <= maximum_width)]
+    if widths.size < 3:
+        raise ValueError("calibration width range must contain at least three levels")
+    return widths
+
+
+def silhouette_partition_commands(
+    target: np.ndarray,
+    *,
+    minimum_width: int = 32,
+    maximum_width: int = 1024,
+    width_quantum: int = 32,
+) -> np.ndarray:
+    """Map a normalized silhouette to an exact output-column partition."""
+
+    target = np.asarray(target, dtype=np.float64)
+    if target.ndim != 1 or target.size < 2 or not np.all(np.isfinite(target)):
+        raise ValueError("target must be a finite one-dimensional array")
+    if np.any((target < 0) | (target > 1)):
+        raise ValueError("target values must be between 0 and 1")
+    if width_quantum < 1 or minimum_width < width_quantum:
+        raise ValueError("minimum_width must be at least one positive width_quantum")
+    if minimum_width % width_quantum or maximum_width % width_quantum:
+        raise ValueError("minimum_width and maximum_width must be multiples of width_quantum")
+    if maximum_width <= minimum_width:
+        raise ValueError("maximum_width must exceed minimum_width")
+    continuous = minimum_width + target * (maximum_width - minimum_width)
+    commands = np.rint(continuous / width_quantum) * width_quantum
+    return np.clip(commands, minimum_width, maximum_width).astype(np.int64)
+
+
+def project_commands_to_total(
+    desired: np.ndarray,
+    total_width: int,
+    *,
+    minimum_width: int = 32,
+    maximum_width: int,
+    width_quantum: int = 32,
+) -> np.ndarray:
+    """Find the nearest legal command vector with an exact fixed sum."""
+
+    desired = np.asarray(desired, dtype=np.float64)
+    if desired.ndim != 1 or desired.size < 2 or not np.all(np.isfinite(desired)):
+        raise ValueError("desired commands must be a finite one-dimensional array")
+    if any(value % width_quantum for value in (total_width, minimum_width, maximum_width)):
+        raise ValueError("width bounds and total_width must be multiples of width_quantum")
+    count = desired.size
+    if not count * minimum_width <= total_width <= count * maximum_width:
+        raise ValueError(
+            "total_width is infeasible for the command count and width bounds: "
+            f"{count} * {minimum_width} <= {total_width} <= {count} * {maximum_width}"
+        )
+    target_units = total_width // width_quantum
+    minimum_units = minimum_width // width_quantum
+    maximum_units = maximum_width // width_quantum
+    desired_units = np.clip(desired / width_quantum, minimum_units, maximum_units)
+    units = np.clip(np.rint(desired_units), minimum_units, maximum_units).astype(np.int64)
+    while int(units.sum()) < target_units:
+        candidates = np.flatnonzero(units < maximum_units)
+        marginal_cost = 2 * (units[candidates] - desired_units[candidates]) + 1
+        units[candidates[int(np.argmin(marginal_cost))]] += 1
+    while int(units.sum()) > target_units:
+        candidates = np.flatnonzero(units > minimum_units)
+        marginal_cost = -2 * (units[candidates] - desired_units[candidates]) + 1
+        units[candidates[int(np.argmin(marginal_cost))]] -= 1
+    return units * width_quantum
+
+
 class TiledLinearTrainingWorkload(Workload):
     """Hand-written exact gradient for ``0.5/B * ||XW-Y||²``.
 
@@ -44,17 +156,25 @@ class TiledLinearTrainingWorkload(Workload):
         *,
         profile_duration_s: float,
         hidden_size: int = 4096,
+        output_size: int | None = None,
         batch_size: int = 512,
         learning_rate: float = 0.01,
+        validation_batch_size: int = 128,
         lead_s: float = 0.002,
         tail_s: float = 0.002,
+        active_lead_width: int = 0,
         seed: int = 1729,
+        schedule_mode: str = "timed-repeat",
+        tile_repeats: int = 1,
+        reference_widths: np.ndarray | None = None,
+        reference_repeats: int = 0,
     ):
+        output_size = hidden_size if output_size is None else int(output_size)
         commands = np.asarray(commands, dtype=np.int64)
         if commands.ndim != 1 or commands.size < 2:
             raise ValueError("commands must be a one-dimensional array with at least two bins")
-        if np.any(commands < 0) or np.any(commands > hidden_size):
-            raise ValueError("tile commands must be between 0 and hidden_size")
+        if np.any(commands < 0) or np.any(commands > output_size):
+            raise ValueError("tile commands must be between 0 and output_size")
         nonzero = commands[commands > 0]
         if nonzero.size and np.any(nonzero % 32):
             raise ValueError("non-zero tile widths must be multiples of 32")
@@ -62,19 +182,53 @@ class TiledLinearTrainingWorkload(Workload):
             raise ValueError("profile duration must be positive and lead/tail cannot be negative")
         if hidden_size < 32 or hidden_size % 32:
             raise ValueError("hidden_size must be a positive multiple of 32")
-        if batch_size < 1 or learning_rate <= 0:
-            raise ValueError("batch_size and learning_rate must be positive")
+        if output_size < 32 or output_size % 32:
+            raise ValueError("output_size must be a positive multiple of 32")
+        if batch_size < 1 or validation_batch_size < 1 or learning_rate <= 0:
+            raise ValueError("batch sizes and learning_rate must be positive")
         self.commands = np.ascontiguousarray(commands)
         self.profile_duration_s = float(profile_duration_s)
         self.hidden_size = int(hidden_size)
+        self.output_size = output_size
         self.batch_size = int(batch_size)
+        self.validation_batch_size = int(validation_batch_size)
         self.learning_rate = float(learning_rate)
         self.lead_s = float(lead_s)
         self.tail_s = float(tail_s)
+        if active_lead_width < 0 or active_lead_width > output_size:
+            raise ValueError("active_lead_width must be between 0 and output_size")
+        if active_lead_width and active_lead_width % 32:
+            raise ValueError("active_lead_width must be zero or a multiple of 32")
+        self.active_lead_width = int(active_lead_width)
         self.seed = int(seed)
+        if schedule_mode not in {"timed-repeat", "single-tile", "exact-once"}:
+            raise ValueError("schedule_mode must be timed-repeat, single-tile, or exact-once")
+        if schedule_mode == "exact-once" and (
+            np.any(commands == 0) or int(commands.sum()) != output_size
+        ):
+            raise ValueError("exact-once commands must be nonzero and sum exactly to output_size")
+        self.schedule_mode = schedule_mode
+        if tile_repeats < 1:
+            raise ValueError("tile_repeats must be at least one")
+        self.tile_repeats = int(tile_repeats)
+        if reference_repeats < 0:
+            raise ValueError("reference_repeats cannot be negative")
+        if reference_widths is None:
+            reference_widths = np.asarray([], dtype=np.int64)
+        reference_widths = np.unique(np.asarray(reference_widths, dtype=np.int64))
+        if reference_repeats == 0:
+            reference_widths = np.asarray([], dtype=np.int64)
+        if np.any(reference_widths < 32) or np.any(reference_widths > output_size):
+            raise ValueError("reference widths must be between 32 and output_size")
+        if reference_widths.size and np.any(reference_widths % 32):
+            raise ValueError("reference widths must be multiples of 32")
+        self.reference_widths = reference_widths
+        self.reference_repeats = int(reference_repeats)
         self.torch = None
         self.inputs = None
         self.targets = None
+        self.validation_inputs = None
+        self.validation_targets = None
         self.weight = None
         self.master_weight = None
         self.gradient_sum = None
@@ -82,10 +236,28 @@ class TiledLinearTrainingWorkload(Workload):
         self.cursor = 0
         self.loss_before = None
         self.loss_after = None
+        self.current_performance = None
+        self.last_performance = None
+        self.accepted_training_steps = 0
+        self.gradient_compute_wall_s = None
+        self.profile_gradient_compute_wall_s = None
+        self.completion_gradient_compute_wall_s = None
+        self.baseline_gradient_compute_s = None
+        self.executed_tile_width_sum = 0
+        self.profile_executed_tile_width_sum = 0
+        self.completion_tile_width_sum = 0
+        self.last_operation_count = 0
+        self.profile_operation_count = 0
+        self.completion_operation_count = 0
+        self.lead_stabilization_operation_count = 0
+        self.lead_stabilization_tile_width_sum = 0
+        self.capture_control_wall_s = None
+        self.coverage_before_completion = None
+        self.coverage_after_completion = None
 
     @property
     def parameter_count(self) -> int:
-        return self.hidden_size * self.hidden_size
+        return self.hidden_size * self.output_size
 
     @property
     def bin_duration_s(self) -> float:
@@ -111,17 +283,32 @@ class TiledLinearTrainingWorkload(Workload):
             device="cuda",
             dtype=torch.bfloat16,
         )
-        self.targets = torch.randn_like(self.inputs)
+        teacher_weight = torch.randn(
+            self.hidden_size,
+            self.output_size,
+            device="cuda",
+            dtype=torch.bfloat16,
+        ) / math.sqrt(self.hidden_size)
+        self.targets = self.inputs @ teacher_weight
+        self.validation_inputs = torch.randn(
+            self.validation_batch_size,
+            self.hidden_size,
+            device="cuda",
+            dtype=torch.bfloat16,
+        )
+        self.validation_targets = self.validation_inputs @ teacher_weight
+        del teacher_weight
         self.master_weight = torch.randn(
             self.hidden_size,
-            self.hidden_size,
+            self.output_size,
             device="cuda",
             dtype=torch.float32,
         ) / math.sqrt(self.hidden_size)
         self.weight = self.master_weight.to(torch.bfloat16)
         self.gradient_sum = torch.zeros_like(self.master_weight)
-        self.column_visits = np.zeros(self.hidden_size, dtype=np.int64)
-        self.loss_before = self.full_loss()
+        self.column_visits = np.zeros(self.output_size, dtype=np.int64)
+        self.current_performance = self.evaluate_performance()
+        self.loss_before = self.current_performance["train_half_mse"]
         torch.cuda.synchronize()
 
     def require_setup(self):
@@ -129,15 +316,36 @@ class TiledLinearTrainingWorkload(Workload):
             raise RuntimeError("TiledLinearTrainingWorkload.setup() has not completed")
         return self.torch
 
-    def full_loss(self) -> float:
+    def half_mse(self, inputs, targets) -> float:
         torch = self.torch
         with torch.no_grad():
-            residual = self.inputs @ self.weight - self.targets
+            residual = inputs @ self.weight - targets
             loss = 0.5 * residual.float().square().mean()
         torch.cuda.synchronize()
         return float(loss)
 
-    def gradient_tile(self, start: int, width: int, *, accumulate: bool = True) -> None:
+    def evaluate_performance(self) -> dict[str, float]:
+        train_half_mse = self.half_mse(self.inputs, self.targets)
+        validation_half_mse = self.half_mse(self.validation_inputs, self.validation_targets)
+        return {
+            "train_half_mse": train_half_mse,
+            "train_objective": train_half_mse * self.output_size,
+            "validation_half_mse": validation_half_mse,
+        }
+
+    def full_loss(self) -> float:
+        """Backward-compatible normalized training loss."""
+
+        return self.half_mse(self.inputs, self.targets)
+
+    def gradient_tile(
+        self,
+        start: int,
+        width: int,
+        *,
+        accumulate: bool = True,
+        synchronize: bool = True,
+    ) -> None:
         torch = self.require_setup()
         end = start + width
         prediction = self.inputs @ self.weight[:, start:end]
@@ -146,16 +354,29 @@ class TiledLinearTrainingWorkload(Workload):
         if accumulate:
             self.gradient_sum[:, start:end].add_(gradient.float() / self.batch_size)
             self.column_visits[start:end] += 1
-        torch.cuda.synchronize()
+        if synchronize:
+            torch.cuda.synchronize()
 
     def next_tile(self, requested_width: int) -> None:
         if requested_width == 0:
             return
-        width = min(int(requested_width), self.hidden_size)
-        if self.cursor + width > self.hidden_size:
+        width = min(int(requested_width), self.output_size)
+        if self.cursor + width > self.output_size:
             self.cursor = 0
         self.gradient_tile(self.cursor, width)
-        self.cursor = (self.cursor + width) % self.hidden_size
+        self.cursor = (self.cursor + width) % self.output_size
+
+    def repeat_partition_tile(self, requested_width: int, *, synchronize: bool = True) -> int:
+        """Repeat one block for signal quality, then advance the partition once."""
+
+        width = min(int(requested_width), self.output_size)
+        if self.cursor + width > self.output_size:
+            self.cursor = 0
+        start = self.cursor
+        for _ in range(self.tile_repeats):
+            self.gradient_tile(start, width, synchronize=synchronize)
+        self.cursor = (start + width) % self.output_size
+        return self.tile_repeats
 
     def clear_gradient(self) -> None:
         if self.gradient_sum is not None:
@@ -167,20 +388,102 @@ class TiledLinearTrainingWorkload(Workload):
     def warmup(self, iteration: int) -> None:
         del iteration
         for width in np.unique(self.commands[self.commands > 0]):
-            self.gradient_tile(0, int(width), accumulate=True)
+            self.gradient_tile(0, int(width), accumulate=False)
         self.clear_gradient()
+
+    def set_schedule(
+        self,
+        commands: np.ndarray,
+        *,
+        profile_duration_s: float,
+        schedule_mode: str | None = None,
+        tile_repeats: int | None = None,
+    ) -> None:
+        commands = np.asarray(commands, dtype=np.int64)
+        if commands.ndim != 1 or commands.size < 2:
+            raise ValueError("commands must be a one-dimensional array with at least two bins")
+        if np.any(commands < 0) or np.any(commands > self.output_size):
+            raise ValueError("tile commands must be between 0 and output_size")
+        nonzero = commands[commands > 0]
+        if nonzero.size and np.any(nonzero % 32):
+            raise ValueError("non-zero tile widths must be multiples of 32")
+        if profile_duration_s <= 0:
+            raise ValueError("profile_duration_s must be positive")
+        schedule_mode = self.schedule_mode if schedule_mode is None else schedule_mode
+        if schedule_mode not in {"timed-repeat", "single-tile", "exact-once"}:
+            raise ValueError("schedule_mode must be timed-repeat, single-tile, or exact-once")
+        if schedule_mode == "exact-once" and (
+            np.any(commands == 0) or int(commands.sum()) != self.output_size
+        ):
+            raise ValueError("exact-once commands must be nonzero and sum exactly to output_size")
+        self.commands = np.ascontiguousarray(commands)
+        self.profile_duration_s = float(profile_duration_s)
+        self.schedule_mode = schedule_mode
+        if tile_repeats is not None:
+            if tile_repeats < 1:
+                raise ValueError("tile_repeats must be at least one")
+            self.tile_repeats = int(tile_repeats)
+        if self.torch is not None:
+            self.warmup(0)
 
     def run(self, context):
         self.clear_gradient()
+        self.current_performance = self.evaluate_performance()
+        self.loss_before = self.current_performance["train_half_mse"]
         context.labels.update(
             task="chipwhisperer-tiled-linear-training",
             profile_duration_s=self.profile_duration_s,
             profile_bins=int(self.commands.size),
             model_parameters=self.parameter_count,
+            training_step=self.accepted_training_steps,
+            train_half_mse_before=self.current_performance["train_half_mse"],
+            validation_half_mse_before=self.current_performance["validation_half_mse"],
+            schedule_mode=self.schedule_mode,
         )
         context.add_artifact("tile_width_commands", self.commands.astype(np.int32))
-        with context.region("tile.lead_idle", duration_s=self.lead_s):
-            sleep_until(time.monotonic_ns() + int(round(self.lead_s * 1e9)))
+        capture_control_start_ns = time.monotonic_ns()
+        lead_deadline_ns = time.monotonic_ns() + int(round(self.lead_s * 1e9))
+        self.lead_stabilization_operation_count = 0
+        lead_name = "tile.lead_baseline" if self.active_lead_width else "tile.lead_idle"
+        with context.region(
+            lead_name,
+            duration_s=self.lead_s,
+            requested_width=self.active_lead_width,
+        ):
+            if self.active_lead_width:
+                while time.monotonic_ns() < lead_deadline_ns:
+                    self.gradient_tile(
+                        0,
+                        self.active_lead_width,
+                        accumulate=False,
+                    )
+                    self.lead_stabilization_operation_count += 1
+            else:
+                sleep_until(lead_deadline_ns)
+        training_compute_start_ns = time.monotonic_ns()
+        reference_commands = np.asarray([], dtype=np.int64)
+        if self.reference_widths.size:
+            if self.schedule_mode not in {"single-tile", "exact-once"}:
+                raise RuntimeError("on-trace references require an operation-level schedule")
+            reference_commands = interleaved_calibration_commands(
+                self.reference_widths,
+                repeats=self.reference_repeats,
+                seed=self.seed + self.accepted_training_steps,
+            )
+            with context.cuda_region(
+                "tile.reference_profile",
+                sync="none",
+                references=int(reference_commands.size),
+            ):
+                for reference_index, width in enumerate(reference_commands):
+                    with context.cuda_region(
+                        "tile.reference",
+                        sync="none",
+                        index=reference_index,
+                        requested_width=int(width),
+                    ):
+                        self.gradient_tile(0, int(width), synchronize=False)
+            context.add_artifact("reference_width_commands", reference_commands.astype(np.int32))
         bin_ns = int(round(self.bin_duration_s * 1e9))
         operation_counts = np.zeros(self.commands.size, dtype=np.int64)
         overruns = np.zeros(self.commands.size, dtype=np.int64)
@@ -189,46 +492,140 @@ class TiledLinearTrainingWorkload(Workload):
             "tile.profile",
             duration_s=self.profile_duration_s,
             bins=int(self.commands.size),
+            schedule_mode=self.schedule_mode,
         ):
             for index, width in enumerate(self.commands):
                 deadline_ns = profile_start_ns + (index + 1) * bin_ns
-                with context.region(
-                    "tile.bin",
-                    index=index,
-                    requested_width=int(width),
-                ):
-                    if width == 0:
+                if self.schedule_mode in {"single-tile", "exact-once"}:
+                    region = context.cuda_region(
+                        "tile.bin",
+                        sync="none",
+                        index=index,
+                        requested_width=int(width),
+                    )
+                else:
+                    region = context.region(
+                        "tile.bin",
+                        index=index,
+                        requested_width=int(width),
+                    )
+                with region:
+                    if self.schedule_mode in {"single-tile", "exact-once"}:
+                        if width == 0:
+                            sleep_until(deadline_ns)
+                        else:
+                            operation_counts[index] = self.repeat_partition_tile(
+                                int(width),
+                                synchronize=False,
+                            )
+                    elif width == 0:
                         sleep_until(deadline_ns)
                     else:
                         while time.monotonic_ns() < deadline_ns:
                             self.next_tile(int(width))
                             operation_counts[index] += 1
-                overruns[index] = max(0, time.monotonic_ns() - deadline_ns)
+                if self.schedule_mode == "timed-repeat":
+                    overruns[index] = max(0, time.monotonic_ns() - deadline_ns)
+        if self.schedule_mode in {"single-tile", "exact-once"}:
+            self.require_setup().cuda.synchronize()
+        profile_end_ns = time.monotonic_ns()
+        self.profile_gradient_compute_wall_s = (profile_end_ns - training_compute_start_ns) / 1e9
+        self.gradient_compute_wall_s = self.profile_gradient_compute_wall_s
+        target_width_sum = int(np.dot(operation_counts, self.commands))
+        reference_width_sum = int(reference_commands.sum())
+        self.profile_executed_tile_width_sum = target_width_sum + reference_width_sum
+        self.lead_stabilization_tile_width_sum = (
+            self.lead_stabilization_operation_count * self.active_lead_width
+        )
+        self.executed_tile_width_sum = (
+            self.profile_executed_tile_width_sum + self.lead_stabilization_tile_width_sum
+        )
+        self.profile_operation_count = int(operation_counts.sum() + reference_commands.size)
+        self.last_operation_count = (
+            self.profile_operation_count + self.lead_stabilization_operation_count
+        )
+        self.completion_gradient_compute_wall_s = 0.0
+        self.completion_tile_width_sum = 0
+        self.completion_operation_count = 0
+        self.coverage_after_completion = None
+        self.coverage_before_completion = {
+            "minimum_visits": int(self.column_visits.min()),
+            "maximum_visits": int(self.column_visits.max()),
+            "unvisited_columns": int(np.count_nonzero(self.column_visits == 0)),
+            "columns_visited_once": int(np.count_nonzero(self.column_visits == 1)),
+        }
+        expected_visits = np.full(self.output_size, self.tile_repeats, dtype=np.int64)
+        for width in reference_commands:
+            expected_visits[: int(width)] += 1
+        if self.schedule_mode == "exact-once" and not np.array_equal(
+            self.column_visits, expected_visits
+        ):
+            raise RuntimeError(
+                "exact partition plus reference schedule produced unexpected gradient visits: "
+                f"{self.coverage_before_completion}"
+            )
         with context.region("tile.tail_idle", duration_s=self.tail_s):
             sleep_until(time.monotonic_ns() + int(round(self.tail_s * 1e9)))
+        self.capture_control_wall_s = (time.monotonic_ns() - capture_control_start_ns) / 1e9
         max_overrun_ns = int(overruns.max(initial=0))
-        if max_overrun_ns > max(500_000, bin_ns // 2):
+        if self.schedule_mode == "timed-repeat" and max_overrun_ns > max(500_000, bin_ns // 2):
             raise RuntimeError(
                 f"a {self.bin_duration_s * 1e3:.3f} ms tile bin overran by "
                 f"{max_overrun_ns / 1e6:.3f} ms; rejecting the timing-distorted trace"
             )
         context.add_artifact("tile_operations_per_bin", operation_counts)
+        context.add_artifact("gradient_column_visits", self.column_visits.astype(np.int32))
         context.labels.update(
             tiled_gradient_operations=int(operation_counts.sum()),
             max_bin_overrun_us=max_overrun_ns / 1e3,
+            gradient_compute_wall_s=self.gradient_compute_wall_s,
+            executed_tile_width_sum=self.executed_tile_width_sum,
+            gradient_unvisited_columns=self.coverage_before_completion["unvisited_columns"],
+            reference_gradient_operations=int(reference_commands.size),
+            reference_width_sum=reference_width_sum,
+            active_lead_width=self.active_lead_width,
+            lead_stabilization_operations=self.lead_stabilization_operation_count,
             loss_before_update=self.loss_before,
         )
         return {
             "tiled_gradient_operations": int(operation_counts.sum()),
             "max_bin_overrun_us": max_overrun_ns / 1e3,
             "loss_before_update": self.loss_before,
+            "gradient_compute_wall_s": self.gradient_compute_wall_s,
+            "executed_tile_width_sum": self.executed_tile_width_sum,
+            "reference_gradient_operations": int(reference_commands.size),
+            "reference_width_sum": reference_width_sum,
         }
 
     def complete_exact_gradient(self) -> None:
-        for start in range(0, self.hidden_size, 256):
-            end = min(self.hidden_size, start + 256)
+        """Fill any unvisited columns and account for all post-profile training work."""
+
+        started_ns = time.monotonic_ns()
+        completed_width = 0
+        completed_operations = 0
+        for start in range(0, self.output_size, 256):
+            end = min(self.output_size, start + 256)
             if np.any(self.column_visits[start:end] == 0):
                 self.gradient_tile(start, end - start)
+                completed_width += end - start
+                completed_operations += 1
+        self.completion_gradient_compute_wall_s = (time.monotonic_ns() - started_ns) / 1e9
+        self.completion_tile_width_sum = completed_width
+        self.completion_operation_count = completed_operations
+        self.gradient_compute_wall_s += self.completion_gradient_compute_wall_s
+        self.executed_tile_width_sum += completed_width
+        self.last_operation_count += completed_operations
+        self.coverage_after_completion = {
+            "minimum_visits": int(self.column_visits.min()),
+            "maximum_visits": int(self.column_visits.max()),
+            "unvisited_columns": int(np.count_nonzero(self.column_visits == 0)),
+            "columns_visited_once": int(np.count_nonzero(self.column_visits == 1)),
+        }
+        if self.coverage_after_completion["unvisited_columns"]:
+            raise RuntimeError(
+                "gradient completion left output columns unvisited: "
+                f"{self.coverage_after_completion}"
+            )
 
     def on_accept(self, result: Any) -> None:
         del result
@@ -236,13 +633,119 @@ class TiledLinearTrainingWorkload(Workload):
         self.complete_exact_gradient()
         visits = torch.from_numpy(self.column_visits).to(device="cuda", dtype=torch.float32)
         average_gradient = self.gradient_sum / visits.clamp_min(1).unsqueeze(0)
+        baseline_started_ns = time.monotonic_ns()
+        reference_residual = self.inputs @ self.weight - self.targets
+        reference_gradient = self.inputs.T @ reference_residual
+        reference_gradient = reference_gradient.float() / self.batch_size
+        torch.cuda.synchronize()
+        self.baseline_gradient_compute_s = (time.monotonic_ns() - baseline_started_ns) / 1e9
+        difference = average_gradient - reference_gradient
+        reference_norm = float(torch.linalg.vector_norm(reference_gradient).item())
+        gradient_relative_l2 = float(torch.linalg.vector_norm(difference).item()) / max(
+            reference_norm, 1e-30
+        )
+        gradient_max_absolute_error = float(difference.abs().max().item())
+        update_started_ns = time.monotonic_ns()
         self.master_weight.add_(average_gradient, alpha=-self.learning_rate)
         self.weight.copy_(self.master_weight.to(torch.bfloat16))
-        self.loss_after = self.full_loss()
+        torch.cuda.synchronize()
+        optimizer_update_wall_s = (time.monotonic_ns() - update_started_ns) / 1e9
+        after = self.evaluate_performance()
+        self.loss_after = after["train_half_mse"]
         if not math.isfinite(self.loss_after) or self.loss_after > self.loss_before:
             raise RuntimeError(
                 f"exact tiled SGD update did not reduce loss: {self.loss_before} -> {self.loss_after}"
             )
+        self.last_performance = {
+            "training_step": self.accepted_training_steps,
+            "before": dict(self.current_performance),
+            "after": dict(after),
+            "train_improvement_percent": 100
+            * (1 - after["train_half_mse"] / self.current_performance["train_half_mse"]),
+            "validation_improvement_percent": 100
+            * (
+                1
+                - after["validation_half_mse"]
+                / self.current_performance["validation_half_mse"]
+            ),
+            "throughput": {
+                "controlled_profile_gradient_wall_s": self.profile_gradient_compute_wall_s,
+                "gradient_completion_wall_s": self.completion_gradient_compute_wall_s,
+                "drawing_gradient_wall_s": self.gradient_compute_wall_s,
+                "drawing_control_wall_s": (
+                    self.capture_control_wall_s + self.completion_gradient_compute_wall_s
+                ),
+                "no_drawing_gradient_wall_s": self.baseline_gradient_compute_s,
+                "optimizer_update_wall_s": optimizer_update_wall_s,
+                "drawing_step_wall_s": self.capture_control_wall_s
+                + self.completion_gradient_compute_wall_s
+                + optimizer_update_wall_s,
+                "no_drawing_step_wall_s": self.baseline_gradient_compute_s
+                + optimizer_update_wall_s,
+                "drawing_examples_per_s": self.batch_size
+                / max(
+                    self.capture_control_wall_s
+                    + self.completion_gradient_compute_wall_s
+                    + optimizer_update_wall_s,
+                    1e-15,
+                ),
+                "no_drawing_examples_per_s": self.batch_size
+                / max(self.baseline_gradient_compute_s + optimizer_update_wall_s, 1e-15),
+                "drawing_steps_per_s": 1
+                / max(
+                    self.capture_control_wall_s
+                    + self.completion_gradient_compute_wall_s
+                    + optimizer_update_wall_s,
+                    1e-15,
+                ),
+                "no_drawing_steps_per_s": 1
+                / max(self.baseline_gradient_compute_s + optimizer_update_wall_s, 1e-15),
+                "drawing_throughput_fraction": (
+                    self.baseline_gradient_compute_s + optimizer_update_wall_s
+                )
+                / max(
+                    self.capture_control_wall_s
+                    + self.completion_gradient_compute_wall_s
+                    + optimizer_update_wall_s,
+                    1e-15,
+                ),
+                "drawing_slowdown_x": (
+                    self.capture_control_wall_s
+                    + self.completion_gradient_compute_wall_s
+                    + optimizer_update_wall_s
+                )
+                / max(self.baseline_gradient_compute_s + optimizer_update_wall_s, 1e-15),
+            },
+            "arithmetic": {
+                "tile_operations": self.last_operation_count,
+                "controlled_profile_tile_operations": self.profile_operation_count,
+                "gradient_completion_tile_operations": self.completion_operation_count,
+                "lead_stabilization_tile_operations": self.lead_stabilization_operation_count,
+                "executed_tile_width_sum": self.executed_tile_width_sum,
+                "controlled_profile_tile_width_sum": self.profile_executed_tile_width_sum,
+                "gradient_completion_tile_width_sum": self.completion_tile_width_sum,
+                "lead_stabilization_tile_width_sum": self.lead_stabilization_tile_width_sum,
+                "useful_output_width": self.output_size,
+                "redundancy_ratio": self.executed_tile_width_sum / self.output_size,
+                "useful_forward_backward_flops": 4
+                * self.batch_size
+                * self.hidden_size
+                * self.output_size,
+                "executed_forward_backward_flops": 4
+                * self.batch_size
+                * self.hidden_size
+                * self.executed_tile_width_sum,
+                "coverage_before_completion": dict(self.coverage_before_completion),
+                "coverage_after_completion": dict(self.coverage_after_completion),
+            },
+            "equivalence": {
+                "drawing_vs_no_drawing_gradient_relative_l2": gradient_relative_l2,
+                "drawing_vs_no_drawing_gradient_max_absolute_error": gradient_max_absolute_error,
+            },
+        }
+        del reference_gradient, reference_residual, difference
+        self.current_performance = after
+        self.accepted_training_steps += 1
         self.clear_gradient()
 
     def on_reject(self, error: BaseException) -> None:
@@ -252,6 +755,8 @@ class TiledLinearTrainingWorkload(Workload):
     def teardown(self) -> None:
         self.inputs = None
         self.targets = None
+        self.validation_inputs = None
+        self.validation_targets = None
         self.weight = None
         self.master_weight = None
         self.gradient_sum = None
@@ -265,16 +770,25 @@ class TiledLinearTrainingWorkload(Workload):
             "profile_bins": int(self.commands.size),
             "profile_duration_s": self.profile_duration_s,
             "bin_duration_s": self.bin_duration_s,
+            "schedule_mode": self.schedule_mode,
+            "tile_repeats": self.tile_repeats,
+            "reference_widths": self.reference_widths.tolist(),
+            "reference_repeats": self.reference_repeats,
             "hidden_size": self.hidden_size,
+            "output_size": self.output_size,
             "batch_size": self.batch_size,
+            "validation_batch_size": self.validation_batch_size,
             "parameter_count": self.parameter_count,
             "dtype": "bfloat16 matmuls, float32 gradient accumulation/master weights",
             "optimizer": "exact deferred SGD",
             "learning_rate": self.learning_rate,
             "lead_s": self.lead_s,
             "tail_s": self.tail_s,
+            "active_lead_width": self.active_lead_width,
             "seed": self.seed,
             "transactional_update": True,
+            "training_task": "teacher-student linear regression with held-out validation batch",
+            "accepted_training_steps": self.accepted_training_steps,
         }
 
 
@@ -295,13 +809,17 @@ class FastCalibration:
     def maximum_activity(self) -> float:
         return float(self.monotonic_activity[-1])
 
-    def commands_for(self, target: np.ndarray) -> np.ndarray:
+    def commands_for(self, target: np.ndarray, *, width_quantum: int = 32) -> np.ndarray:
+        if width_quantum < 1:
+            raise ValueError("width_quantum must be positive")
         desired = self.minimum_activity + np.asarray(target) * (
             self.maximum_activity - self.minimum_activity
         )
-        continuous = np.interp(desired, self.monotonic_activity, self.widths)
-        distances = np.abs(continuous[:, None] - self.widths[None, :])
-        return self.widths[np.argmin(distances, axis=1)].astype(np.int64)
+        activity, first = np.unique(self.monotonic_activity, return_index=True)
+        efficient_widths = self.widths[first]
+        continuous = np.interp(desired, activity, efficient_widths)
+        quantized = np.rint(continuous / width_quantum) * width_quantum
+        return np.clip(quantized, 0, self.widths[-1]).astype(np.int64)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -327,19 +845,214 @@ class FastCalibration:
         )
 
 
-def _trace_and_bins(root: str | Path) -> tuple[np.ndarray, list[dict[str, Any]], dict[str, Any]]:
+class FastRefinementController:
+    """Adapt tile commands from the best measured SideCapture trace."""
+
+    def __init__(
+        self,
+        target: np.ndarray,
+        calibration: FastCalibration,
+        *,
+        target_accuracy_percent: float | None = None,
+        initial_gain: float = 0.35,
+        minimum_gain: float = 0.05,
+        gain_decay: float = 0.5,
+        gain_growth: float = 1.05,
+        improvement_tolerance: float = 1e-4,
+        total_width: int | None = None,
+        minimum_width: int = 0,
+        correction_smoothing_sigma_points: float = 0.0,
+    ):
+        target = np.asarray(target, dtype=np.float64)
+        if target.ndim != 1 or target.size < 2 or not np.all(np.isfinite(target)):
+            raise ValueError("target must be a finite one-dimensional array")
+        if np.any((target < 0) | (target > 1)):
+            raise ValueError("target values must be between 0 and 1")
+        if target_accuracy_percent is not None and not 0 < target_accuracy_percent <= 100:
+            raise ValueError("target_accuracy_percent must be in (0, 100]")
+        if initial_gain <= 0 or minimum_gain <= 0 or minimum_gain > initial_gain:
+            raise ValueError("controller gains must satisfy 0 < minimum_gain <= initial_gain")
+        if not 0 < gain_decay < 1:
+            raise ValueError("gain_decay must be in (0, 1)")
+        if gain_growth < 1:
+            raise ValueError("gain_growth must be at least 1")
+        if improvement_tolerance < 0:
+            raise ValueError("improvement_tolerance cannot be negative")
+        if correction_smoothing_sigma_points < 0:
+            raise ValueError("correction_smoothing_sigma_points cannot be negative")
+        self.target = target
+        self.calibration = calibration
+        self.target_accuracy_percent = target_accuracy_percent
+        self.initial_gain = float(initial_gain)
+        self.minimum_gain = float(minimum_gain)
+        self.gain_decay = float(gain_decay)
+        self.gain_growth = float(gain_growth)
+        self.improvement_tolerance = float(improvement_tolerance)
+        self.total_width = total_width
+        self.minimum_width = int(minimum_width)
+        self.correction_smoothing_sigma_points = float(
+            correction_smoothing_sigma_points
+        )
+        if total_width is not None:
+            project_commands_to_total(
+                np.full(target.size, total_width / target.size),
+                total_width,
+                minimum_width=self.minimum_width,
+                maximum_width=int(calibration.widths[-1]),
+            )
+        self.gain = float(initial_gain)
+        self.best_rmse = math.inf
+        self.best_accuracy_percent = 0.0
+        self.best_commands: np.ndarray | None = None
+        self.best_measured: np.ndarray | None = None
+        self.observations = 0
+
+    @property
+    def reached_target(self) -> bool:
+        return (
+            self.target_accuracy_percent is not None
+            and self.best_accuracy_percent >= self.target_accuracy_percent
+        )
+
+    def initial_commands(self) -> np.ndarray:
+        return self._constrain(self.calibration.commands_for(self.target))
+
+    def _constrain(self, commands: np.ndarray) -> np.ndarray:
+        if self.total_width is None:
+            commands = np.rint(np.asarray(commands, dtype=np.float64) / 32) * 32
+            return np.clip(
+                commands,
+                self.minimum_width,
+                int(self.calibration.widths[-1]),
+            ).astype(np.int64)
+        return project_commands_to_total(
+            commands,
+            self.total_width,
+            minimum_width=self.minimum_width,
+            maximum_width=int(self.calibration.widths[-1]),
+        )
+
+    def observe(
+        self,
+        commands: np.ndarray,
+        measured: np.ndarray,
+        *,
+        normalized_rmse: float,
+        shape_accuracy_percent: float,
+    ) -> bool:
+        commands = np.asarray(commands, dtype=np.int64)
+        measured = np.asarray(measured, dtype=np.float64)
+        if commands.shape != self.target.shape or measured.shape != self.target.shape:
+            raise ValueError("commands, measured values, and target must have matching shapes")
+        if not np.all(np.isfinite(measured)) or not math.isfinite(normalized_rmse):
+            raise ValueError("refinement measurements must be finite")
+        improved = normalized_rmse < self.best_rmse
+        if improved:
+            had_best = self.best_commands is not None
+            significant = normalized_rmse < self.best_rmse - self.improvement_tolerance
+            self.best_rmse = float(normalized_rmse)
+            self.best_accuracy_percent = float(shape_accuracy_percent)
+            self.best_commands = commands.copy()
+            self.best_measured = measured.copy()
+            if had_best and significant:
+                self.gain = min(self.initial_gain, self.gain * self.gain_growth)
+        else:
+            self.gain = max(self.minimum_gain, self.gain * self.gain_decay)
+        self.observations += 1
+        return improved
+
+    def next_commands(self) -> np.ndarray:
+        if self.best_commands is None or self.best_measured is None:
+            return self.initial_commands()
+        error = self.target - self.best_measured
+        corrected_target = np.clip(self.target + self.gain * error, 0, 1)
+        baseline_commands = self.calibration.commands_for(self.target)
+        corrected_commands = self.calibration.commands_for(corrected_target)
+        # True iterative learning control: retain the best delivered command and
+        # add the calibration-derived correction. Recomputing from the baseline
+        # on every round discards prior successful corrections and oscillates.
+        correction = (
+            self.best_commands - baseline_commands
+            + corrected_commands - baseline_commands
+        ).astype(np.float64)
+        if self.correction_smoothing_sigma_points:
+            correction = _smooth_points(
+                correction,
+                self.correction_smoothing_sigma_points,
+            )
+        commands = self._constrain(baseline_commands + correction)
+        if np.array_equal(commands, self.best_commands) and not self.reached_target:
+            # Quantization can otherwise make a nonzero residual a fixed point.
+            largest = int(np.argmax(np.abs(error)))
+            direction = 32 if error[largest] > 0 else -32
+            if self.total_width is None:
+                commands[largest] = int(
+                    np.clip(
+                        self.best_commands[largest] + direction,
+                        0,
+                        self.calibration.widths[-1],
+                    )
+                )
+            else:
+                if direction > 0:
+                    donors = np.flatnonzero(commands > self.minimum_width)
+                    donors = donors[donors != largest]
+                    receiver_ok = commands[largest] < self.calibration.widths[-1]
+                    donor = donors[int(np.argmin(error[donors]))] if donors.size else None
+                else:
+                    donors = np.flatnonzero(commands < self.calibration.widths[-1])
+                    donors = donors[donors != largest]
+                    receiver_ok = commands[largest] > self.minimum_width
+                    donor = donors[int(np.argmax(error[donors]))] if donors.size else None
+                if receiver_ok and donor is not None:
+                    commands[largest] += direction
+                    commands[donor] -= direction
+        return commands
+
+    def metadata(self) -> dict[str, Any]:
+        return {
+            "target_accuracy_percent": self.target_accuracy_percent,
+            "initial_gain": self.initial_gain,
+            "minimum_gain": self.minimum_gain,
+            "current_gain": self.gain,
+            "gain_decay": self.gain_decay,
+            "gain_growth": self.gain_growth,
+            "observations": self.observations,
+            "best_normalized_rmse": None if not math.isfinite(self.best_rmse) else self.best_rmse,
+            "best_accuracy_percent": self.best_accuracy_percent,
+            "reached_target": self.reached_target,
+            "total_width": self.total_width,
+            "minimum_width": self.minimum_width,
+            "correction_smoothing_sigma_points": self.correction_smoothing_sigma_points,
+        }
+
+
+def _trace_and_bins(
+    root: str | Path,
+    *,
+    record_index: int | None = None,
+    event_name: str = "tile.bin",
+) -> tuple[np.ndarray, list[dict[str, Any]], dict[str, Any]]:
     root = Path(root)
     records = DirectoryStore(root, resume=True).records()
-    if len(records) != 1:
+    if record_index is None and len(records) != 1:
         raise ConfigurationError(f"expected one ChipWhisperer trace in {root}, found {len(records)}")
-    record = records[0]
+    if record_index is None:
+        record = records[0]
+    else:
+        matches = [record for record in records if int(record["index"]) == record_index]
+        if len(matches) != 1:
+            raise ConfigurationError(
+                f"expected capture index {record_index} in {root}, found {len(matches)}"
+            )
+        record = matches[0]
     descriptor = record["channels"][record["primary_channel"]]
     trace = np.load(root / descriptor["path"], allow_pickle=False).astype(np.float64)
     annotations = json.loads((root / record["annotations"]["path"]).read_text())
-    bins = [event for event in annotations if event["name"] == "tile.bin"]
+    bins = [event for event in annotations if event["name"] == event_name]
     bins.sort(key=lambda event: int(event["metadata"]["index"]))
     if not bins:
-        raise ConfigurationError("trace has no tile.bin annotations")
+        raise ConfigurationError(f"trace has no {event_name} annotations")
     return trace, bins, record
 
 
@@ -355,8 +1068,17 @@ def _features(segment: np.ndarray, trace_center: float) -> dict[str, float]:
     }
 
 
-def measured_bin_features(root: str | Path) -> tuple[dict[str, np.ndarray], np.ndarray, dict]:
-    trace, bins, record = _trace_and_bins(root)
+def measured_bin_features(
+    root: str | Path,
+    *,
+    record_index: int | None = None,
+    event_name: str = "tile.bin",
+) -> tuple[dict[str, np.ndarray], np.ndarray, dict]:
+    trace, bins, record = _trace_and_bins(
+        root,
+        record_index=record_index,
+        event_name=event_name,
+    )
     center = float(np.median(trace))
     by_name: dict[str, list[float]] = {}
     widths = []
@@ -365,7 +1087,7 @@ def measured_bin_features(root: str | Path) -> tuple[dict[str, np.ndarray], np.n
         segment = trace[max(0, start) : min(trace.size, end)]
         if segment.size < 8:
             raise ConfigurationError(
-                f"tile bin {event['metadata']['index']} has only {segment.size} ADC samples"
+                f"{event_name} event {event['metadata']['index']} has only {segment.size} ADC samples"
             )
         for name, value in _features(segment, center).items():
             by_name.setdefault(name, []).append(value)
@@ -373,39 +1095,85 @@ def measured_bin_features(root: str | Path) -> tuple[dict[str, np.ndarray], np.n
     return {name: np.asarray(value) for name, value in by_name.items()}, np.asarray(widths), record
 
 
-def calibrate_fast(root: str | Path) -> FastCalibration:
-    features, commands, _ = measured_bin_features(root)
+def calibrate_fast(
+    root: str | Path,
+    *,
+    record_index: int | None = None,
+    event_name: str = "tile.bin",
+    preferred_feature: str | None = None,
+) -> FastCalibration:
+    features, commands, _ = measured_bin_features(
+        root,
+        record_index=record_index,
+        event_name=event_name,
+    )
     widths = np.asarray(sorted(set(commands)), dtype=np.float64)
     x = np.log2(widths + 32)
-    best = None
+    candidates = []
     for name, values in features.items():
         medians = np.asarray([np.median(values[commands == width]) for width in widths])
         correlation = float(np.corrcoef(x, medians)[0, 1])
-        score = abs(correlation)
-        if best is None or score > best[0]:
-            best = (score, name, medians, correlation)
-    _, name, measured, correlation = best
-    sign = 1.0 if correlation >= 0 else -1.0
-    activity = sign * measured
-    # The AC-coupled feature can turn over once very wide GEMMs become more
-    # efficient. Widths beyond the measured activity peak are not invertible
-    # and must not be used by the controller.
-    peak = int(np.argmax(activity))
-    widths = widths[: peak + 1]
-    measured = measured[: peak + 1]
-    activity = activity[: peak + 1]
-    monotonic = _isotonic_increasing(activity)
-    within = np.asarray(
-        [np.std(features[name][commands == width]) for width in widths],
-        dtype=np.float64,
-    )
-    span = float(monotonic[-1] - monotonic[0])
-    noise = float(np.median(within))
-    if span <= max(1e-9, 2 * noise):
-        raise ConfigurationError(
-            f"tile-width calibration is not separable: activity span {span:.4g}, median noise {noise:.4g}"
+        sign = 1.0 if medians[-1] >= medians[0] else -1.0
+        activity = sign * medians
+        peak = int(np.argmax(activity))
+        candidate_widths = widths[: peak + 1]
+        candidate_measured = medians[: peak + 1]
+        candidate_activity = activity[: peak + 1]
+        monotonic = _isotonic_increasing(candidate_activity)
+        within = np.asarray(
+            [np.std(values[commands == width]) for width in candidate_widths],
+            dtype=np.float64,
         )
-    return FastCalibration(widths, name, sign, measured, monotonic, within)
+        span = float(monotonic[-1] - monotonic[0])
+        noise = float(np.median(within))
+        snr = span / max(noise, 1e-15)
+        score = snr * max(abs(correlation), 0.1) * math.sqrt(candidate_widths.size)
+        candidates.append(
+            {
+                "score": score,
+                "name": name,
+                "sign": sign,
+                "widths": candidate_widths,
+                "measured": candidate_measured,
+                "monotonic": monotonic,
+                "within": within,
+                "span": span,
+                "noise": noise,
+                "snr": snr,
+                "correlation": correlation,
+            }
+        )
+    valid = [
+        item
+        for item in candidates
+        if item["widths"].size >= 3 and item["span"] > max(1e-9, 2 * item["noise"])
+    ]
+    if not valid:
+        diagnostics = "; ".join(
+            f"{item['name']}: span={item['span']:.4g}, noise={item['noise']:.4g}, "
+            f"snr={item['snr']:.2f}, widths={item['widths'].size}"
+            for item in candidates
+        )
+        raise ConfigurationError(
+            "tile-width calibration has no separable feature; " + diagnostics
+        )
+    if preferred_feature is not None:
+        preferred = [item for item in valid if item["name"] == preferred_feature]
+        if not preferred:
+            raise ConfigurationError(
+                f"preferred calibration feature {preferred_feature!r} is not separable; "
+                + diagnostics
+            )
+        valid = preferred
+    best = max(valid, key=lambda item: item["score"])
+    return FastCalibration(
+        best["widths"],
+        best["name"],
+        best["sign"],
+        best["measured"],
+        best["monotonic"],
+        best["within"],
+    )
 
 
 def save_fast_calibration(root: str | Path, calibration: FastCalibration) -> Path:
@@ -450,6 +1218,65 @@ def render_fast_calibration(
     return output
 
 
+def render_training_comparison(
+    performances: list[dict[str, Any]],
+    output: str | Path,
+) -> Path:
+    """Plot learning and drawing-versus-no-drawing training throughput."""
+
+    if not performances:
+        raise ValueError("at least one training performance record is required")
+    output = Path(output)
+    steps = [int(item["training_step"]) for item in performances]
+    x = np.asarray([steps[0], *[step + 1 for step in steps]], dtype=np.int64)
+    train = np.asarray(
+        [performances[0]["before"]["train_half_mse"]]
+        + [item["after"]["train_half_mse"] for item in performances]
+    )
+    validation = np.asarray(
+        [performances[0]["before"]["validation_half_mse"]]
+        + [item["after"]["validation_half_mse"] for item in performances]
+    )
+    drawing_steps = np.asarray(
+        [item["throughput"]["drawing_steps_per_s"] for item in performances]
+    )
+    no_drawing_steps = np.asarray(
+        [item["throughput"]["no_drawing_steps_per_s"] for item in performances]
+    )
+    drawing_median = float(np.median(drawing_steps))
+    no_drawing_median = float(np.median(no_drawing_steps))
+    retained = drawing_median / max(no_drawing_median, 1e-15) * 100
+    slowdown = no_drawing_median / max(drawing_median, 1e-15)
+
+    figure, axes = plt.subplots(1, 2, figsize=(12, 4.8), constrained_layout=True, facecolor="white")
+    axes[0].plot(x, train, "o-", color="#D92D20", label="Training loss")
+    axes[0].plot(x, validation, "o-", color="#475467", label="Held-out loss")
+    axes[0].set_xlabel("accepted optimizer steps")
+    axes[0].set_ylabel("half mean-squared error")
+    axes[0].set_title("The persistent model really learns")
+    axes[0].grid(True, color="#E4E7EC", linewidth=0.7)
+    axes[0].spines[["top", "right"]].set_visible(False)
+    axes[0].legend(frameon=False)
+
+    bars = axes[1].bar(
+        ["Drawing", "No drawing"],
+        [drawing_median, no_drawing_median],
+        color=["#D92D20", "#475467"],
+        width=0.62,
+    )
+    axes[1].bar_label(bars, fmt="%.1f steps/s", padding=4)
+    axes[1].set_ylabel("optimizer steps per second")
+    axes[1].set_title(f"Drawing retains {retained:.1f}% throughput · {slowdown:.2f}× slower")
+    axes[1].grid(True, axis="y", color="#E4E7EC", linewidth=0.7)
+    axes[1].spines[["top", "right"]].set_visible(False)
+    axes[1].set_ylim(0, max(drawing_median, no_drawing_median) * 1.2)
+    figure.suptitle("Training performance with and without power-trace drawing", weight="bold")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    figure.savefig(output, dpi=180, facecolor="white", bbox_inches="tight")
+    plt.close(figure)
+    return output
+
+
 def load_fast_calibration(path: str | Path) -> FastCalibration:
     path = Path(path)
     if path.is_dir():
@@ -469,40 +1296,112 @@ def _smooth_points(values: np.ndarray, sigma: float) -> np.ndarray:
     return np.convolve(np.pad(values, radius, mode="edge"), kernel, mode="valid")
 
 
+def normalized_curve_metrics(
+    target: np.ndarray,
+    measured_raw: np.ndarray,
+    measured_smoothed: np.ndarray,
+) -> dict[str, Any]:
+    """Score native and display-bandwidth curves without hiding bin-scale error."""
+
+    target = np.asarray(target, dtype=np.float64)
+    measured_raw = np.asarray(measured_raw, dtype=np.float64)
+    measured_smoothed = np.asarray(measured_smoothed, dtype=np.float64)
+    if target.ndim != 1 or target.shape != measured_raw.shape or target.shape != measured_smoothed.shape:
+        raise ValueError("target, raw measurement, and smoothed measurement must be matching vectors")
+    if not all(np.all(np.isfinite(value)) for value in (target, measured_raw, measured_smoothed)):
+        raise ValueError("curve metrics require finite values")
+    error = measured_smoothed - target
+    raw_error = measured_raw - target
+    rmse = float(np.sqrt(np.mean(np.square(error))))
+    raw_rmse = float(np.sqrt(np.mean(np.square(raw_error))))
+    multiscale_rmse = float(np.sqrt((rmse**2 + raw_rmse**2) / 2))
+    target_variance = float(np.sum(np.square(target - target.mean())))
+    return {
+        "pearson_r": float(np.corrcoef(target, measured_smoothed)[0, 1]),
+        "normalized_mae": float(np.mean(np.abs(error))),
+        "normalized_rmse": rmse,
+        "r_squared": float(1 - np.sum(np.square(error)) / max(target_variance, 1e-15)),
+        "shape_accuracy_percent": float(max(0, 1 - rmse) * 100),
+        "raw_pearson_r": float(np.corrcoef(target, measured_raw)[0, 1]),
+        "raw_normalized_mae": float(np.mean(np.abs(raw_error))),
+        "raw_normalized_rmse": raw_rmse,
+        "raw_shape_accuracy_percent": float(max(0, 1 - raw_rmse) * 100),
+        "multiscale_normalized_rmse": multiscale_rmse,
+        "multiscale_shape_accuracy_percent": float(max(0, 1 - multiscale_rmse) * 100),
+        "multiscale_score_definition": (
+            "100 * (1 - RMS(raw normalized RMSE, smoothed normalized RMSE))"
+        ),
+    }
+
+
 def analyze_fast_drawing(
     root: str | Path,
     target: np.ndarray,
     calibration: FastCalibration,
     *,
     smoothing_sigma_points: float = 0.8,
+    record_index: int | None = None,
+    feature_name: str | None = None,
+    feature_sign: float | None = None,
+    normalization: str = "calibration",
 ) -> tuple[dict[str, Any], dict[str, np.ndarray]]:
-    features, commands, record = measured_bin_features(root)
-    measured_feature = features[calibration.feature_name]
-    activity = calibration.feature_sign * measured_feature
-    measured = (activity - calibration.minimum_activity) / max(
-        calibration.maximum_activity - calibration.minimum_activity,
-        1e-15,
+    features, commands, record = measured_bin_features(root, record_index=record_index)
+    _, bins, _ = _trace_and_bins(root, record_index=record_index)
+    channel = record["channels"][record["primary_channel"]]
+    sample_rate_hz = float(channel["sample_rate_hz"])
+    profile_start_sample = min(int(item["start_sample"]) for item in bins)
+    profile_end_sample = max(int(item["end_sample"]) for item in bins)
+    bin_center_ms = np.asarray(
+        [
+            ((int(item["start_sample"]) + int(item["end_sample"])) / 2 - profile_start_sample)
+            / sample_rate_hz
+            * 1e3
+            for item in bins
+        ],
+        dtype=np.float64,
     )
+    actual_duration_ms = (profile_end_sample - profile_start_sample) / sample_rate_hz * 1e3
+    feature_name = calibration.feature_name if feature_name is None else feature_name
+    if feature_name not in features:
+        raise ConfigurationError(
+            f"trace feature {feature_name!r} is unavailable; choose from {sorted(features)}"
+        )
+    feature_sign = calibration.feature_sign if feature_sign is None else float(feature_sign)
+    if feature_sign not in {-1.0, 1.0}:
+        raise ValueError("feature_sign must be -1 or 1")
+    measured_feature = features[feature_name]
+    activity = feature_sign * measured_feature
+    if normalization == "calibration":
+        measured = (activity - calibration.minimum_activity) / max(
+            calibration.maximum_activity - calibration.minimum_activity,
+            1e-15,
+        )
+        normalization_bounds = [calibration.minimum_activity, calibration.maximum_activity]
+    elif normalization == "robust":
+        low, high = np.quantile(activity, [0.02, 0.98])
+        if high - low <= 1e-15:
+            raise ConfigurationError("robust trace normalization has zero activity span")
+        measured = np.clip((activity - low) / (high - low), 0, 1)
+        normalization_bounds = [float(low), float(high)]
+    else:
+        raise ValueError("normalization must be 'calibration' or 'robust'")
     measured_smoothed = _smooth_points(measured, smoothing_sigma_points)
     target = np.asarray(target, dtype=np.float64)
     if target.shape != measured.shape:
         raise ConfigurationError(
             f"target has {target.size} points but trace contains {measured.size} tile bins"
         )
-    error = measured_smoothed - target
-    rmse = float(np.sqrt(np.mean(np.square(error))))
-    target_variance = float(np.sum(np.square(target - target.mean())))
+    curve_metrics = normalized_curve_metrics(target, measured, measured_smoothed)
     metrics = {
         "requested_duration_ms": float(record["labels"]["profile_duration_s"] * 1e3),
+        "actual_profile_duration_ms": actual_duration_ms,
         "bins": int(target.size),
-        "feature": calibration.feature_name,
-        "feature_sign": calibration.feature_sign,
+        "feature": feature_name,
+        "feature_sign": feature_sign,
+        "normalization": normalization,
+        "normalization_bounds": normalization_bounds,
         "smoothing_sigma_points": smoothing_sigma_points,
-        "pearson_r": float(np.corrcoef(target, measured_smoothed)[0, 1]),
-        "normalized_mae": float(np.mean(np.abs(error))),
-        "normalized_rmse": rmse,
-        "r_squared": float(1 - np.sum(np.square(error)) / max(target_variance, 1e-15)),
-        "shape_accuracy_percent": float(max(0, 1 - rmse) * 100),
+        **curve_metrics,
         "measurement": "ChipWhisperer normalized ADC activity; not calibrated watts",
         "loss_before_update": record["labels"].get("loss_before_update"),
     }
@@ -512,6 +1411,7 @@ def analyze_fast_drawing(
         "measured_smoothed": measured_smoothed,
         "commands": commands,
         "feature_raw": measured_feature,
+        "bin_center_ms": bin_center_ms,
     }
     return metrics, arrays
 
@@ -524,6 +1424,11 @@ def render_fast_drawing(
     *,
     output: str | Path | None = None,
     smoothing_sigma_points: float = 0.8,
+    record_index: int | None = None,
+    analysis_root: str | Path | None = None,
+    feature_name: str | None = None,
+    feature_sign: float | None = None,
+    normalization: str = "calibration",
 ) -> tuple[Path, dict[str, Any]]:
     root = Path(root)
     metrics, arrays = analyze_fast_drawing(
@@ -531,10 +1436,15 @@ def render_fast_drawing(
         target,
         calibration,
         smoothing_sigma_points=smoothing_sigma_points,
+        record_index=record_index,
+        feature_name=feature_name,
+        feature_sign=feature_sign,
+        normalization=normalization,
     )
-    output = Path(output) if output is not None else root / "fast_measured_silhouette.png"
-    duration_ms = metrics["requested_duration_ms"]
-    x = np.linspace(0, duration_ms, target.size)
+    analysis_root = root if analysis_root is None else Path(analysis_root)
+    output = Path(output) if output is not None else analysis_root / "fast_measured_silhouette.png"
+    duration_ms = metrics["actual_profile_duration_ms"]
+    x = arrays["bin_center_ms"]
     figure, axes = plt.subplots(
         2,
         1,
@@ -548,16 +1458,27 @@ def render_fast_drawing(
     axes[0].set_xlim(0, duration_ms)
     axes[0].set_ylim(0, 1.05)
     axes[0].axis("off")
-    axes[0].set_title("Lowered target silhouette", fontsize=13)
+    target_titles = {
+        "height": "Lowered target silhouette",
+        "upper-boundary": "Lowered upper boundary",
+        "lower-boundary": "Lowered lower boundary",
+    }
+    axes[0].set_title(target_titles[envelope.extraction_mode], fontsize=13)
     axes[1].plot(x, target, color="#475467", linestyle="--", linewidth=1.4, label="Target")
+    axes[1].plot(
+        x,
+        arrays["measured_raw"],
+        color="#F97066",
+        linewidth=0.7,
+        alpha=0.45,
+        label="Measured native bins",
+    )
     axes[1].plot(
         x,
         arrays["measured_smoothed"],
         color="#D92D20",
         linewidth=1.8,
-        marker="o",
-        markersize=3,
-        label="Measured ChipWhisperer activity",
+        label="Measured scored curve",
     )
     axes[1].fill_between(x, 0, arrays["measured_smoothed"], color="#D0D5DD", alpha=0.65)
     axes[1].set_xlim(0, duration_ms)
@@ -567,7 +1488,9 @@ def render_fast_drawing(
     axes[1].set_xlabel("time (ms)")
     axes[1].set_ylabel("normalized activity")
     axes[1].set_title(
-        f"{duration_ms:g} ms real tiled-gradient capture · accuracy {metrics['shape_accuracy_percent']:.1f}%"
+        f"{duration_ms:g} ms real tiled-gradient capture · "
+        f"fidelity {metrics['multiscale_shape_accuracy_percent']:.1f}% · "
+        f"smoothed {metrics['shape_accuracy_percent']:.1f}%"
     )
     axes[1].grid(True, color="#E4E7EC", linewidth=0.65)
     axes[1].spines[["top", "right"]].set_visible(False)
@@ -580,9 +1503,9 @@ def render_fast_drawing(
     )
     figure.savefig(output, dpi=180, facecolor="white", bbox_inches="tight")
     plt.close(figure)
-    atomic_json(metrics, root / "fast_metrics.json")
+    atomic_json(metrics, analysis_root / "fast_metrics.json")
     for name, values in arrays.items():
-        atomic_numpy(np.asarray(values, dtype=np.float32), root / f"fast_{name}.npy")
+        atomic_numpy(np.asarray(values, dtype=np.float32), analysis_root / f"fast_{name}.npy")
     return output, metrics
 
 

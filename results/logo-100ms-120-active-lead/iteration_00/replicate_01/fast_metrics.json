@@ -1,0 +1,27 @@
+{
+  "actual_profile_duration_ms": 100.02999999999999,
+  "bins": 120,
+  "feature": "rms",
+  "feature_sign": -1.0,
+  "loss_before_update": 0.6878868341445923,
+  "measurement": "ChipWhisperer normalized ADC activity; not calibrated watts",
+  "multiscale_normalized_rmse": 0.08963534130055609,
+  "multiscale_score_definition": "100 * (1 - RMS(raw normalized RMSE, smoothed normalized RMSE))",
+  "multiscale_shape_accuracy_percent": 91.0364658699444,
+  "normalization": "robust",
+  "normalization_bounds": [
+    -0.02963399095767194,
+    -0.016206502662876397
+  ],
+  "normalized_mae": 0.06697905060283231,
+  "normalized_rmse": 0.08712438872864184,
+  "pearson_r": 0.9539964131110434,
+  "r_squared": 0.8784368998649775,
+  "raw_normalized_mae": 0.06660908198729838,
+  "raw_normalized_rmse": 0.09207784591743477,
+  "raw_pearson_r": 0.9377626405127427,
+  "raw_shape_accuracy_percent": 90.79221540825652,
+  "requested_duration_ms": 100.0,
+  "shape_accuracy_percent": 91.28756112713582,
+  "smoothing_sigma_points": 2.0
+}

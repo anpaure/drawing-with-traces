@@ -1,152 +1,137 @@
 # Drawing with traces
 
-Train a real model while shaping its measured GPU power activity into an image silhouette.
+Draw a PNG silhouette with the **measured power activity of real GPU model training**.
 
 This is a standalone experiment built on [SideCapture](https://github.com/anpaure/sidecapture).
-It does not synthesize, replace, or geometrically warp measured values.
+It uses a ChipWhisperer Husky Plus to capture an H100 PCIe while a hand-tiled training gradient changes
+GEMM width over time. The plotted result is measured data: it is not synthesized, shifted, or warped.
 
-![Measured 10 ms silhouette](results/fast-10ms/measured_silhouette.png)
+![Best measured silhouette](results/logo-100ms-120-active-lead/measured_silhouette.png)
 
-## Best real-hardware result
+## Best verified hardware result
 
 | Property | Result |
 |---|---:|
-| Requested profile duration | **10 ms** |
-| Controlled bins | 20 (0.5 ms each) |
-| ChipWhisperer rate | **10 MSPS burst** |
-| Captured samples | 150,000 |
-| Model parameters | 16,777,216 |
-| Pearson correlation | **0.9968** |
-| Normalized MAE | **2.40%** |
-| Normalized RMSE | **2.94%** |
-| R² | **0.9933** |
-| Shape accuracy (`100 × (1 − NRMSE)`) | **97.06%** |
-| Training loss | **0.99772 → 0.83642** |
+| Profile duration | **100.019 ms measured** |
+| Distinct target positions | **120** (0.833 ms each) |
+| ChipWhisperer capture | **1.5 MSPS burst**, 165,000 samples |
+| GPU / model | H100 PCIe / 16,777,216 parameters |
+| Multiscale fidelity | **94.26%** |
+| Native-bin fidelity | **94.42%** |
+| Smoothed fidelity | **94.09%** |
+| Pearson correlation | **0.9790** |
+| R² | **0.9441** |
+| Train loss for promoted step | **0.40575 → 0.34279** |
+| Held-out loss for promoted step | **0.93094 → 0.92316** |
+| Gradient relative L2 error vs untiled | **7.41 × 10⁻⁷** |
+| Drawing / ordinary training | **9.57 / 1764.56 steps/s** |
 
-Hardware: NVIDIA H100 PCIe and ChipWhisperer Husky Plus. The committed result includes the raw
-SideCapture dataset, explicit bin annotations, health report, exact commands, calibration, and derived
-arrays under [`results/fast-10ms`](results/fast-10ms). SideCapture accepted the best trace on its first
-attempt with no health issues, no ADC clipping, and all 150,000 requested samples present.
+The complete 17 MB result is committed under
+[`results/logo-100ms-120-active-lead`](results/logo-100ms-120-active-lead). It includes all raw
+SideCapture records, annotations, tile commands, health reports, calibration, candidate plots, training
+metrics, and a compact [`published_summary.json`](results/logo-100ms-120-active-lead/published_summary.json).
+The promoted result is capture **5**, accepted on its first attempt with all 165,000 samples present,
+no ADC clipping, no annotation bounds errors, and no health issues.
 
-## Where SideCapture is used
+## One-command reproduction
 
-This experiment does **not** bypass SideCapture. The fast capture path constructs
-`sidecapture.ChipWhispererSampler` and runs the workload through `sidecapture.Experiment` with a
-`DirectoryStore`, retry policy, warmup, CUDA synchronization, validators, and transactional workload
-commit. The resulting manifest uses `sidecapture.dataset/v1` and records the sampler, resolved capture
-plan, hardware/software provenance, annotations, validation metrics, and retry attempt.
+```bash
+python -m pip install -e .
 
-The split of responsibility is:
+draw-power-png assets/logo-top.png \
+  --output runs/logo-100ms \
+  --engine timed \
+  --silhouette-mode upper-boundary \
+  --points 120 \
+  --duration-ms 100 \
+  --capture-window-ms 110 \
+  --sample-rate 1.5MHz \
+  --batch-size 512 \
+  --target-accuracy 95 \
+  --max-refinements 8 \
+  --replicates-per-refinement 3 \
+  --ilc-gain 0.10 \
+  --minimum-ilc-gain 0.0125
+```
 
-- **SideCapture:** plans, arms, and reads the Husky; maps annotations; validates traces; retries failed
-  acquisitions; and crash-safely commits the raw trace and metadata.
-- **This repository:** lowers the image into a one-dimensional envelope, schedules genuine tiled
-  gradient operations, calibrates tile width to measured activity, and scores/plots the committed trace.
+This requires the installed H100/ChipWhisperer setup and SideCapture's hardware dependencies. Model and
+scope setup happen once. Every accepted drawing capture applies another optimizer step to the same
+persistent model.
 
-## How the millisecond version works
+## What actually runs
 
-A filled 2D shape first becomes a valid one-dimensional target:
-
-1. Extract the foreground mask.
-2. Measure the foreground height in every image column.
-3. Move every column down to a common baseline.
-4. Smooth and normalize the resulting height envelope.
-
-The fast workload is then a hand-written tiled gradient for
+The current workload is a teacher–student linear model with the objective
 
 ```text
 loss = 0.5 / batch × ||XW − Y||²
 gradient = Xᵀ(XW − Y) / batch
 ```
 
-Every controlled tile computes both `X @ W[:, start:end]` and its real gradient block
-`X.T @ residual[:, start:end]`. Tile width changes the GEMM shape and therefore the measured GPU
-activity. Repeated visits are averaged by output column before one deferred SGD update, so changing the
-power pattern does not change the mathematical gradient.
+Each controlled block computes a real forward tile `X @ W[:, start:end]` and its real weight-gradient
+tile `X.T @ residual[:, start:end]`. Tile width changes Tensor Core occupancy and therefore measured
+power activity. Visits to an output column are averaged before deferred SGD, so scheduling changes the
+power waveform without changing the intended gradient. The result is numerically equivalent to the
+untiled BF16 gradient to approximately `7.4e-7` relative L2 for the promoted step.
 
-On the H100, the tiled result matched the full untiled manual gradient exactly in the validation run
-(`relative L2 = 0`, `max absolute difference = 0`). Every accepted iteration reduced the model loss.
+This is **not yet a literal reproduction of Fable's reported 14-layer residual MLP**. It implements the
+same central mechanism—real gradient work decomposed into controllable GEMM widths plus iterative
+learning control—but currently trains one large linear layer.
 
-## Calibration and iterative learning control
+## Why the active baseline matters
 
-The first SideCapture run sweeps tile widths from idle through 4096 columns. At 10 ms, each width is
-held for four consecutive 0.5 ms bins; calibration uses the repeated steady-state bins to match the
-timing and AC-coupled frontend behavior of the drawing itself. It automatically chooses the most
-monotonic ChipWhisperer feature and builds a width-to-activity map.
+Earlier versions mapped target zero to GPU idle. That allowed H100 SM clocks to collapse between low
+bins and made the next power level depend on DVFS history. The verified path instead:
 
-![Tile-width calibration](results/fast-10ms/tile_width_calibration.png)
+- maps the lowest target level to a real **128-column gradient tile**;
+- runs that same narrow tile during the 2 ms lead period;
+- sweeps 23 candidate widths from 128 through 4096 (the measured monotonic range retained 22 through
+  3072);
+- uses 120 **distinct target positions**, with no repeated target block inside the trace.
 
-The image envelope is inverted through that calibration. Subsequent real captures use iterative learning
-control (ILC): measured per-bin error can adjust the next tile-width sequence. For the 10 ms result, the
-calibrated feed-forward command (iteration 0) was already best; later high-gain corrections amplified
-run-to-run variation, so the reported score is not cherry-picked after shifting or warping the trace.
+`--replicates-per-refinement 3` means three separate physical training captures are used to form robust
+median feedback for one ILC round. It does **not** repeat or average blocks inside the promoted trace.
+The published picture and score belong to one unaveraged capture.
 
-## Reproduce the 10 ms experiment
+## Measurement and score
 
-```bash
-python -m pip install -e .
+The Husky input is AC-coupled, so this experiment reports normalized ChipWhisperer activity rather than
+calibrated watts. Timed mode preselects RMS activity before seeing a drawing trace and uses target-free
+2nd/98th-percentile normalization. No target-aware affine fitting is applied.
 
-drawing-with-traces fast \
-  --image assets/target.png \
-  --output runs/fast-10ms \
-  --duration-ms 10 \
-  --points 20 \
-  --iterations 10 \
-  --ilc-gain 1.0
+To prevent display smoothing from hiding bin-scale ripple, the primary fidelity combines native and
+smoothed errors:
+
+```text
+multiscale_rmse = sqrt((raw_rmse² + smoothed_rmse²) / 2)
+fidelity        = 100 × (1 − multiscale_rmse)
 ```
 
-SideCapture provides:
+The faint red line in the plot is the native 120-bin measurement; the solid line is the sigma-2 scored
+curve. Both metrics are stored. “Fidelity” here is a waveform score, not classification accuracy.
 
-- `ChipWhispererSampler` acquisition and hardware planning;
-- trigger-to-host annotation mapping;
-- ADC clipping, finite-value, expected-length, variance, flatline, and bounds validation;
-- automatic retries and sampler recovery;
-- crash-safe records, raw channels, labels, artifacts, and provenance.
+## SideCapture integrity
 
-The 10 ms feature is normalized AC-coupled ChipWhisperer activity, **not calibrated watts**.
+SideCapture owns acquisition and durability:
 
-## Independent 100 ms result
+- plans, arms, and reads the Husky;
+- maps CUDA/host annotations into ADC sample boundaries;
+- validates length, finite values, variance, flatlines, clipping, and bounds;
+- retries failed acquisitions and recovers the sampler;
+- crash-safely commits raw channels, records, annotations, artifacts, and provenance.
 
-The earlier 100 ms SideCapture/Husky run used 60 controlled bins at 1.5 MSPS and reached 94.46% shape
-accuracy (`r = 0.9861`, R² = 0.9687). Its complete raw dataset and calibration remain under
-[`results/fast-100ms`](results/fast-100ms).
+The workload update is transactional. A rejected trace clears accumulated gradients; only an accepted
+trace applies SGD. Post-profile gradient completion and active-lead arithmetic are included in the
+reported FLOPs and drawing-vs-no-drawing timing.
 
-![Measured 100 ms silhouette](results/fast-100ms/measured_silhouette.png)
+## More documentation
 
-## Seconds-scale watts mode
+- [Experiment and implementation guide](docs/EXPERIMENT.md)
+- [Resolution and controller ablations](docs/RESULTS.md)
+- [Compact published metrics](results/logo-100ms-120-active-lead/published_summary.json)
 
-For slow absolute-power drawings, the project also supports SideCapture's timestamped NVML sampler. The
-installed ChipWhisperer path is high-pass/AC-coupled, so NVML is the honest source for curves expressed in
-watts over seconds.
+## Earlier modes
 
-The measured 10-second adaptive run reached 92.04% shape accuracy and `r = 0.9583`:
-
-![Measured 10 second silhouette](results/h100-silhouette-short-v1/measured_silhouette.png)
-
-```bash
-drawing-with-traces run \
-  --image assets/target.png \
-  --output runs/h100-silhouette \
-  --duration-s 10 \
-  --adaptive
-```
-
-## Target preview
-
-```bash
-drawing-with-traces preview \
-  --image assets/target.png \
-  --output results/target-envelope.png
-```
-
-![Lowered target](results/target-envelope.png)
-
-## Measurement integrity
-
-- Raw traces are committed before optimizer state changes.
-- Rejected captures clear gradients and retry without applying an update twice.
-- Exact target values, tile commands, operation counts, model configuration, and timing are stored.
-- Accuracy uses the unshifted measured curve; no lag shifting is applied to the plotted data.
-- The plotted fast curve uses the calibration-selected feature and a documented 0.8-bin Gaussian display
-  smoothing. Raw per-bin values remain available beside it.
-- Hardware retries remain visible through each record's `attempt` and rejection log.
+The repository retains the original smooth 10 ms/20-bin result under
+[`results/fast-10ms`](results/fast-10ms) and a 100 ms/60-bin result under
+[`results/fast-100ms`](results/fast-100ms). Their older headline scores use only smoothed RMSE and are
+therefore not directly comparable to the stricter multiscale fidelity above.

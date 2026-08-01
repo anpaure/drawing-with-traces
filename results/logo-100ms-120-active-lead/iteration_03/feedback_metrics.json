@@ -1,0 +1,14 @@
+{
+  "multiscale_normalized_rmse": 0.10211847036438841,
+  "multiscale_score_definition": "100 * (1 - RMS(raw normalized RMSE, smoothed normalized RMSE))",
+  "multiscale_shape_accuracy_percent": 89.78815296356116,
+  "normalized_mae": 0.0811133965861976,
+  "normalized_rmse": 0.10337217707745402,
+  "pearson_r": 0.9453740231054529,
+  "r_squared": 0.8288686388693064,
+  "raw_normalized_mae": 0.07717914977279276,
+  "raw_normalized_rmse": 0.10084917939870626,
+  "raw_pearson_r": 0.9421045976502778,
+  "raw_shape_accuracy_percent": 89.91508206012936,
+  "shape_accuracy_percent": 89.66278229225459
+}

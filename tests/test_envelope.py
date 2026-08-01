@@ -43,6 +43,7 @@ def test_envelope_round_trip_and_idempotent_save(tmp_path):
     restored = load_envelope(tmp_path / "run")
     assert np.array_equal(restored.values, target.values)
     assert restored.metadata() == target.metadata()
+    assert restored.extraction_mode == "height"
 
 
 def test_save_refuses_different_target(tmp_path):
@@ -58,3 +59,50 @@ def test_blank_image_is_rejected(tmp_path):
     Image.new("RGB", (20, 20), "white").save(source)
     with pytest.raises(ConfigurationError, match="no foreground"):
         extract_envelope(source)
+
+
+def test_alpha_only_black_logo_supports_upper_boundary(tmp_path):
+    source = tmp_path / "transparent-logo.png"
+    pixels = np.zeros((20, 32, 4), dtype=np.uint8)
+    for column in range(2, 30):
+        top = 14 - column // 3
+        pixels[top:18, column, 3] = 255
+    Image.fromarray(pixels, mode="RGBA").save(source)
+
+    target = extract_envelope(
+        source,
+        points=16,
+        smoothing_sigma_points=0,
+        extraction_mode="upper-boundary",
+    )
+
+    assert target.extraction_mode == "upper-boundary"
+    assert target.values[0] < target.values[-1]
+    assert target.metadata()["extraction_mode"] == "upper-boundary"
+    assert target.crop_bbox == (2, 5, 30, 18)
+
+
+def test_upper_boundary_and_column_height_are_distinct(tmp_path):
+    source = tmp_path / "floating-shape.png"
+    pixels = np.zeros((24, 32, 4), dtype=np.uint8)
+    for column in range(32):
+        top = 3 + column // 5
+        bottom = min(23, top + 4 + column // 4)
+        pixels[top : bottom + 1, column, 3] = 255
+    Image.fromarray(pixels, mode="RGBA").save(source)
+
+    upper = extract_envelope(
+        source, points=16, smoothing_sigma_points=0, extraction_mode="upper-boundary"
+    )
+    height = extract_envelope(source, points=16, smoothing_sigma_points=0, extraction_mode="height")
+
+    assert upper.values[0] > upper.values[-1]
+    assert height.values[0] < height.values[-1]
+    assert not np.allclose(upper.values, height.values)
+
+
+def test_invalid_extraction_mode_is_rejected(tmp_path):
+    source = tmp_path / "shape.png"
+    make_shape(source)
+    with pytest.raises(ValueError, match="extraction_mode"):
+        extract_envelope(source, extraction_mode="diagonal")
