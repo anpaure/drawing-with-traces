@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "drawing-with-traces"
-version = "0.2.0"
+version = "0.3.0"
 description = "Draw silhouettes with measured GPU training power traces"
 readme = "README.md"
 requires-python = ">=3.10"

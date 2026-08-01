@@ -27,6 +27,7 @@ from .envelope import extract_envelope, save_envelope
 from .fast import (
     FastRefinementController,
     TiledLinearTrainingWorkload,
+    TiledResidualMLPTrainingWorkload,
     analyze_fast_drawing,
     calibrate_fast,
     capture_fast,
@@ -119,6 +120,20 @@ def add_fast_arguments(
     parser.add_argument("--hidden-size", type=int, default=4096)
     parser.add_argument("--batch-size", type=int, default=batch_size)
     parser.add_argument("--learning-rate", type=float, default=0.01)
+    parser.add_argument(
+        "--training-model",
+        choices=("linear", "residual-mlp"),
+        default="linear",
+        help="exact-gradient model used by the tiled drawing engine",
+    )
+    parser.add_argument("--residual-depth", type=int, default=14)
+    parser.add_argument("--residual-scale", type=float, default=0.125)
+    parser.add_argument("--residual-learning-rate", type=float, default=0.002)
+    parser.add_argument(
+        "--skip-autograd-verification",
+        action="store_true",
+        help="skip the setup-time handwritten-gradient versus autograd check",
+    )
     parser.add_argument("--gain-db", type=float, default=10.0)
     parser.add_argument("--max-attempts", type=int, default=4)
     parser.add_argument(
@@ -484,19 +499,32 @@ def run_draw_png_timed(args: argparse.Namespace) -> dict:
         repeats=calibration_repeats,
         seed=args.seed,
     )
-    workload = TiledLinearTrainingWorkload(
-        calibration_commands,
-        profile_duration_s=bin_duration_ms / 1e3 * calibration_commands.size,
-        hidden_size=args.hidden_size,
-        output_size=args.hidden_size,
-        batch_size=args.batch_size,
-        learning_rate=args.learning_rate,
-        lead_s=lead_ms / 1e3,
-        tail_s=tail_ms / 1e3,
-        active_lead_width=minimum_tile_width,
-        seed=args.seed,
-        schedule_mode="timed-repeat",
-    )
+    common_workload = {
+        "profile_duration_s": bin_duration_ms / 1e3 * calibration_commands.size,
+        "hidden_size": args.hidden_size,
+        "batch_size": args.batch_size,
+        "lead_s": lead_ms / 1e3,
+        "tail_s": tail_ms / 1e3,
+        "active_lead_width": minimum_tile_width,
+        "seed": args.seed,
+        "schedule_mode": "timed-repeat",
+    }
+    if args.training_model == "residual-mlp":
+        workload = TiledResidualMLPTrainingWorkload(
+            calibration_commands,
+            depth=args.residual_depth,
+            residual_scale=args.residual_scale,
+            verify_autograd=not args.skip_autograd_verification,
+            learning_rate=args.residual_learning_rate,
+            **common_workload,
+        )
+    else:
+        workload = TiledLinearTrainingWorkload(
+            calibration_commands,
+            output_size=args.hidden_size,
+            learning_rate=args.learning_rate,
+            **common_workload,
+        )
     captures_root = parent / "captures"
     sampler = sc.ChipWhispererSampler(
         sc.CaptureRequest.create(
@@ -695,12 +723,26 @@ def run_draw_png_timed(args: argparse.Namespace) -> dict:
         "target": envelope.metadata(),
         "target_preview": str(target_preview),
         "model": {
-            "type": "teacher-student tiled linear training",
+            "type": (
+                "teacher-student residual MLP training"
+                if args.training_model == "residual-mlp"
+                else "teacher-student tiled linear training"
+            ),
+            "training_model": args.training_model,
             "parameters": workload.parameter_count,
             "input_size": args.hidden_size,
             "output_size": args.hidden_size,
             "batch_size": args.batch_size,
             "persistent_across_captures": True,
+            **(
+                {
+                    "depth": args.residual_depth,
+                    "residual_scale": args.residual_scale,
+                    "autograd_verification": workload.autograd_equivalence,
+                }
+                if args.training_model == "residual-mlp"
+                else {}
+            ),
         },
         "calibration": {
             "context_repeats_per_width": calibration_repeats,
@@ -768,6 +810,11 @@ def run_draw_png(args: argparse.Namespace) -> dict:
 
     if args.engine == "timed":
         return run_draw_png_timed(args)
+    if args.training_model != "linear":
+        raise ConfigurationError(
+            "--training-model residual-mlp currently requires --engine timed; "
+            "operation-level scheduling remains available with --training-model linear"
+        )
     if args.iterations < 1:
         raise ConfigurationError("maximum refinements must be at least one")
     if args.target_accuracy is not None and not 0 < args.target_accuracy <= 100:
@@ -1120,6 +1167,11 @@ def run_draw_png(args: argparse.Namespace) -> dict:
 
 
 def run_fast(args: argparse.Namespace) -> dict:
+    if args.training_model != "linear":
+        raise ConfigurationError(
+            "the legacy fast command supports --training-model linear only; use "
+            "draw-png --engine timed --training-model residual-mlp"
+        )
     if args.duration_ms <= 0 or args.duration_ms > 200:
         raise ConfigurationError("fast duration must be positive and at most 200 ms")
     if args.iterations < 1:

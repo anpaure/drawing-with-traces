@@ -5,6 +5,7 @@ from drawing_with_traces.fast import (
     FastCalibration,
     FastRefinementController,
     TiledLinearTrainingWorkload,
+    TiledResidualMLPTrainingWorkload,
     dense_calibration_widths,
     interleaved_calibration_commands,
     normalized_curve_metrics,
@@ -116,6 +117,100 @@ def test_tiled_workload_metadata_is_transactional_without_cuda():
     assert workload.parameter_count == 16_777_216
     assert workload.metadata()["transactional_update"] is True
     assert "X.T @" in workload.metadata()["gradient"]
+
+
+def test_residual_mlp_metadata_and_parameter_count_without_cuda():
+    workload = TiledResidualMLPTrainingWorkload(
+        np.array([128, 512, 4096]),
+        profile_duration_s=0.1,
+        hidden_size=4096,
+        depth=14,
+        batch_size=256,
+    )
+
+    assert workload.parameter_count == 14 * 4096 * 4096
+    assert workload.useful_gradient_width == 14 * 4096
+    assert workload.task_label == "chipwhisperer-tiled-residual-mlp-training"
+    assert workload.metadata()["depth"] == 14
+    assert workload.metadata()["residual_scale"] == pytest.approx(0.125)
+    assert "layers" in workload.metadata()["gradient"]
+
+
+def test_residual_mlp_scheduler_walks_distinct_blocks_and_layers(monkeypatch):
+    workload = TiledResidualMLPTrainingWorkload(
+        np.array([128, 128]),
+        profile_duration_s=0.01,
+        hidden_size=256,
+        depth=3,
+        batch_size=8,
+    )
+    visited = []
+
+    def fake_gradient_tile(start, width, **kwargs):
+        visited.append((kwargs["layer_index"], start, width))
+
+    monkeypatch.setattr(workload, "gradient_tile", fake_gradient_tile)
+    for _ in range(7):
+        workload.next_tile(128)
+
+    assert visited == [
+        (0, 0, 128),
+        (0, 128, 128),
+        (1, 0, 128),
+        (1, 128, 128),
+        (2, 0, 128),
+        (2, 128, 128),
+        (0, 0, 128),
+    ]
+
+
+def test_residual_mlp_warmup_first_touches_every_layer_and_width(monkeypatch):
+    workload = TiledResidualMLPTrainingWorkload(
+        np.array([128, 256, 128]),
+        profile_duration_s=0.01,
+        hidden_size=256,
+        depth=3,
+        batch_size=8,
+    )
+    visited = []
+    monkeypatch.setattr(
+        workload,
+        "gradient_tile",
+        lambda start, width, **kwargs: visited.append(
+            (kwargs["layer_index"], start, width, kwargs["accumulate"])
+        ),
+    )
+    monkeypatch.setattr(workload, "clear_gradient", lambda: None)
+
+    workload.warmup(0)
+
+    assert visited == [
+        (0, 0, 128, False),
+        (0, 0, 256, False),
+        (1, 0, 128, False),
+        (1, 0, 256, False),
+        (2, 0, 128, False),
+        (2, 0, 256, False),
+    ]
+
+
+def test_residual_mlp_teardown_preserves_scalar_verification_evidence():
+    workload = TiledResidualMLPTrainingWorkload(
+        np.array([128, 256]),
+        profile_duration_s=0.01,
+        hidden_size=256,
+        depth=2,
+        batch_size=8,
+    )
+    workload.autograd_equivalence = {
+        "manual_vs_autograd_gradient_relative_l2": 0.0,
+    }
+
+    workload.teardown()
+
+    assert workload.metadata()["autograd_equivalence"] == {
+        "manual_vs_autograd_gradient_relative_l2": 0.0,
+    }
 
 
 def test_gradient_completion_is_included_in_drawing_cost(monkeypatch):

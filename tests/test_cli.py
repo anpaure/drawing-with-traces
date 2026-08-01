@@ -1,4 +1,7 @@
-from drawing_with_traces.cli import _fast_analysis_policy, build_parser
+import pytest
+from sidecapture.errors import ConfigurationError
+
+from drawing_with_traces.cli import _fast_analysis_policy, build_parser, run_draw_png, run_fast
 
 
 def test_draw_png_defaults_to_short_automatic_hardware_run():
@@ -51,6 +54,7 @@ def test_draw_png_exposes_120_position_timed_engine():
     assert args.engine == "timed"
     assert args.points == 120
     assert args.duration_ms == 100
+    assert args.training_model == "linear"
     assert _fast_analysis_policy(args, engine="timed") == {
         "preferred_feature": "rms",
         "smoothing_sigma_points": 2.0,
@@ -80,3 +84,56 @@ def test_timed_analysis_policy_can_be_overridden_explicitly():
     policy = _fast_analysis_policy(args, engine="timed")
     assert policy["preferred_feature"] == "std"
     assert policy["smoothing_sigma_points"] == 1.25
+
+
+def test_draw_png_exposes_fable_style_residual_mlp_controls():
+    args = build_parser().parse_args(
+        [
+            "draw-png",
+            "logo.png",
+            "--output",
+            "run",
+            "--engine",
+            "timed",
+            "--training-model",
+            "residual-mlp",
+            "--residual-depth",
+            "14",
+            "--residual-scale",
+            "0.125",
+        ]
+    )
+
+    assert args.training_model == "residual-mlp"
+    assert args.residual_depth == 14
+    assert args.residual_scale == pytest.approx(0.125)
+    assert args.residual_learning_rate == pytest.approx(0.002)
+
+
+def test_residual_mlp_rejects_non_timed_engines_before_hardware_access():
+    draw_args = build_parser().parse_args(
+        [
+            "draw-png",
+            "logo.png",
+            "--output",
+            "run",
+            "--training-model",
+            "residual-mlp",
+        ]
+    )
+    fast_args = build_parser().parse_args(
+        [
+            "fast",
+            "--image",
+            "logo.png",
+            "--output",
+            "run",
+            "--training-model",
+            "residual-mlp",
+        ]
+    )
+
+    with pytest.raises(ConfigurationError, match="requires --engine timed"):
+        run_draw_png(draw_args)
+    with pytest.raises(ConfigurationError, match="legacy fast command"):
+        run_fast(fast_args)

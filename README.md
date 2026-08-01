@@ -33,6 +33,28 @@ metrics, and a compact [`published_summary.json`](results/logo-100ms-120-active-
 The promoted result is capture **5**, accepted on its first attempt with all 165,000 samples present,
 no ADC clipping, no annotation bounds errors, and no health issues.
 
+## 14-layer residual-MLP result
+
+The repository now also contains a closer Fable-style workload: a genuine **14-layer, 234,881,024
+parameter residual MLP** with a handwritten tiled forward/backward pass.
+
+![Residual MLP measured silhouette](results/resmlp-v1-100ms-120/measured_silhouette.png)
+
+| Property | Residual-MLP result |
+|---|---:|
+| Multiscale / native / smoothed fidelity | **93.08% / 92.11% / 94.21%** |
+| PyTorch autograd gradient error | **exactly zero** in BF16 |
+| Tiled versus untiled gradient error | **exactly zero** |
+| Train loss for promoted step | **0.07250 → 0.07174** |
+| Held-out loss for promoted step | **0.08020 → 0.08000** |
+| Drawing / ordinary training | **9.10 / 125.31 steps/s** (median) |
+| Drawing slowdown | **13.77×**, versus 184.39× for the linear workload |
+
+This is currently the strongest *real-model/training-efficiency* result, while the linear workload still
+has the strongest absolute waveform score. The curated residual result includes the promoted physical
+trace, annotations, commands, layer/column coverage, health record, plots, and independently recomputed
+checksums under [`results/resmlp-v1-100ms-120`](results/resmlp-v1-100ms-120).
+
 ## One-command reproduction
 
 ```bash
@@ -54,13 +76,23 @@ draw-power-png assets/logo-top.png \
   --minimum-ilc-gain 0.0125
 ```
 
+For the 14-layer residual MLP, add:
+
+```bash
+  --training-model residual-mlp \
+  --residual-depth 14 \
+  --residual-scale 0.125 \
+  --residual-learning-rate 0.002 \
+  --batch-size 256
+```
+
 This requires the installed H100/ChipWhisperer setup and SideCapture's hardware dependencies. Model and
 scope setup happen once. Every accepted drawing capture applies another optimizer step to the same
 persistent model.
 
 ## What actually runs
 
-The current workload is a teacher–student linear model with the objective
+The original workload is a teacher–student linear model with the objective
 
 ```text
 loss = 0.5 / batch × ||XW − Y||²
@@ -73,9 +105,28 @@ power activity. Visits to an output column are averaged before deferred SGD, so 
 power waveform without changing the intended gradient. The result is numerically equivalent to the
 untiled BF16 gradient to approximately `7.4e-7` relative L2 for the promoted step.
 
-This is **not yet a literal reproduction of Fable's reported 14-layer residual MLP**. It implements the
-same central mechanism—real gradient work decomposed into controllable GEMM widths plus iterative
-learning control—but currently trains one large linear layer.
+The residual engine trains
+
+```text
+h[l + 1] = h[l] + 0.125 × relu(h[l] W[l]),  l = 0…13
+loss       = 0.5 / batch × ||h[14] − Y||²
+```
+
+It prepares the real reverse-mode delta for every layer, then schedules true blocks of
+`h[l].T @ delta[l]` across the 100 ms profile. The scheduler traverses layers and output columns rather
+than replaying a fake burner kernel. Repeated visits are averaged, missing blocks are completed after
+capture, and the accepted update is compared with both an untiled handwritten gradient and PyTorch
+autograd. Both comparisons were bit-for-bit exact in the verified H100 run.
+
+### Why drawing is slower
+
+An ordinary residual-MLP optimizer step takes about **8 ms** once warm. A 100 ms requested waveform has
+an unavoidable ceiling near 10 drawing steps/s before setup, completion, and update overhead. To keep
+all 120 levels physically present, the GPU also computes roughly 24 traversals' worth of gradient-column
+work in the promoted step. This is useful gradient arithmetic, but repeated visits must be averaged to
+preserve the same update. The resulting measured step is about 110 ms, or 13.77× slower than the same
+model without drawing. The earlier linear model's ordinary step is only about 0.57 ms, which is why its
+fixed 100 ms drawing window creates the much larger 184× ratio.
 
 ## Why the active baseline matters
 
@@ -128,6 +179,7 @@ reported FLOPs and drawing-vs-no-drawing timing.
 - [Experiment and implementation guide](docs/EXPERIMENT.md)
 - [Resolution and controller ablations](docs/RESULTS.md)
 - [Compact published metrics](results/logo-100ms-120-active-lead/published_summary.json)
+- [Residual-MLP compact metrics](results/resmlp-v1-100ms-120/published_summary.json)
 
 ## Earlier modes
 

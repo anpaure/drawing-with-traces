@@ -149,6 +149,7 @@ class TiledLinearTrainingWorkload(Workload):
     """
 
     replay_safe = True
+    task_label = "chipwhisperer-tiled-linear-training"
 
     def __init__(
         self,
@@ -333,6 +334,11 @@ class TiledLinearTrainingWorkload(Workload):
             "validation_half_mse": validation_half_mse,
         }
 
+    def performance_before_capture(self) -> dict[str, float]:
+        """Return the loss snapshot associated with the gradient being captured."""
+
+        return self.evaluate_performance()
+
     def full_loss(self) -> float:
         """Backward-compatible normalized training loss."""
 
@@ -428,10 +434,10 @@ class TiledLinearTrainingWorkload(Workload):
 
     def run(self, context):
         self.clear_gradient()
-        self.current_performance = self.evaluate_performance()
+        self.current_performance = self.performance_before_capture()
         self.loss_before = self.current_performance["train_half_mse"]
         context.labels.update(
-            task="chipwhisperer-tiled-linear-training",
+            task=self.task_label,
             profile_duration_s=self.profile_duration_s,
             profile_bins=int(self.commands.size),
             model_parameters=self.parameter_count,
@@ -789,6 +795,479 @@ class TiledLinearTrainingWorkload(Workload):
             "transactional_update": True,
             "training_task": "teacher-student linear regression with held-out validation batch",
             "accepted_training_steps": self.accepted_training_steps,
+        }
+
+
+class TiledResidualMLPTrainingWorkload(TiledLinearTrainingWorkload):
+    """Train a residual MLP while its real weight gradients draw the trace.
+
+    The model contains ``depth`` square residual layers::
+
+        h[l + 1] = h[l] + residual_scale * relu(h[l] @ W[l])
+
+    Forward activations and reverse-mode deltas are prepared once for the
+    current optimizer step.  Every controlled operation then computes a true
+    block of ``h[l].T @ delta[l]``.  The scheduler walks across both columns
+    and layers, repeated visits are averaged, and any unvisited blocks are
+    completed after capture.  The resulting update is therefore independent
+    of the silhouette command sequence apart from floating-point rounding.
+    """
+
+    task_label = "chipwhisperer-tiled-residual-mlp-training"
+
+    def __init__(
+        self,
+        commands: np.ndarray,
+        *,
+        profile_duration_s: float,
+        hidden_size: int = 4096,
+        depth: int = 14,
+        batch_size: int = 256,
+        learning_rate: float = 0.002,
+        validation_batch_size: int = 128,
+        residual_scale: float = 0.125,
+        verify_autograd: bool = True,
+        lead_s: float = 0.002,
+        tail_s: float = 0.002,
+        active_lead_width: int = 0,
+        seed: int = 1729,
+        schedule_mode: str = "timed-repeat",
+        tile_repeats: int = 1,
+        reference_widths: np.ndarray | None = None,
+        reference_repeats: int = 0,
+    ):
+        if depth < 2:
+            raise ValueError("residual MLP depth must be at least two")
+        if not 0 < residual_scale <= 1:
+            raise ValueError("residual_scale must be greater than zero and at most one")
+        self.depth = int(depth)
+        self.residual_scale = float(residual_scale)
+        self.verify_autograd = bool(verify_autograd)
+        super().__init__(
+            commands,
+            profile_duration_s=profile_duration_s,
+            hidden_size=hidden_size,
+            output_size=hidden_size,
+            batch_size=batch_size,
+            learning_rate=learning_rate,
+            validation_batch_size=validation_batch_size,
+            lead_s=lead_s,
+            tail_s=tail_s,
+            active_lead_width=active_lead_width,
+            seed=seed,
+            schedule_mode=schedule_mode,
+            tile_repeats=tile_repeats,
+            reference_widths=reference_widths,
+            reference_repeats=reference_repeats,
+        )
+        self.layer_cursor = 0
+        self.activations = None
+        self.deltas = None
+        self.state_prepare_wall_s = None
+        self.autograd_equivalence = None
+
+    @property
+    def parameter_count(self) -> int:
+        return self.depth * self.hidden_size * self.hidden_size
+
+    @property
+    def useful_gradient_width(self) -> int:
+        return self.depth * self.output_size
+
+    def _forward_with_weights(self, inputs, weights, *, retain_state: bool = False):
+        torch = self.torch
+        hidden = inputs
+        activations = []
+        masks = []
+        for layer in range(self.depth):
+            if retain_state:
+                activations.append(hidden)
+            preactivation = hidden @ weights[layer]
+            if retain_state:
+                masks.append(preactivation > 0)
+            hidden = hidden + torch.relu(preactivation) * self.residual_scale
+        return hidden, activations, masks
+
+    def setup(self) -> None:
+        try:
+            import torch
+        except ImportError as error:
+            raise ConfigurationError("residual-MLP tiled training requires PyTorch") from error
+        if not torch.cuda.is_available():
+            raise ConfigurationError("residual-MLP tiled training requires a CUDA GPU")
+        self.torch = torch
+        torch.manual_seed(self.seed)
+        torch.cuda.manual_seed_all(self.seed)
+        self.inputs = torch.randn(
+            self.batch_size,
+            self.hidden_size,
+            device="cuda",
+            dtype=torch.bfloat16,
+        )
+        self.validation_inputs = torch.randn(
+            self.validation_batch_size,
+            self.hidden_size,
+            device="cuda",
+            dtype=torch.bfloat16,
+        )
+        teacher_weight = torch.randn(
+            self.depth,
+            self.hidden_size,
+            self.hidden_size,
+            device="cuda",
+            dtype=torch.bfloat16,
+        ) / math.sqrt(self.hidden_size)
+        with torch.no_grad():
+            self.targets = self._forward_with_weights(self.inputs, teacher_weight)[0]
+            self.validation_targets = self._forward_with_weights(
+                self.validation_inputs,
+                teacher_weight,
+            )[0]
+        del teacher_weight
+        self.master_weight = torch.randn(
+            self.depth,
+            self.hidden_size,
+            self.hidden_size,
+            device="cuda",
+            dtype=torch.float32,
+        ) / math.sqrt(self.hidden_size)
+        self.weight = self.master_weight.to(torch.bfloat16)
+        self.gradient_sum = torch.zeros_like(self.master_weight)
+        self.column_visits = np.zeros(
+            (self.depth, self.output_size),
+            dtype=np.int64,
+        )
+        self.current_performance = self.evaluate_performance()
+        self.loss_before = self.current_performance["train_half_mse"]
+        self._prepare_training_state()
+        if self.verify_autograd:
+            self.autograd_equivalence = self.verify_manual_gradient_against_autograd()
+        torch.cuda.synchronize()
+
+    def half_mse(self, inputs, targets) -> float:
+        torch = self.torch
+        with torch.no_grad():
+            prediction = self._forward_with_weights(inputs, self.weight)[0]
+            residual = prediction - targets
+            loss = 0.5 * residual.float().square().mean()
+        torch.cuda.synchronize()
+        return float(loss)
+
+    def performance_before_capture(self) -> dict[str, float]:
+        if self.current_performance is None:
+            raise RuntimeError("residual MLP has no prepared performance snapshot")
+        return dict(self.current_performance)
+
+    def _prepare_training_state(self) -> None:
+        torch = self.require_setup()
+        started_ns = time.monotonic_ns()
+        with torch.no_grad():
+            prediction, activations, masks = self._forward_with_weights(
+                self.inputs,
+                self.weight,
+                retain_state=True,
+            )
+            residual = prediction - self.targets
+            incoming = (residual.float() / self.batch_size).to(torch.bfloat16)
+            deltas = [None] * self.depth
+            for layer in range(self.depth - 1, -1, -1):
+                local_delta = incoming * masks[layer]
+                local_delta = local_delta * self.residual_scale
+                deltas[layer] = local_delta
+                incoming = incoming + local_delta @ self.weight[layer].T
+        torch.cuda.synchronize()
+        self.activations = activations
+        self.deltas = deltas
+        self.state_prepare_wall_s = (time.monotonic_ns() - started_ns) / 1e9
+
+    def _full_weight_gradient(self):
+        torch = self.require_setup()
+        gradient = torch.empty_like(self.master_weight)
+        for layer in range(self.depth):
+            block = self.activations[layer].T @ self.deltas[layer]
+            gradient[layer].copy_(block.float())
+        torch.cuda.synchronize()
+        return gradient
+
+    def verify_manual_gradient_against_autograd(self) -> dict[str, float]:
+        """Compare the handwritten reverse pass to PyTorch autograd once at setup."""
+
+        torch = self.require_setup()
+        manual = self._full_weight_gradient()
+        reference_weight = self.weight.detach().clone().requires_grad_(True)
+        prediction = self._forward_with_weights(self.inputs, reference_weight)[0]
+        residual = prediction - self.targets
+        objective = 0.5 * residual.float().square().sum() / self.batch_size
+        (autograd,) = torch.autograd.grad(objective, reference_weight)
+        torch.cuda.synchronize()
+        difference = manual - autograd.float()
+        reference_norm = float(torch.linalg.vector_norm(autograd.float()).item())
+        result = {
+            "manual_vs_autograd_gradient_relative_l2": float(
+                torch.linalg.vector_norm(difference).item()
+            )
+            / max(reference_norm, 1e-30),
+            "manual_vs_autograd_gradient_max_absolute_error": float(
+                difference.abs().max().item()
+            ),
+        }
+        del manual, reference_weight, autograd, difference, prediction, residual, objective
+        torch.cuda.empty_cache()
+        return result
+
+    def gradient_tile(
+        self,
+        start: int,
+        width: int,
+        *,
+        accumulate: bool = True,
+        synchronize: bool = True,
+        layer_index: int | None = None,
+    ) -> None:
+        torch = self.require_setup()
+        layer = self.layer_cursor if layer_index is None else int(layer_index)
+        if not 0 <= layer < self.depth:
+            raise ValueError(f"layer index {layer} is outside [0, {self.depth})")
+        end = start + width
+        if not 0 <= start < end <= self.output_size:
+            raise ValueError("gradient tile falls outside the residual layer")
+        gradient = self.activations[layer].T @ self.deltas[layer][:, start:end]
+        if accumulate:
+            self.gradient_sum[layer, :, start:end].add_(gradient.float())
+            self.column_visits[layer, start:end] += 1
+        if synchronize:
+            torch.cuda.synchronize()
+
+    def _next_block(self, requested_width: int) -> tuple[int, int, int]:
+        width = min(int(requested_width), self.output_size)
+        if self.cursor + width > self.output_size:
+            self.cursor = 0
+            self.layer_cursor = (self.layer_cursor + 1) % self.depth
+        layer = self.layer_cursor
+        start = self.cursor
+        self.cursor = start + width
+        if self.cursor == self.output_size:
+            self.cursor = 0
+            self.layer_cursor = (self.layer_cursor + 1) % self.depth
+        return layer, start, width
+
+    def next_tile(self, requested_width: int) -> None:
+        if requested_width == 0:
+            return
+        layer, start, width = self._next_block(requested_width)
+        self.gradient_tile(start, width, layer_index=layer)
+
+    def repeat_partition_tile(self, requested_width: int, *, synchronize: bool = True) -> int:
+        layer, start, width = self._next_block(requested_width)
+        for _ in range(self.tile_repeats):
+            self.gradient_tile(
+                start,
+                width,
+                synchronize=synchronize,
+                layer_index=layer,
+            )
+        return self.tile_repeats
+
+    def clear_gradient(self) -> None:
+        super().clear_gradient()
+        self.layer_cursor = 0
+
+    def warmup(self, iteration: int) -> None:
+        """First-touch every layer/shape outside the timed capture window."""
+
+        del iteration
+        for layer in range(self.depth):
+            for width in np.unique(self.commands[self.commands > 0]):
+                self.gradient_tile(
+                    0,
+                    int(width),
+                    accumulate=False,
+                    layer_index=layer,
+                )
+        self.clear_gradient()
+
+    def complete_exact_gradient(self) -> None:
+        started_ns = time.monotonic_ns()
+        completed_width = 0
+        completed_operations = 0
+        for layer in range(self.depth):
+            for start in range(0, self.output_size, 256):
+                end = min(self.output_size, start + 256)
+                if np.any(self.column_visits[layer, start:end] == 0):
+                    self.gradient_tile(
+                        start,
+                        end - start,
+                        layer_index=layer,
+                    )
+                    completed_width += end - start
+                    completed_operations += 1
+        self.completion_gradient_compute_wall_s = (time.monotonic_ns() - started_ns) / 1e9
+        self.completion_tile_width_sum = completed_width
+        self.completion_operation_count = completed_operations
+        self.gradient_compute_wall_s += self.completion_gradient_compute_wall_s
+        self.executed_tile_width_sum += completed_width
+        self.last_operation_count += completed_operations
+        self.coverage_after_completion = {
+            "minimum_visits": int(self.column_visits.min()),
+            "maximum_visits": int(self.column_visits.max()),
+            "unvisited_columns": int(np.count_nonzero(self.column_visits == 0)),
+            "columns_visited_once": int(np.count_nonzero(self.column_visits == 1)),
+        }
+        if self.coverage_after_completion["unvisited_columns"]:
+            raise RuntimeError(
+                "gradient completion left residual-MLP columns unvisited: "
+                f"{self.coverage_after_completion}"
+            )
+
+    def on_accept(self, result: Any) -> None:
+        del result
+        torch = self.require_setup()
+        common_compute_s = float(self.state_prepare_wall_s)
+        self.complete_exact_gradient()
+        visits = torch.from_numpy(self.column_visits).to(device="cuda", dtype=torch.float32)
+        average_gradient = self.gradient_sum / visits.clamp_min(1).unsqueeze(1)
+        baseline_started_ns = time.monotonic_ns()
+        reference_gradient = self._full_weight_gradient()
+        self.baseline_gradient_compute_s = (time.monotonic_ns() - baseline_started_ns) / 1e9
+        difference = average_gradient - reference_gradient
+        reference_norm = float(torch.linalg.vector_norm(reference_gradient).item())
+        gradient_relative_l2 = float(torch.linalg.vector_norm(difference).item()) / max(
+            reference_norm,
+            1e-30,
+        )
+        gradient_max_absolute_error = float(difference.abs().max().item())
+        update_started_ns = time.monotonic_ns()
+        self.master_weight.add_(average_gradient, alpha=-self.learning_rate)
+        self.weight.copy_(self.master_weight.to(torch.bfloat16))
+        torch.cuda.synchronize()
+        optimizer_update_wall_s = (time.monotonic_ns() - update_started_ns) / 1e9
+        after = self.evaluate_performance()
+        self.loss_after = after["train_half_mse"]
+        if not math.isfinite(self.loss_after) or self.loss_after > self.loss_before:
+            raise RuntimeError(
+                "exact tiled residual-MLP update did not reduce loss: "
+                f"{self.loss_before} -> {self.loss_after}"
+            )
+        drawing_step_s = (
+            common_compute_s
+            + self.capture_control_wall_s
+            + self.completion_gradient_compute_wall_s
+            + optimizer_update_wall_s
+        )
+        no_drawing_step_s = (
+            common_compute_s + self.baseline_gradient_compute_s + optimizer_update_wall_s
+        )
+        common_forward_backward_flops = (
+            4 * self.batch_size * self.hidden_size * self.hidden_size * self.depth
+        )
+        useful_weight_gradient_flops = (
+            2 * self.batch_size * self.hidden_size * self.hidden_size * self.depth
+        )
+        executed_weight_gradient_flops = (
+            2 * self.batch_size * self.hidden_size * self.executed_tile_width_sum
+        )
+        self.last_performance = {
+            "training_step": self.accepted_training_steps,
+            "before": dict(self.current_performance),
+            "after": dict(after),
+            "train_improvement_percent": 100
+            * (1 - after["train_half_mse"] / self.current_performance["train_half_mse"]),
+            "validation_improvement_percent": 100
+            * (
+                1
+                - after["validation_half_mse"]
+                / self.current_performance["validation_half_mse"]
+            ),
+            "throughput": {
+                "common_forward_and_delta_wall_s": common_compute_s,
+                "controlled_profile_gradient_wall_s": self.profile_gradient_compute_wall_s,
+                "gradient_completion_wall_s": self.completion_gradient_compute_wall_s,
+                "drawing_gradient_wall_s": self.gradient_compute_wall_s,
+                "drawing_control_wall_s": self.capture_control_wall_s,
+                "no_drawing_gradient_wall_s": self.baseline_gradient_compute_s,
+                "optimizer_update_wall_s": optimizer_update_wall_s,
+                "drawing_step_wall_s": drawing_step_s,
+                "no_drawing_step_wall_s": no_drawing_step_s,
+                "drawing_examples_per_s": self.batch_size / max(drawing_step_s, 1e-15),
+                "no_drawing_examples_per_s": self.batch_size
+                / max(no_drawing_step_s, 1e-15),
+                "drawing_steps_per_s": 1 / max(drawing_step_s, 1e-15),
+                "no_drawing_steps_per_s": 1 / max(no_drawing_step_s, 1e-15),
+                "drawing_throughput_fraction": no_drawing_step_s
+                / max(drawing_step_s, 1e-15),
+                "drawing_slowdown_x": drawing_step_s / max(no_drawing_step_s, 1e-15),
+            },
+            "arithmetic": {
+                "tile_operations": self.last_operation_count,
+                "controlled_profile_tile_operations": self.profile_operation_count,
+                "gradient_completion_tile_operations": self.completion_operation_count,
+                "lead_stabilization_tile_operations": self.lead_stabilization_operation_count,
+                "executed_tile_width_sum": self.executed_tile_width_sum,
+                "controlled_profile_tile_width_sum": self.profile_executed_tile_width_sum,
+                "gradient_completion_tile_width_sum": self.completion_tile_width_sum,
+                "lead_stabilization_tile_width_sum": self.lead_stabilization_tile_width_sum,
+                "useful_output_width": self.useful_gradient_width,
+                "redundancy_ratio": self.executed_tile_width_sum
+                / self.useful_gradient_width,
+                "useful_forward_backward_flops": common_forward_backward_flops
+                + useful_weight_gradient_flops,
+                "executed_forward_backward_flops": common_forward_backward_flops
+                + executed_weight_gradient_flops,
+                "coverage_before_completion": dict(self.coverage_before_completion),
+                "coverage_after_completion": dict(self.coverage_after_completion),
+            },
+            "equivalence": {
+                "drawing_vs_no_drawing_gradient_relative_l2": gradient_relative_l2,
+                "drawing_vs_no_drawing_gradient_max_absolute_error": (
+                    gradient_max_absolute_error
+                ),
+                **(self.autograd_equivalence or {}),
+            },
+        }
+        del reference_gradient, difference, average_gradient, visits
+        self.current_performance = after
+        self.accepted_training_steps += 1
+        self.clear_gradient()
+        self._prepare_training_state()
+
+    def teardown(self) -> None:
+        self.activations = None
+        self.deltas = None
+        super().teardown()
+
+    def metadata(self) -> dict[str, Any]:
+        return {
+            "type": "drawing_with_traces.exact_tiled_residual_mlp_gradient",
+            "architecture": (
+                "h[l+1] = h[l] + residual_scale * relu(h[l] @ W[l])"
+            ),
+            "objective": "0.5 / batch * ||MLP(X)-Y||^2",
+            "gradient": "h[l].T @ delta[l], tiled over output columns and layers",
+            "commands_sha256": array_hash(self.commands, "<i8"),
+            "profile_bins": int(self.commands.size),
+            "profile_duration_s": self.profile_duration_s,
+            "bin_duration_s": self.bin_duration_s,
+            "schedule_mode": self.schedule_mode,
+            "tile_repeats": self.tile_repeats,
+            "reference_widths": self.reference_widths.tolist(),
+            "reference_repeats": self.reference_repeats,
+            "hidden_size": self.hidden_size,
+            "depth": self.depth,
+            "residual_scale": self.residual_scale,
+            "batch_size": self.batch_size,
+            "validation_batch_size": self.validation_batch_size,
+            "parameter_count": self.parameter_count,
+            "dtype": "bfloat16 matmuls, float32 gradient accumulation/master weights",
+            "optimizer": "exact deferred SGD",
+            "learning_rate": self.learning_rate,
+            "lead_s": self.lead_s,
+            "tail_s": self.tail_s,
+            "active_lead_width": self.active_lead_width,
+            "seed": self.seed,
+            "transactional_update": True,
+            "training_task": "teacher-student 14-layer residual MLP regression",
+            "accepted_training_steps": self.accepted_training_steps,
+            "autograd_equivalence": self.autograd_equivalence,
         }
 
 

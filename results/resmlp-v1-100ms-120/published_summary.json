@@ -1,0 +1,249 @@
+{
+  "capture_plan": {
+    "bits_per_sample": 12,
+    "decimation": 100,
+    "details": {
+      "gain_db": 10.0,
+      "max_samples_hw": 327828,
+      "max_samples_safe": 213088,
+      "max_stream_rate_hz": 10000000.0,
+      "stream_arm_settle_s": null,
+      "stream_fast_fifo": null,
+      "stream_segment_size": null,
+      "trigger": "gpio",
+      "usb_read_mode": "auto"
+    },
+    "duration_s": 0.11,
+    "mode": "burst",
+    "pretrigger_samples": 0,
+    "raw_sample_rate_hz": 150000000.0,
+    "sample_rate_hz": 1500000.0,
+    "samples": 165000,
+    "warnings": []
+  },
+  "control_policy": {
+    "active_lead_width": 128,
+    "algorithm": "cumulative iterative learning control",
+    "correction_smoothing_ms": 0.0,
+    "correction_smoothing_sigma_points": 0.0,
+    "feedback_aggregation": "pointwise median",
+    "preserves_unsmoothed_target_baseline": true,
+    "promoted_result_is_single_physical_trace": true,
+    "replicates_per_refinement": 3
+  },
+  "drawing_vs_no_drawing": {
+    "comparison_plot": "/home/amodo/drawing_with_traces_logo_20260801_1218/runs/logo-resmlp-v1-active-lead-median3-100ms-120/training_performance.png",
+    "drawing_median_steps_per_s": 9.103244776443074,
+    "drawing_slowdown_x": 13.765890008655212,
+    "drawing_throughput_fraction": 0.07264332341543166,
+    "no_drawing_median_steps_per_s": 125.31426631438046
+  },
+  "measurement_policy": {
+    "feature_sign": -1.0,
+    "maximum_requested_tile_width": 3072,
+    "minimum_tile_width": 128,
+    "normalization": "robust",
+    "normalization_quantiles": [
+      0.02,
+      0.98
+    ],
+    "preferred_feature": "rms",
+    "resolved_feature": "rms",
+    "selected_before_drawing": true,
+    "selection_accuracy_key": "multiscale_shape_accuracy_percent",
+    "selection_rmse_key": "multiscale_normalized_rmse",
+    "smoothing_sigma_points": 2.0,
+    "uses_target_for_feature_selection": false
+  },
+  "model": {
+    "autograd_verification": {
+      "manual_vs_autograd_gradient_max_absolute_error": 0.0,
+      "manual_vs_autograd_gradient_relative_l2": 0.0
+    },
+    "batch_size": 256,
+    "depth": 14,
+    "input_size": 4096,
+    "output_size": 4096,
+    "parameters": 234881024,
+    "persistent_across_captures": true,
+    "residual_scale": 0.125,
+    "training_model": "residual-mlp",
+    "type": "teacher-student residual MLP training"
+  },
+  "promoted_trace": {
+    "files": {
+      "annotations.json": {
+        "bytes": 51408,
+        "file_sha256": "151c33bd8199353b2345adde1b84d923ee3aba805b2508903496f9225e24e5dd"
+      },
+      "gradient_column_visits.npy": {
+        "bytes": 229504,
+        "file_sha256": "83cd6419ff4fa58c0c305634d79dfd2ef718de901450831749fbce8a4353dec9",
+        "payload_sha256": "2d1ee6c5bc12435a115a4f20ea959ff4e68466268a6defd1f62734ad51f80e03"
+      },
+      "record.json": {
+        "bytes": 5860,
+        "file_sha256": "c8ec7e2c895b821e824e5f5132fd541f78f6f4660ba99efae4b00c0ddc521993"
+      },
+      "target_envelope.npy": {
+        "bytes": 608,
+        "file_sha256": "e359009c05a9b1ff923748df96346ed734410f95c5bc3c7d289a866cc8c3718f",
+        "payload_sha256": "a8915781156497f4bf98edaecf290fde4ddca24234b0ca49027de890319c6daf"
+      },
+      "tile_operations_per_bin.npy": {
+        "bytes": 1088,
+        "file_sha256": "bd884335a3b2c76ed93f6c20d39a1423d9ef4df195e85245b6dff51fa1a472c5",
+        "payload_sha256": "ed0e9ac15cab746f0899a1d997f7b51ab65cd7f6d630f4246085f1270d03f90c"
+      },
+      "tile_width_commands.npy": {
+        "bytes": 608,
+        "file_sha256": "918b02e85b2687b65a7a3284f946078d67f8ca7105fceb1e4f5ed719f5caa094",
+        "payload_sha256": "43de558b84f9102092c3022bbce3d6e3891a24ec9148f3ed2da92d5a680b9757"
+      },
+      "trace.npy": {
+        "bytes": 330128,
+        "file_sha256": "63451fbcf61c70ee2eb486f4153d50d630358bb484430dc3b46ff44bfbd146a4",
+        "payload_sha256": "707c3a8db3a40d1e11060ee336197d53e7349445764c39326741ed485530eba4"
+      }
+    },
+    "health": {
+      "issues": [],
+      "metrics": {
+        "annotations.out_of_bounds": 0,
+        "power.finite_fraction": 1.0,
+        "primary.adc_rail_fraction": 0.0,
+        "primary.adc_robust_high": 0.05810546875,
+        "primary.adc_robust_low": -0.0732421875,
+        "primary.adc_robust_span": 0.13134765625,
+        "primary.expected_samples": 165000,
+        "primary.max_equal_run_fraction": 2.4242424242424244e-05,
+        "primary.samples": 165000,
+        "primary.std": 0.023052675346543545
+      },
+      "ok": true
+    },
+    "metrics": {
+      "actual_profile_duration_ms": 100.01666666666667,
+      "bins": 120,
+      "feature": "rms",
+      "feature_sign": -1.0,
+      "loss_before_update": 0.07249563932418823,
+      "measurement": "ChipWhisperer normalized ADC activity; not calibrated watts",
+      "multiscale_normalized_rmse": 0.06916864060299054,
+      "multiscale_score_definition": "100 * (1 - RMS(raw normalized RMSE, smoothed normalized RMSE))",
+      "multiscale_shape_accuracy_percent": 93.08313593970095,
+      "normalization": "robust",
+      "normalization_bounds": [
+        -0.028909981042137937,
+        -0.01580581444662275
+      ],
+      "normalized_mae": 0.04119584067624274,
+      "normalized_rmse": 0.05788590644237914,
+      "pearson_r": 0.9766014810565161,
+      "r_squared": 0.9463378640002675,
+      "raw_normalized_mae": 0.06267311332112678,
+      "raw_normalized_rmse": 0.07885317698783906,
+      "raw_pearson_r": 0.9564757647610915,
+      "raw_shape_accuracy_percent": 92.11468230121609,
+      "requested_duration_ms": 100.0,
+      "shape_accuracy_percent": 94.21140935576209,
+      "smoothing_sigma_points": 2.0
+    },
+    "record_index": 12,
+    "refinement_round": 3,
+    "replicate": 2,
+    "training_performance": {
+      "after": {
+        "train_half_mse": 0.07174070179462433,
+        "train_objective": 293.84991455078125,
+        "validation_half_mse": 0.08000324666500092
+      },
+      "arithmetic": {
+        "controlled_profile_tile_operations": 998,
+        "controlled_profile_tile_width_sum": 1367520,
+        "coverage_after_completion": {
+          "columns_visited_once": 1568,
+          "maximum_visits": 30,
+          "minimum_visits": 1,
+          "unvisited_columns": 0
+        },
+        "coverage_before_completion": {
+          "columns_visited_once": 992,
+          "maximum_visits": 30,
+          "minimum_visits": 0,
+          "unvisited_columns": 1120
+        },
+        "executed_forward_backward_flops": 3134453710848,
+        "executed_tile_width_sum": 1379936,
+        "gradient_completion_tile_operations": 10,
+        "gradient_completion_tile_width_sum": 2560,
+        "lead_stabilization_tile_operations": 77,
+        "lead_stabilization_tile_width_sum": 9856,
+        "redundancy_ratio": 24.064174107142858,
+        "tile_operations": 1085,
+        "useful_forward_backward_flops": 360777252864,
+        "useful_output_width": 57344
+      },
+      "before": {
+        "train_half_mse": 0.07249563932418823,
+        "train_objective": 296.942138671875,
+        "validation_half_mse": 0.08020434528589249
+      },
+      "equivalence": {
+        "drawing_vs_no_drawing_gradient_max_absolute_error": 0.0,
+        "drawing_vs_no_drawing_gradient_relative_l2": 0.0,
+        "manual_vs_autograd_gradient_max_absolute_error": 0.0,
+        "manual_vs_autograd_gradient_relative_l2": 0.0
+      },
+      "throughput": {
+        "common_forward_and_delta_wall_s": 0.001587336,
+        "controlled_profile_gradient_wall_s": 0.100044235,
+        "drawing_control_wall_s": 0.104160615,
+        "drawing_examples_per_s": 2326.575093155703,
+        "drawing_gradient_wall_s": 0.101573765,
+        "drawing_slowdown_x": 13.803375168021399,
+        "drawing_step_wall_s": 0.110032984,
+        "drawing_steps_per_s": 9.088183957639465,
+        "drawing_throughput_fraction": 0.07244604945004489,
+        "gradient_completion_wall_s": 0.00152953,
+        "no_drawing_examples_per_s": 32114.588867402505,
+        "no_drawing_gradient_wall_s": 0.003628616,
+        "no_drawing_step_wall_s": 0.007971454999999999,
+        "no_drawing_steps_per_s": 125.44761276329103,
+        "optimizer_update_wall_s": 0.002755503
+      },
+      "train_improvement_percent": 1.0413557789151318,
+      "training_step": 12,
+      "validation_improvement_percent": 0.25073282522878326
+    }
+  },
+  "refinement": {
+    "accepted_training_steps": 25,
+    "physical_drawing_captures": 24,
+    "rounds_completed": 8,
+    "stop_reason": "maximum_refinements_reached"
+  },
+  "result": "real H100 14-layer residual-MLP training silhouette captured by SideCapture and ChipWhisperer",
+  "verification": {
+    "all_capture_health_ok": true,
+    "all_promoted_samples_finite": true,
+    "gradient_matches_pytorch_autograd": true,
+    "gradient_matches_untiled": true,
+    "independent_metric_recompute": {
+      "multiscale_normalized_rmse": 0.06916864060299055,
+      "multiscale_score_definition": "100 * (1 - RMS(raw normalized RMSE, smoothed normalized RMSE))",
+      "multiscale_shape_accuracy_percent": 93.08313593970095,
+      "normalized_mae": 0.041195840676242754,
+      "normalized_rmse": 0.057885906442379176,
+      "pearson_r": 0.9766014810565159,
+      "r_squared": 0.9463378640002674,
+      "raw_normalized_mae": 0.06267311332112678,
+      "raw_normalized_rmse": 0.07885317698783906,
+      "raw_pearson_r": 0.9564757647610913,
+      "raw_shape_accuracy_percent": 92.11468230121609,
+      "shape_accuracy_percent": 94.21140935576209
+    },
+    "promoted_dtype": "float16",
+    "promoted_samples": 165000
+  }
+}

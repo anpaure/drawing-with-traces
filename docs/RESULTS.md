@@ -12,6 +12,7 @@ sigma-2 RMSE, so a visually smooth but locally oscillating trace cannot win only
 | Active floor + active lead | 120 | 94.09% | Removing the pre-profile idle transition is a clear improvement |
 | Active floor + active lead, three-replicate ILC | **120** | **94.26%** | Best verified single physical trace |
 | Active floor + active lead | 100 | 91.06% | Longer bins alone do not compensate for a poorer calibration state |
+| 14-layer residual MLP, RMS control | 120 | 93.08% | Exact autograd parity and 13.77× rather than 184× slowdown |
 
 ## Why 120 won
 
@@ -39,5 +40,21 @@ Calibration context repeats and ILC replicates serve different purposes:
 1. The H100 power response has temporal memory and DVFS sensitivity.
 2. The installed clamp/Husky path is AC-coupled and reports activity, not DC watts.
 3. The simple pointwise ILC does not explicitly invert the temporal impulse response.
-4. The teacher–student linear task approaches convergence after many captures, changing operating state.
-5. A residual-MLP tiled implementation and model-based temporal controller remain future work.
+4. Both teacher–student tasks approach convergence after many captures, changing operating state.
+5. The pointwise controller cannot distinguish stable response error from stochastic native-bin noise.
+
+## Residual-MLP efficiency result
+
+The residual engine has 14 square 4096-wide layers (234,881,024 parameters). Its handwritten reverse
+pass matched PyTorch autograd exactly, and its delivered tiled gradient matched the untiled gradient
+exactly for every verified optimizer step. Layer-wide warmup eliminated first-touch timing failures; five
+consecutive synthetic-context 100 ms steps and the complete scope run stayed within the bin-overrun gate.
+
+The production run reached 93.08% multiscale fidelity. Its ordinary step is materially heavier than the
+linear baseline, so the fixed 100 ms waveform is less dominant: median throughput was 9.10 drawing versus
+125.31 ordinary steps/s, a 13.77× slowdown. This does not beat the linear trace's 94.26% shape score, but
+it is the stronger demonstration that a substantial model can genuinely train while drawing.
+
+A post-hoc feature ablation found one 94.84% `mean_abs` trace, but a fresh prospectively selected
+`mean_abs` run produced an unstable calibration range and only 70.47%. That run is not promoted. RMS
+remains the reproducible control feature.
