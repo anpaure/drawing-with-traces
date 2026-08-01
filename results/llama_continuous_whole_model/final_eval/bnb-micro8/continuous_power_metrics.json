@@ -1,0 +1,1131 @@
+{
+  "root": "/home/amodo/llama_continuous_whole_model_20260801/final_eval/candidates/bnb-micro8",
+  "sample_rate_hz": 1500000.0,
+  "trace_samples": 150000,
+  "trace_counts": {
+    "inference": 32,
+    "training": 32
+  },
+  "session_counts": {
+    "inference": 4,
+    "training": 4
+  },
+  "all_health_checks_passed": true,
+  "attacker_observable": "ADC power samples only",
+  "similarities": {
+    "raw_amplitude_js_similarity": 0.7535387159153043,
+    "normalized_amplitude_js_similarity": 0.7773442887617422,
+    "welch_psd_js_similarity": 0.6954478854732253,
+    "mean_similarity": 0.7421102967167572
+  },
+  "detector_by_horizon_ms": {
+    "5.0": {
+      "balanced_accuracy": 0.96953125,
+      "fold_standard_deviation": 0.030351671425694723,
+      "minimum_fold_accuracy": 0.9,
+      "maximum_fold_accuracy": 1.0,
+      "folds": [
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 0.9906250000000001,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 0.984375,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 0.959375,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 0.95,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 0.959375,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 0.9,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 0.99375,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 0.95625,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 0.9375,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 0.99375,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 0.95625,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 0.93125,
+          "test_windows": 320
+        }
+      ],
+      "split": "leave one complete inference session and one complete training session out",
+      "attacker_input": "power samples only"
+    },
+    "10.0": {
+      "balanced_accuracy": 0.983203125,
+      "fold_standard_deviation": 0.021252297669899153,
+      "minimum_fold_accuracy": 0.94375,
+      "maximum_fold_accuracy": 1.0,
+      "folds": [
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 0.99375,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 0.99375,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 0.95,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 0.9875,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 0.9875,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 0.95,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 0.99375,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 0.99375,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 0.94375,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 0.9875,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 0.95,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        }
+      ],
+      "split": "leave one complete inference session and one complete training session out",
+      "attacker_input": "power samples only"
+    },
+    "20.0": {
+      "balanced_accuracy": 0.98125,
+      "fold_standard_deviation": 0.0164570147151096,
+      "minimum_fold_accuracy": 0.95,
+      "maximum_fold_accuracy": 1.0,
+      "folds": [
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 0.9875,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 0.975,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 0.975,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 0.9875,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 0.9875,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 0.95,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 0.9875,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 0.9625,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 0.95,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 0.9875,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 0.975,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 0.975,
+          "test_windows": 80
+        }
+      ],
+      "split": "leave one complete inference session and one complete training session out",
+      "attacker_input": "power samples only"
+    },
+    "50.0": {
+      "balanced_accuracy": 0.978515625,
+      "fold_standard_deviation": 0.024787508404772486,
+      "minimum_fold_accuracy": 0.9375,
+      "maximum_fold_accuracy": 1.0,
+      "folds": [
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 0.96875,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 0.9375,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 0.96875,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 0.96875,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 0.96875,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 0.9375,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 0.96875,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 0.9375,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        }
+      ],
+      "split": "leave one complete inference session and one complete training session out",
+      "attacker_input": "power samples only"
+    },
+    "100.0": {
+      "balanced_accuracy": 1.0,
+      "fold_standard_deviation": 0.0,
+      "minimum_fold_accuracy": 1.0,
+      "maximum_fold_accuracy": 1.0,
+      "folds": [
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "reference-r0",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "reference-r1",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "reference-r2",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "reference-r3",
+          "held_out_training_session": "bnb-micro8-r3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        }
+      ],
+      "split": "leave one complete inference session and one complete training session out",
+      "attacker_input": "power samples only"
+    }
+  },
+  "per_trace": [
+    {
+      "process": "inference",
+      "session_id": "reference-r0",
+      "index": 0,
+      "mean": 0.004025921223958334,
+      "std": 0.02412578476002929,
+      "minimum": -0.1240234375,
+      "maximum": 0.138916015625
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r0",
+      "index": 1,
+      "mean": 0.004110392252604167,
+      "std": 0.023584060016315085,
+      "minimum": -0.1259765625,
+      "maximum": 0.1357421875
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r0",
+      "index": 2,
+      "mean": 0.0040173291015625,
+      "std": 0.024079258420962202,
+      "minimum": -0.134521484375,
+      "maximum": 0.14697265625
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r0",
+      "index": 3,
+      "mean": 0.003978994140625,
+      "std": 0.02413449566155595,
+      "minimum": -0.127685546875,
+      "maximum": 0.13330078125
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r0",
+      "index": 4,
+      "mean": 0.0039796728515625,
+      "std": 0.024186094638481984,
+      "minimum": -0.128173828125,
+      "maximum": 0.140869140625
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r0",
+      "index": 5,
+      "mean": 0.004028045247395833,
+      "std": 0.024115220743049927,
+      "minimum": -0.124267578125,
+      "maximum": 0.1337890625
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r0",
+      "index": 6,
+      "mean": 0.003976702473958333,
+      "std": 0.02438148774766149,
+      "minimum": -0.128662109375,
+      "maximum": 0.1376953125
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r0",
+      "index": 7,
+      "mean": 0.0042645003255208334,
+      "std": 0.022790688931237552,
+      "minimum": -0.126220703125,
+      "maximum": 0.13427734375
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r1",
+      "index": 0,
+      "mean": 0.004026184895833333,
+      "std": 0.02377464461795028,
+      "minimum": -0.13037109375,
+      "maximum": 0.13818359375
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r1",
+      "index": 1,
+      "mean": 0.004041319986979167,
+      "std": 0.023724767370785795,
+      "minimum": -0.12353515625,
+      "maximum": 0.12890625
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r1",
+      "index": 2,
+      "mean": 0.0040552278645833335,
+      "std": 0.023850889544032406,
+      "minimum": -0.131591796875,
+      "maximum": 0.13330078125
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r1",
+      "index": 3,
+      "mean": 0.004287137044270833,
+      "std": 0.022648670901583116,
+      "minimum": -0.124755859375,
+      "maximum": 0.130615234375
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r1",
+      "index": 4,
+      "mean": 0.004043693033854167,
+      "std": 0.02376141040891738,
+      "minimum": -0.129638671875,
+      "maximum": 0.14208984375
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r1",
+      "index": 5,
+      "mean": 0.004115914713541667,
+      "std": 0.02380912008535982,
+      "minimum": -0.1259765625,
+      "maximum": 0.13232421875
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r1",
+      "index": 6,
+      "mean": 0.004092744140625,
+      "std": 0.023709306195554582,
+      "minimum": -0.123779296875,
+      "maximum": 0.131103515625
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r1",
+      "index": 7,
+      "mean": 0.004054054361979167,
+      "std": 0.023531988670295597,
+      "minimum": -0.12744140625,
+      "maximum": 0.129150390625
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r2",
+      "index": 0,
+      "mean": 0.004030771484375,
+      "std": 0.02377408682523016,
+      "minimum": -0.12451171875,
+      "maximum": 0.1357421875
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r2",
+      "index": 1,
+      "mean": 0.00407265625,
+      "std": 0.02375709979042731,
+      "minimum": -0.122802734375,
+      "maximum": 0.136962890625
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r2",
+      "index": 2,
+      "mean": 0.0040826090494791665,
+      "std": 0.023734702964258253,
+      "minimum": -0.131103515625,
+      "maximum": 0.138916015625
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r2",
+      "index": 3,
+      "mean": 0.0040418359375,
+      "std": 0.023853532865651776,
+      "minimum": -0.125244140625,
+      "maximum": 0.1357421875
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r2",
+      "index": 4,
+      "mean": 0.004055148111979167,
+      "std": 0.02380563544519007,
+      "minimum": -0.12109375,
+      "maximum": 0.135986328125
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r2",
+      "index": 5,
+      "mean": 0.004072659505208334,
+      "std": 0.023769142638688075,
+      "minimum": -0.126953125,
+      "maximum": 0.135498046875
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r2",
+      "index": 6,
+      "mean": 0.004075148111979167,
+      "std": 0.023797002072164238,
+      "minimum": -0.123779296875,
+      "maximum": 0.12841796875
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r2",
+      "index": 7,
+      "mean": 0.0040928125,
+      "std": 0.023841179119783364,
+      "minimum": -0.12548828125,
+      "maximum": 0.140869140625
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r3",
+      "index": 0,
+      "mean": 0.004038834635416667,
+      "std": 0.023827098051271582,
+      "minimum": -0.1240234375,
+      "maximum": 0.129638671875
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r3",
+      "index": 1,
+      "mean": 0.004057737630208333,
+      "std": 0.023894829045256215,
+      "minimum": -0.12255859375,
+      "maximum": 0.1318359375
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r3",
+      "index": 2,
+      "mean": 0.004071668294270833,
+      "std": 0.02395632775154233,
+      "minimum": -0.13134765625,
+      "maximum": 0.1357421875
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r3",
+      "index": 3,
+      "mean": 0.004091036783854167,
+      "std": 0.023886932824453706,
+      "minimum": -0.120361328125,
+      "maximum": 0.13525390625
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r3",
+      "index": 4,
+      "mean": 0.004054729817708333,
+      "std": 0.023794532959355495,
+      "minimum": -0.124755859375,
+      "maximum": 0.134521484375
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r3",
+      "index": 5,
+      "mean": 0.004106404622395833,
+      "std": 0.023801142356039685,
+      "minimum": -0.125732421875,
+      "maximum": 0.13525390625
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r3",
+      "index": 6,
+      "mean": 0.0040979052734375,
+      "std": 0.02389771456248977,
+      "minimum": -0.126220703125,
+      "maximum": 0.1318359375
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-r3",
+      "index": 7,
+      "mean": 0.0040718391927083335,
+      "std": 0.02382464715862463,
+      "minimum": -0.124755859375,
+      "maximum": 0.13525390625
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r0",
+      "index": 0,
+      "mean": 0.004388045247395833,
+      "std": 0.022776304603300254,
+      "minimum": -0.119873046875,
+      "maximum": 0.1181640625
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r0",
+      "index": 1,
+      "mean": 0.0045906136067708336,
+      "std": 0.015937853425395294,
+      "minimum": -0.114013671875,
+      "maximum": 0.109375
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r0",
+      "index": 2,
+      "mean": 0.00454978515625,
+      "std": 0.01750613301373287,
+      "minimum": -0.123291015625,
+      "maximum": 0.11181640625
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r0",
+      "index": 3,
+      "mean": 0.004507496744791666,
+      "std": 0.012721446979660636,
+      "minimum": -0.114013671875,
+      "maximum": 0.106201171875
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r0",
+      "index": 4,
+      "mean": 0.004531946614583333,
+      "std": 0.01645199975043391,
+      "minimum": -0.1083984375,
+      "maximum": 0.130126953125
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r0",
+      "index": 5,
+      "mean": 0.004531222330729167,
+      "std": 0.014676593681716749,
+      "minimum": -0.123779296875,
+      "maximum": 0.1123046875
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r0",
+      "index": 6,
+      "mean": 0.004513684895833333,
+      "std": 0.012933917696679932,
+      "minimum": -0.1103515625,
+      "maximum": 0.10791015625
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r0",
+      "index": 7,
+      "mean": 0.004438277994791667,
+      "std": 0.014032312527419958,
+      "minimum": -0.109130859375,
+      "maximum": 0.10986328125
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r1",
+      "index": 0,
+      "mean": 0.0045643375651041665,
+      "std": 0.01607447899891203,
+      "minimum": -0.1201171875,
+      "maximum": 0.109619140625
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r1",
+      "index": 1,
+      "mean": 0.00458005859375,
+      "std": 0.015718437538543115,
+      "minimum": -0.122314453125,
+      "maximum": 0.112548828125
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r1",
+      "index": 2,
+      "mean": 0.004533059895833334,
+      "std": 0.009384157165774567,
+      "minimum": -0.10205078125,
+      "maximum": 0.096435546875
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r1",
+      "index": 3,
+      "mean": 0.0045512158203125,
+      "std": 0.017103423533766426,
+      "minimum": -0.121826171875,
+      "maximum": 0.115478515625
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r1",
+      "index": 4,
+      "mean": 0.004522014973958334,
+      "std": 0.01612335097892309,
+      "minimum": -0.119140625,
+      "maximum": 0.113525390625
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r1",
+      "index": 5,
+      "mean": 0.004489415690104167,
+      "std": 0.008906688435460178,
+      "minimum": -0.100830078125,
+      "maximum": 0.095703125
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r1",
+      "index": 6,
+      "mean": 0.004586642252604167,
+      "std": 0.016179161658873755,
+      "minimum": -0.113037109375,
+      "maximum": 0.10791015625
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r1",
+      "index": 7,
+      "mean": 0.0045929150390625,
+      "std": 0.015494367971679126,
+      "minimum": -0.125732421875,
+      "maximum": 0.116455078125
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r2",
+      "index": 0,
+      "mean": 0.004600556640625,
+      "std": 0.017378575480638307,
+      "minimum": -0.11572265625,
+      "maximum": 0.125
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r2",
+      "index": 1,
+      "mean": 0.004576806640625,
+      "std": 0.016286101199574195,
+      "minimum": -0.11962890625,
+      "maximum": 0.108642578125
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r2",
+      "index": 2,
+      "mean": 0.004634347330729167,
+      "std": 0.014194195767106978,
+      "minimum": -0.116455078125,
+      "maximum": 0.109375
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r2",
+      "index": 3,
+      "mean": 0.0046257568359375,
+      "std": 0.017566493493710988,
+      "minimum": -0.120849609375,
+      "maximum": 0.119873046875
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r2",
+      "index": 4,
+      "mean": 0.004587403971354167,
+      "std": 0.015801048882241053,
+      "minimum": -0.11767578125,
+      "maximum": 0.115966796875
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r2",
+      "index": 5,
+      "mean": 0.004614580078125,
+      "std": 0.0157402570923036,
+      "minimum": -0.115966796875,
+      "maximum": 0.107421875
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r2",
+      "index": 6,
+      "mean": 0.0045595458984375,
+      "std": 0.01715625467026467,
+      "minimum": -0.117431640625,
+      "maximum": 0.120361328125
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r2",
+      "index": 7,
+      "mean": 0.0046294954427083335,
+      "std": 0.016664126354611723,
+      "minimum": -0.114501953125,
+      "maximum": 0.112060546875
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r3",
+      "index": 0,
+      "mean": 0.0045274283854166665,
+      "std": 0.017629521565578964,
+      "minimum": -0.123291015625,
+      "maximum": 0.117919921875
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r3",
+      "index": 1,
+      "mean": 0.004528308919270833,
+      "std": 0.017418196434598895,
+      "minimum": -0.12255859375,
+      "maximum": 0.123046875
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r3",
+      "index": 2,
+      "mean": 0.004529365234375,
+      "std": 0.01785419423032107,
+      "minimum": -0.1171875,
+      "maximum": 0.123291015625
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r3",
+      "index": 3,
+      "mean": 0.004590076497395833,
+      "std": 0.011598956637480277,
+      "minimum": -0.109619140625,
+      "maximum": 0.103271484375
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r3",
+      "index": 4,
+      "mean": 0.0044920458984375,
+      "std": 0.017778968755759544,
+      "minimum": -0.124755859375,
+      "maximum": 0.117919921875
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r3",
+      "index": 5,
+      "mean": 0.004446583658854167,
+      "std": 0.018783442601867904,
+      "minimum": -0.124755859375,
+      "maximum": 0.122802734375
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r3",
+      "index": 6,
+      "mean": 0.004562820638020834,
+      "std": 0.012171090222251713,
+      "minimum": -0.11962890625,
+      "maximum": 0.119140625
+    },
+    {
+      "process": "training",
+      "session_id": "bnb-micro8-r3",
+      "index": 7,
+      "mean": 0.004527200520833333,
+      "std": 0.01701889015740069,
+      "minimum": -0.119873046875,
+      "maximum": 0.116455078125
+    }
+  ]
+}

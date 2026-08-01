@@ -1,0 +1,1131 @@
+{
+  "root": "baseline_v1",
+  "sample_rate_hz": 1500000.0,
+  "trace_samples": 150000,
+  "trace_counts": {
+    "inference": 32,
+    "training": 32
+  },
+  "session_counts": {
+    "inference": 4,
+    "training": 4
+  },
+  "all_health_checks_passed": true,
+  "attacker_observable": "ADC power samples only",
+  "similarities": {
+    "raw_amplitude_js_similarity": 0.5464117896310883,
+    "normalized_amplitude_js_similarity": 0.7668861903570998,
+    "welch_psd_js_similarity": 0.7194414886119056,
+    "mean_similarity": 0.6775798228666979
+  },
+  "detector_by_horizon_ms": {
+    "5.0": {
+      "balanced_accuracy": 0.9998046875,
+      "fold_standard_deviation": 0.0007812500000000111,
+      "minimum_fold_accuracy": 0.996875,
+      "maximum_fold_accuracy": 1.0,
+      "folds": [
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 0.996875,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 320
+        }
+      ],
+      "split": "leave one complete inference session and one complete training session out",
+      "attacker_input": "power samples only"
+    },
+    "10.0": {
+      "balanced_accuracy": 1.0,
+      "fold_standard_deviation": 0.0,
+      "minimum_fold_accuracy": 1.0,
+      "maximum_fold_accuracy": 1.0,
+      "folds": [
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 160
+        }
+      ],
+      "split": "leave one complete inference session and one complete training session out",
+      "attacker_input": "power samples only"
+    },
+    "20.0": {
+      "balanced_accuracy": 1.0,
+      "fold_standard_deviation": 0.0,
+      "minimum_fold_accuracy": 1.0,
+      "maximum_fold_accuracy": 1.0,
+      "folds": [
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 80
+        }
+      ],
+      "split": "leave one complete inference session and one complete training session out",
+      "attacker_input": "power samples only"
+    },
+    "50.0": {
+      "balanced_accuracy": 1.0,
+      "fold_standard_deviation": 0.0,
+      "minimum_fold_accuracy": 1.0,
+      "maximum_fold_accuracy": 1.0,
+      "folds": [
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 32
+        }
+      ],
+      "split": "leave one complete inference session and one complete training session out",
+      "attacker_input": "power samples only"
+    },
+    "100.0": {
+      "balanced_accuracy": 1.0,
+      "fold_standard_deviation": 0.0,
+      "minimum_fold_accuracy": 1.0,
+      "maximum_fold_accuracy": 1.0,
+      "folds": [
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "inference-0",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "inference-1",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "inference-2",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-0",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-1",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-2",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        },
+        {
+          "held_out_inference_session": "inference-3",
+          "held_out_training_session": "training-3",
+          "balanced_accuracy": 1.0,
+          "test_windows": 16
+        }
+      ],
+      "split": "leave one complete inference session and one complete training session out",
+      "attacker_input": "power samples only"
+    }
+  },
+  "per_trace": [
+    {
+      "process": "inference",
+      "session_id": "inference-0",
+      "index": 0,
+      "mean": 0.003963580729166667,
+      "std": 0.024136765950091864,
+      "minimum": -0.12451171875,
+      "maximum": 0.139404296875
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-0",
+      "index": 1,
+      "mean": 0.003966285807291667,
+      "std": 0.024234078652752115,
+      "minimum": -0.12548828125,
+      "maximum": 0.13818359375
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-0",
+      "index": 2,
+      "mean": 0.003954388020833333,
+      "std": 0.024221659942066404,
+      "minimum": -0.126708984375,
+      "maximum": 0.13623046875
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-0",
+      "index": 3,
+      "mean": 0.003916507161458333,
+      "std": 0.024292684320253694,
+      "minimum": -0.13037109375,
+      "maximum": 0.1376953125
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-0",
+      "index": 4,
+      "mean": 0.0042357763671875,
+      "std": 0.023248153778062493,
+      "minimum": -0.12841796875,
+      "maximum": 0.1328125
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-0",
+      "index": 5,
+      "mean": 0.0039578955078125,
+      "std": 0.024149903413464423,
+      "minimum": -0.1298828125,
+      "maximum": 0.134033203125
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-0",
+      "index": 6,
+      "mean": 0.003938181966145833,
+      "std": 0.024230809488405964,
+      "minimum": -0.126220703125,
+      "maximum": 0.14013671875
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-0",
+      "index": 7,
+      "mean": 0.004236951497395833,
+      "std": 0.023085803593970226,
+      "minimum": -0.126220703125,
+      "maximum": 0.13818359375
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-1",
+      "index": 0,
+      "mean": 0.003993800455729167,
+      "std": 0.02426846562125527,
+      "minimum": -0.130859375,
+      "maximum": 0.131591796875
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-1",
+      "index": 1,
+      "mean": 0.004265906575520833,
+      "std": 0.023026073433830094,
+      "minimum": -0.125244140625,
+      "maximum": 0.134521484375
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-1",
+      "index": 2,
+      "mean": 0.003960061848958333,
+      "std": 0.024229737451059292,
+      "minimum": -0.1279296875,
+      "maximum": 0.141845703125
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-1",
+      "index": 3,
+      "mean": 0.004041492513020833,
+      "std": 0.02448771586388462,
+      "minimum": -0.130126953125,
+      "maximum": 0.13232421875
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-1",
+      "index": 4,
+      "mean": 0.0040244970703125,
+      "std": 0.02433613681223509,
+      "minimum": -0.12646484375,
+      "maximum": 0.13134765625
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-1",
+      "index": 5,
+      "mean": 0.004280022786458333,
+      "std": 0.023215877878133413,
+      "minimum": -0.125,
+      "maximum": 0.132080078125
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-1",
+      "index": 6,
+      "mean": 0.004009365234375,
+      "std": 0.024617462991226493,
+      "minimum": -0.131103515625,
+      "maximum": 0.132568359375
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-1",
+      "index": 7,
+      "mean": 0.004058541666666667,
+      "std": 0.024301270062097473,
+      "minimum": -0.127197265625,
+      "maximum": 0.1318359375
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-2",
+      "index": 0,
+      "mean": 0.004040465494791667,
+      "std": 0.023965630369246513,
+      "minimum": -0.1240234375,
+      "maximum": 0.134765625
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-2",
+      "index": 1,
+      "mean": 0.0040217626953125,
+      "std": 0.023913142835623326,
+      "minimum": -0.130859375,
+      "maximum": 0.13525390625
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-2",
+      "index": 2,
+      "mean": 0.00402505859375,
+      "std": 0.024080769569832763,
+      "minimum": -0.125,
+      "maximum": 0.135009765625
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-2",
+      "index": 3,
+      "mean": 0.003976217447916667,
+      "std": 0.024096111670139662,
+      "minimum": -0.12353515625,
+      "maximum": 0.141357421875
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-2",
+      "index": 4,
+      "mean": 0.004014300130208333,
+      "std": 0.02404260120850879,
+      "minimum": -0.123779296875,
+      "maximum": 0.1416015625
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-2",
+      "index": 5,
+      "mean": 0.003985354817708333,
+      "std": 0.024010507951431684,
+      "minimum": -0.12451171875,
+      "maximum": 0.134033203125
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-2",
+      "index": 6,
+      "mean": 0.004250218098958334,
+      "std": 0.02288278842607665,
+      "minimum": -0.130615234375,
+      "maximum": 0.13623046875
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-2",
+      "index": 7,
+      "mean": 0.004035379231770833,
+      "std": 0.024056196589379426,
+      "minimum": -0.12890625,
+      "maximum": 0.135986328125
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-3",
+      "index": 0,
+      "mean": 0.003979962565104167,
+      "std": 0.023878084358347436,
+      "minimum": -0.126953125,
+      "maximum": 0.13720703125
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-3",
+      "index": 1,
+      "mean": 0.004251560872395833,
+      "std": 0.022743177937952268,
+      "minimum": -0.125,
+      "maximum": 0.135986328125
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-3",
+      "index": 2,
+      "mean": 0.0040098046875,
+      "std": 0.023940811466384673,
+      "minimum": -0.12744140625,
+      "maximum": 0.134521484375
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-3",
+      "index": 3,
+      "mean": 0.003993624674479166,
+      "std": 0.02388669662969525,
+      "minimum": -0.127685546875,
+      "maximum": 0.13720703125
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-3",
+      "index": 4,
+      "mean": 0.00426466796875,
+      "std": 0.02277441342362156,
+      "minimum": -0.1259765625,
+      "maximum": 0.13671875
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-3",
+      "index": 5,
+      "mean": 0.0039881884765625,
+      "std": 0.023884025206705174,
+      "minimum": -0.124755859375,
+      "maximum": 0.1416015625
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-3",
+      "index": 6,
+      "mean": 0.004034041341145833,
+      "std": 0.023965509370768984,
+      "minimum": -0.12646484375,
+      "maximum": 0.134521484375
+    },
+    {
+      "process": "inference",
+      "session_id": "inference-3",
+      "index": 7,
+      "mean": 0.004041686197916667,
+      "std": 0.023864306773286534,
+      "minimum": -0.124755859375,
+      "maximum": 0.1318359375
+    },
+    {
+      "process": "training",
+      "session_id": "training-0",
+      "index": 0,
+      "mean": 0.004489765625,
+      "std": 0.010087344339435776,
+      "minimum": -0.107177734375,
+      "maximum": 0.095947265625
+    },
+    {
+      "process": "training",
+      "session_id": "training-0",
+      "index": 1,
+      "mean": 0.004450929361979166,
+      "std": 0.010158410148523022,
+      "minimum": -0.112060546875,
+      "maximum": 0.096923828125
+    },
+    {
+      "process": "training",
+      "session_id": "training-0",
+      "index": 2,
+      "mean": 0.00444119140625,
+      "std": 0.00972699788605092,
+      "minimum": -0.109130859375,
+      "maximum": 0.093505859375
+    },
+    {
+      "process": "training",
+      "session_id": "training-0",
+      "index": 3,
+      "mean": 0.004459775390625,
+      "std": 0.00989268142465225,
+      "minimum": -0.107421875,
+      "maximum": 0.0908203125
+    },
+    {
+      "process": "training",
+      "session_id": "training-0",
+      "index": 4,
+      "mean": 0.0044949381510416666,
+      "std": 0.01454152839542987,
+      "minimum": -0.134033203125,
+      "maximum": 0.133544921875
+    },
+    {
+      "process": "training",
+      "session_id": "training-0",
+      "index": 5,
+      "mean": 0.0044162109375,
+      "std": 0.009730932705442513,
+      "minimum": -0.1083984375,
+      "maximum": 0.1044921875
+    },
+    {
+      "process": "training",
+      "session_id": "training-0",
+      "index": 6,
+      "mean": 0.0044624267578125,
+      "std": 0.009813621960185178,
+      "minimum": -0.108154296875,
+      "maximum": 0.09814453125
+    },
+    {
+      "process": "training",
+      "session_id": "training-0",
+      "index": 7,
+      "mean": 0.004466175130208333,
+      "std": 0.009574777960530396,
+      "minimum": -0.10400390625,
+      "maximum": 0.09716796875
+    },
+    {
+      "process": "training",
+      "session_id": "training-1",
+      "index": 0,
+      "mean": 0.00453435546875,
+      "std": 0.014596912893130816,
+      "minimum": -0.124755859375,
+      "maximum": 0.1328125
+    },
+    {
+      "process": "training",
+      "session_id": "training-1",
+      "index": 1,
+      "mean": 0.004495584309895833,
+      "std": 0.014634675506471448,
+      "minimum": -0.125732421875,
+      "maximum": 0.126220703125
+    },
+    {
+      "process": "training",
+      "session_id": "training-1",
+      "index": 2,
+      "mean": 0.004506746419270833,
+      "std": 0.009945781982956127,
+      "minimum": -0.10498046875,
+      "maximum": 0.09521484375
+    },
+    {
+      "process": "training",
+      "session_id": "training-1",
+      "index": 3,
+      "mean": 0.0045073095703125,
+      "std": 0.01463716287997657,
+      "minimum": -0.114501953125,
+      "maximum": 0.1279296875
+    },
+    {
+      "process": "training",
+      "session_id": "training-1",
+      "index": 4,
+      "mean": 0.004458707682291667,
+      "std": 0.010718518794364796,
+      "minimum": -0.107421875,
+      "maximum": 0.11572265625
+    },
+    {
+      "process": "training",
+      "session_id": "training-1",
+      "index": 5,
+      "mean": 0.004465310872395834,
+      "std": 0.0114984092430903,
+      "minimum": -0.114013671875,
+      "maximum": 0.11962890625
+    },
+    {
+      "process": "training",
+      "session_id": "training-1",
+      "index": 6,
+      "mean": 0.004444713541666667,
+      "std": 0.009454135191043326,
+      "minimum": -0.103515625,
+      "maximum": 0.098876953125
+    },
+    {
+      "process": "training",
+      "session_id": "training-1",
+      "index": 7,
+      "mean": 0.004442692057291667,
+      "std": 0.014053322416411915,
+      "minimum": -0.113525390625,
+      "maximum": 0.132080078125
+    },
+    {
+      "process": "training",
+      "session_id": "training-2",
+      "index": 0,
+      "mean": 0.004476370442708333,
+      "std": 0.011601158859529637,
+      "minimum": -0.125732421875,
+      "maximum": 0.11328125
+    },
+    {
+      "process": "training",
+      "session_id": "training-2",
+      "index": 1,
+      "mean": 0.004510480143229166,
+      "std": 0.009697771425027413,
+      "minimum": -0.102783203125,
+      "maximum": 0.093994140625
+    },
+    {
+      "process": "training",
+      "session_id": "training-2",
+      "index": 2,
+      "mean": 0.004446212565104166,
+      "std": 0.014053137499755472,
+      "minimum": -0.1142578125,
+      "maximum": 0.140869140625
+    },
+    {
+      "process": "training",
+      "session_id": "training-2",
+      "index": 3,
+      "mean": 0.004445997721354167,
+      "std": 0.009486204401026219,
+      "minimum": -0.11279296875,
+      "maximum": 0.091552734375
+    },
+    {
+      "process": "training",
+      "session_id": "training-2",
+      "index": 4,
+      "mean": 0.004438678385416667,
+      "std": 0.014451495671682201,
+      "minimum": -0.11572265625,
+      "maximum": 0.13427734375
+    },
+    {
+      "process": "training",
+      "session_id": "training-2",
+      "index": 5,
+      "mean": 0.004403206380208333,
+      "std": 0.011501796330003141,
+      "minimum": -0.102294921875,
+      "maximum": 0.136962890625
+    },
+    {
+      "process": "training",
+      "session_id": "training-2",
+      "index": 6,
+      "mean": 0.0044203759765625,
+      "std": 0.010351095782602852,
+      "minimum": -0.108642578125,
+      "maximum": 0.11865234375
+    },
+    {
+      "process": "training",
+      "session_id": "training-2",
+      "index": 7,
+      "mean": 0.0044152001953125,
+      "std": 0.009139947586881832,
+      "minimum": -0.1044921875,
+      "maximum": 0.091796875
+    },
+    {
+      "process": "training",
+      "session_id": "training-3",
+      "index": 0,
+      "mean": 0.004490048828125,
+      "std": 0.011065823281924177,
+      "minimum": -0.102783203125,
+      "maximum": 0.091064453125
+    },
+    {
+      "process": "training",
+      "session_id": "training-3",
+      "index": 1,
+      "mean": 0.0044489892578125,
+      "std": 0.01075025423687183,
+      "minimum": -0.11767578125,
+      "maximum": 0.10693359375
+    },
+    {
+      "process": "training",
+      "session_id": "training-3",
+      "index": 2,
+      "mean": 0.004467880859375,
+      "std": 0.009671995992544855,
+      "minimum": -0.111328125,
+      "maximum": 0.093994140625
+    },
+    {
+      "process": "training",
+      "session_id": "training-3",
+      "index": 3,
+      "mean": 0.004463297526041667,
+      "std": 0.009644885431639964,
+      "minimum": -0.104248046875,
+      "maximum": 0.093994140625
+    },
+    {
+      "process": "training",
+      "session_id": "training-3",
+      "index": 4,
+      "mean": 0.004480187174479166,
+      "std": 0.014175291628706458,
+      "minimum": -0.114990234375,
+      "maximum": 0.1298828125
+    },
+    {
+      "process": "training",
+      "session_id": "training-3",
+      "index": 5,
+      "mean": 0.004408116861979167,
+      "std": 0.009421061983500172,
+      "minimum": -0.10595703125,
+      "maximum": 0.088623046875
+    },
+    {
+      "process": "training",
+      "session_id": "training-3",
+      "index": 6,
+      "mean": 0.004413269856770833,
+      "std": 0.008911331184892306,
+      "minimum": -0.103515625,
+      "maximum": 0.106201171875
+    },
+    {
+      "process": "training",
+      "session_id": "training-3",
+      "index": 7,
+      "mean": 0.004472561848958333,
+      "std": 0.013793419443699915,
+      "minimum": -0.1064453125,
+      "maximum": 0.1337890625
+    }
+  ]
+}

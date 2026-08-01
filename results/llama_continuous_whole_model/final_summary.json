@@ -1,0 +1,4516 @@
+{
+  "experiment": "continuous whole-model Llama training versus quantized inference",
+  "attacker_observable": "ADC current-probe samples only",
+  "sample_rate_hz": 1500000.0,
+  "capture_duration_ms": 100.0,
+  "original_baseline": {
+    "stationary_similarities": {
+      "raw_amplitude_js_similarity": 0.5464117896310883,
+      "normalized_amplitude_js_similarity": 0.7668861903570998,
+      "welch_psd_js_similarity": 0.7194414886119056,
+      "mean_similarity": 0.6775798228666979
+    },
+    "ridge_detector_by_horizon_ms": {
+      "5.0": {
+        "balanced_accuracy": 0.9998046875,
+        "fold_standard_deviation": 0.0007812500000000111,
+        "minimum_fold_accuracy": 0.996875,
+        "maximum_fold_accuracy": 1.0,
+        "folds": [
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 320
+          },
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 320
+          },
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 320
+          },
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 0.996875,
+            "test_windows": 320
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 320
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 320
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 320
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 320
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 320
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 320
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 320
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 320
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 320
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 320
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 320
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 320
+          }
+        ],
+        "split": "leave one complete inference session and one complete training session out",
+        "attacker_input": "power samples only"
+      },
+      "10.0": {
+        "balanced_accuracy": 1.0,
+        "fold_standard_deviation": 0.0,
+        "minimum_fold_accuracy": 1.0,
+        "maximum_fold_accuracy": 1.0,
+        "folds": [
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 160
+          },
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 160
+          },
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 160
+          },
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 160
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 160
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 160
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 160
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 160
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 160
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 160
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 160
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 160
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 160
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 160
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 160
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 160
+          }
+        ],
+        "split": "leave one complete inference session and one complete training session out",
+        "attacker_input": "power samples only"
+      },
+      "20.0": {
+        "balanced_accuracy": 1.0,
+        "fold_standard_deviation": 0.0,
+        "minimum_fold_accuracy": 1.0,
+        "maximum_fold_accuracy": 1.0,
+        "folds": [
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 80
+          },
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 80
+          },
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 80
+          },
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 80
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 80
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 80
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 80
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 80
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 80
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 80
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 80
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 80
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 80
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 80
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 80
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 80
+          }
+        ],
+        "split": "leave one complete inference session and one complete training session out",
+        "attacker_input": "power samples only"
+      },
+      "50.0": {
+        "balanced_accuracy": 1.0,
+        "fold_standard_deviation": 0.0,
+        "minimum_fold_accuracy": 1.0,
+        "maximum_fold_accuracy": 1.0,
+        "folds": [
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 32
+          },
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 32
+          },
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 32
+          },
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 32
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 32
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 32
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 32
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 32
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 32
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 32
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 32
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 32
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 32
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 32
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 32
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 32
+          }
+        ],
+        "split": "leave one complete inference session and one complete training session out",
+        "attacker_input": "power samples only"
+      },
+      "100.0": {
+        "balanced_accuracy": 1.0,
+        "fold_standard_deviation": 0.0,
+        "minimum_fold_accuracy": 1.0,
+        "maximum_fold_accuracy": 1.0,
+        "folds": [
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 16
+          },
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 16
+          },
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 16
+          },
+          {
+            "held_out_inference_session": "inference-0",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 16
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 16
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 16
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 16
+          },
+          {
+            "held_out_inference_session": "inference-1",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 16
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 16
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 16
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 16
+          },
+          {
+            "held_out_inference_session": "inference-2",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 16
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-0",
+            "balanced_accuracy": 1.0,
+            "test_windows": 16
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-1",
+            "balanced_accuracy": 1.0,
+            "test_windows": 16
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-2",
+            "balanced_accuracy": 1.0,
+            "test_windows": 16
+          },
+          {
+            "held_out_inference_session": "inference-3",
+            "held_out_training_session": "training-3",
+            "balanced_accuracy": 1.0,
+            "test_windows": 16
+          }
+        ],
+        "split": "leave one complete inference session and one complete training session out",
+        "attacker_input": "power samples only"
+      }
+    },
+    "useful_loss_tokens_per_second": 355.560731872772,
+    "trace_counts": {
+      "inference": 32,
+      "training": 32
+    },
+    "session_counts": {
+      "inference": 4,
+      "training": 4
+    },
+    "all_health_checks_passed": true
+  },
+  "candidates": {
+    "bnb-micro8": {
+      "label": "Micro-8 (no cover)",
+      "stationary_similarities": {
+        "raw_amplitude_js_similarity": 0.7535387159153043,
+        "normalized_amplitude_js_similarity": 0.7773442887617422,
+        "welch_psd_js_similarity": 0.6954478854732253,
+        "mean_similarity": 0.7421102967167572
+      },
+      "ridge_detector_by_horizon_ms": {
+        "5.0": {
+          "balanced_accuracy": 0.96953125,
+          "fold_standard_deviation": 0.030351671425694723,
+          "minimum_fold_accuracy": 0.9,
+          "maximum_fold_accuracy": 1.0,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 0.9906250000000001,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 0.984375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 0.959375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 0.95,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 0.959375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 0.9,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 0.99375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 0.95625,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 0.99375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 0.95625,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 0.93125,
+              "test_windows": 320
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "10.0": {
+          "balanced_accuracy": 0.983203125,
+          "fold_standard_deviation": 0.021252297669899153,
+          "minimum_fold_accuracy": 0.94375,
+          "maximum_fold_accuracy": 1.0,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 0.99375,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 0.99375,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 0.95,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 0.9875,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 0.9875,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 0.95,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 0.99375,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 0.99375,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 0.94375,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 0.9875,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 0.95,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 160
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "20.0": {
+          "balanced_accuracy": 0.98125,
+          "fold_standard_deviation": 0.0164570147151096,
+          "minimum_fold_accuracy": 0.95,
+          "maximum_fold_accuracy": 1.0,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 0.9875,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 0.975,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 0.975,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 0.9875,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 0.9875,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 0.95,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 0.9875,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 0.9625,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 0.95,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 0.9875,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 0.975,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 0.975,
+              "test_windows": 80
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "50.0": {
+          "balanced_accuracy": 0.978515625,
+          "fold_standard_deviation": 0.024787508404772486,
+          "minimum_fold_accuracy": 0.9375,
+          "maximum_fold_accuracy": 1.0,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 0.96875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 0.96875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 0.96875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 0.96875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 0.96875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "100.0": {
+          "balanced_accuracy": 1.0,
+          "fold_standard_deviation": 0.0,
+          "minimum_fold_accuracy": 1.0,
+          "maximum_fold_accuracy": 1.0,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "bnb-micro8-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        }
+      },
+      "useful_loss_tokens_per_second": 67.19499567957476,
+      "throughput_relative_to_original": 0.1889831740576423,
+      "trace_counts": {
+        "inference": 32,
+        "training": 32
+      },
+      "session_counts": {
+        "inference": 4,
+        "training": 4
+      },
+      "all_health_checks_passed": true
+    },
+    "fused-micro16-cover1": {
+      "label": "Micro-16 + decode each",
+      "stationary_similarities": {
+        "raw_amplitude_js_similarity": 0.8603010502560812,
+        "normalized_amplitude_js_similarity": 0.7786720719794414,
+        "welch_psd_js_similarity": 0.6658755349875811,
+        "mean_similarity": 0.7682828857410345
+      },
+      "ridge_detector_by_horizon_ms": {
+        "5.0": {
+          "balanced_accuracy": 0.960546875,
+          "fold_standard_deviation": 0.03799799542410099,
+          "minimum_fold_accuracy": 0.9125000000000001,
+          "maximum_fold_accuracy": 1.0,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 0.9125000000000001,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 0.9875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 0.9281250000000001,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 0.9875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 0.921875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 0.928125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 0.921875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 0.93125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 0.91875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 0.93125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 320
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "10.0": {
+          "balanced_accuracy": 0.967578125,
+          "fold_standard_deviation": 0.033010316411439214,
+          "minimum_fold_accuracy": 0.93125,
+          "maximum_fold_accuracy": 1.0,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 0.93125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 0.99375,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 0.93125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 0.93125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 0.94375,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 0.93125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 0.94375,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 0.93125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 0.94375,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 160
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "20.0": {
+          "balanced_accuracy": 0.9765625,
+          "fold_standard_deviation": 0.01929756029484903,
+          "minimum_fold_accuracy": 0.95,
+          "maximum_fold_accuracy": 1.0,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 0.9625,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 0.975,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 0.975,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 0.975,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 0.95,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 0.9875,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 0.9625,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 0.95,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 0.9625,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 0.95,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 0.975,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 80
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "50.0": {
+          "balanced_accuracy": 0.9921875,
+          "fold_standard_deviation": 0.013975424859373685,
+          "minimum_fold_accuracy": 0.96875,
+          "maximum_fold_accuracy": 1.0,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 0.96875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 0.96875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 0.96875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 0.96875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "100.0": {
+          "balanced_accuracy": 1.0,
+          "fold_standard_deviation": 0.0,
+          "minimum_fold_accuracy": 1.0,
+          "maximum_fold_accuracy": 1.0,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-micro16-cover1-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        }
+      },
+      "useful_loss_tokens_per_second": 134.99460117778943,
+      "throughput_relative_to_original": 0.3796667884745318,
+      "trace_counts": {
+        "inference": 32,
+        "training": 32
+      },
+      "session_counts": {
+        "inference": 4,
+        "training": 4
+      },
+      "all_health_checks_passed": true
+    },
+    "fused-cover8": {
+      "label": "8 decode/update",
+      "stationary_similarities": {
+        "raw_amplitude_js_similarity": 0.9015071464791274,
+        "normalized_amplitude_js_similarity": 0.8482307372658412,
+        "welch_psd_js_similarity": 0.9175793117315286,
+        "mean_similarity": 0.8891057318254991
+      },
+      "ridge_detector_by_horizon_ms": {
+        "5.0": {
+          "balanced_accuracy": 0.6998046874999999,
+          "fold_standard_deviation": 0.08014853357919804,
+          "minimum_fold_accuracy": 0.528125,
+          "maximum_fold_accuracy": 0.8218749999999999,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.6875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.6968749999999999,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.528125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.7375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.575,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.725,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.653125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.753125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.696875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.76875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.6625,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.653125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.7749999999999999,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.65,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.8218749999999999,
+              "test_windows": 320
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "10.0": {
+          "balanced_accuracy": 0.700390625,
+          "fold_standard_deviation": 0.08150500847340611,
+          "minimum_fold_accuracy": 0.50625,
+          "maximum_fold_accuracy": 0.83125,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.65625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.68125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.50625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.7375,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.63125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.775,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.6375,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.7625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.7,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.71875,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.65625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.8,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.675,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.7875,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.65,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.83125,
+              "test_windows": 160
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "20.0": {
+          "balanced_accuracy": 0.7421875,
+          "fold_standard_deviation": 0.10133227110188871,
+          "minimum_fold_accuracy": 0.5625,
+          "maximum_fold_accuracy": 0.9,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.6625,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.75,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.5625,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.7,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.625,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.8625,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.675,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.675,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.8375,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.7,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.8375,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.675,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.9,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.7125,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.8875,
+              "test_windows": 80
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "50.0": {
+          "balanced_accuracy": 0.76953125,
+          "fold_standard_deviation": 0.0772871741731231,
+          "minimum_fold_accuracy": 0.65625,
+          "maximum_fold_accuracy": 0.875,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.6875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.75,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.65625,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.78125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.65625,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.84375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.65625,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.78125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.6875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.875,
+              "test_windows": 32
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "100.0": {
+          "balanced_accuracy": 0.93359375,
+          "fold_standard_deviation": 0.06641390887206283,
+          "minimum_fold_accuracy": 0.8125,
+          "maximum_fold_accuracy": 1.0,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover8-r3",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        }
+      },
+      "useful_loss_tokens_per_second": 380.9607360912544,
+      "throughput_relative_to_original": 1.071436471864309,
+      "trace_counts": {
+        "inference": 32,
+        "training": 32
+      },
+      "session_counts": {
+        "inference": 4,
+        "training": 4
+      },
+      "all_health_checks_passed": true
+    },
+    "fused-cover12": {
+      "label": "12 decode/update",
+      "stationary_similarities": {
+        "raw_amplitude_js_similarity": 0.9247484818993748,
+        "normalized_amplitude_js_similarity": 0.8975841211588014,
+        "welch_psd_js_similarity": 0.8662844721679535,
+        "mean_similarity": 0.8962056917420432
+      },
+      "ridge_detector_by_horizon_ms": {
+        "5.0": {
+          "balanced_accuracy": 0.627734375,
+          "fold_standard_deviation": 0.15004719309687203,
+          "minimum_fold_accuracy": 0.246875,
+          "maximum_fold_accuracy": 0.753125,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.615625,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.246875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.41874999999999996,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.55,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.709375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.49375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.7406250000000001,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.734375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.74375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.5031249999999999,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.746875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.728125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.740625,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.5875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.753125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.73125,
+              "test_windows": 320
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "10.0": {
+          "balanced_accuracy": 0.63203125,
+          "fold_standard_deviation": 0.13637561105882043,
+          "minimum_fold_accuracy": 0.33125,
+          "maximum_fold_accuracy": 0.76875,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.6312500000000001,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.33125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.41874999999999996,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.51875,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.6125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.5,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.76875,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.7437499999999999,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.66875,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.53125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.75,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.7437499999999999,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.75,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.6375,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.75625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.75,
+              "test_windows": 160
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "20.0": {
+          "balanced_accuracy": 0.6312500000000001,
+          "fold_standard_deviation": 0.11989578808281796,
+          "minimum_fold_accuracy": 0.4,
+          "maximum_fold_accuracy": 0.7875,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.6125,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.4625,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.4,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.6000000000000001,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.6,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.4875,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.75,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.7749999999999999,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.6375,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.525,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.7125,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.7625,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.65,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.5875,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.75,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.7875,
+              "test_windows": 80
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "50.0": {
+          "balanced_accuracy": 0.77734375,
+          "fold_standard_deviation": 0.14784696127527724,
+          "minimum_fold_accuracy": 0.4375,
+          "maximum_fold_accuracy": 0.96875,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.625,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.4375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.65625,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.75,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.59375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.96875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.84375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.6875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.90625,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.90625,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.84375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.6875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.90625,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.875,
+              "test_windows": 32
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "100.0": {
+          "balanced_accuracy": 0.77734375,
+          "fold_standard_deviation": 0.1707348547455967,
+          "minimum_fold_accuracy": 0.375,
+          "maximum_fold_accuracy": 0.9375,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.875,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.75,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.75,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.625,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.5625,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.625,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.875,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.875,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r0",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r1",
+              "balanced_accuracy": 0.625,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r2",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover12-r3",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        }
+      },
+      "useful_loss_tokens_per_second": 306.89202799364523,
+      "throughput_relative_to_original": 0.863121263074288,
+      "trace_counts": {
+        "inference": 32,
+        "training": 32
+      },
+      "session_counts": {
+        "inference": 4,
+        "training": 4
+      },
+      "all_health_checks_passed": true,
+      "cnn_evaluations": [
+        {
+          "source_file": "cnn_20ms.json",
+          "horizon_ms": 20.0,
+          "balanced_accuracy": 0.6742187500000001,
+          "fold_standard_deviation": 0.1485673773915391,
+          "minimum_fold_accuracy": 0.5,
+          "maximum_fold_accuracy": 0.925,
+          "aggregate_confusion_matrix_true_rows_predicted_columns": [
+            [
+              396,
+              244
+            ],
+            [
+              173,
+              467
+            ]
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "raw ADC windows only",
+          "epochs_per_fold": 20,
+          "batch_size": 32,
+          "learning_rate": 0.002
+        },
+        {
+          "source_file": "cnn_5ms.json",
+          "horizon_ms": 5.0,
+          "balanced_accuracy": 0.6507812500000001,
+          "fold_standard_deviation": 0.1593831697252463,
+          "minimum_fold_accuracy": 0.41562499999999997,
+          "maximum_fold_accuracy": 0.965625,
+          "aggregate_confusion_matrix_true_rows_predicted_columns": [
+            [
+              1329,
+              1231
+            ],
+            [
+              557,
+              2003
+            ]
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "raw ADC windows only",
+          "epochs_per_fold": 15,
+          "batch_size": 64,
+          "learning_rate": 0.002
+        },
+        {
+          "source_file": "cnn_5ms_seed3031.json",
+          "horizon_ms": 5.0,
+          "balanced_accuracy": 0.7169921874999999,
+          "fold_standard_deviation": 0.10967499780364333,
+          "minimum_fold_accuracy": 0.534375,
+          "maximum_fold_accuracy": 0.928125,
+          "aggregate_confusion_matrix_true_rows_predicted_columns": [
+            [
+              1898,
+              662
+            ],
+            [
+              787,
+              1773
+            ]
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "raw ADC windows only",
+          "epochs_per_fold": 30,
+          "batch_size": 64,
+          "learning_rate": 0.001
+        }
+      ],
+      "strongest_cnn_5ms": {
+        "source_file": "cnn_5ms_seed3031.json",
+        "horizon_ms": 5.0,
+        "balanced_accuracy": 0.7169921874999999,
+        "fold_standard_deviation": 0.10967499780364333,
+        "minimum_fold_accuracy": 0.534375,
+        "maximum_fold_accuracy": 0.928125,
+        "aggregate_confusion_matrix_true_rows_predicted_columns": [
+          [
+            1898,
+            662
+          ],
+          [
+            787,
+            1773
+          ]
+        ],
+        "split": "leave one complete inference session and one complete training session out",
+        "attacker_input": "raw ADC windows only",
+        "epochs_per_fold": 30,
+        "batch_size": 64,
+        "learning_rate": 0.001
+      }
+    },
+    "fused-cover12-jitter4": {
+      "label": "12 decode \u00b14",
+      "stationary_similarities": {
+        "raw_amplitude_js_similarity": 0.9507906829372004,
+        "normalized_amplitude_js_similarity": 0.9290235894064376,
+        "welch_psd_js_similarity": 0.9138823015307029,
+        "mean_similarity": 0.9312321912914469
+      },
+      "ridge_detector_by_horizon_ms": {
+        "5.0": {
+          "balanced_accuracy": 0.6455078125,
+          "fold_standard_deviation": 0.08726134678784855,
+          "minimum_fold_accuracy": 0.45625,
+          "maximum_fold_accuracy": 0.78125,
+          "folds": [
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.653125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.70625,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.6312500000000001,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.70625,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.628125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.746875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.675,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.746875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.45625,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.6125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.55,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.56875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.5375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.63125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.696875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.78125,
+              "test_windows": 320
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "10.0": {
+          "balanced_accuracy": 0.68515625,
+          "fold_standard_deviation": 0.09222015664520782,
+          "minimum_fold_accuracy": 0.47500000000000003,
+          "maximum_fold_accuracy": 0.8,
+          "folds": [
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.66875,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.74375,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.6625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.7875000000000001,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.60625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.775,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.73125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.76875,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.47500000000000003,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.65,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.65625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.6125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.55625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.6937500000000001,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.7749999999999999,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.8,
+              "test_windows": 160
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "20.0": {
+          "balanced_accuracy": 0.73046875,
+          "fold_standard_deviation": 0.09873879155799573,
+          "minimum_fold_accuracy": 0.5,
+          "maximum_fold_accuracy": 0.8625,
+          "folds": [
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.725,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.8374999999999999,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.75,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.675,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.825,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.7625,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.7625,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.5,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.65,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.675,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.6,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.65,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.7875,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.8625,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 80
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "50.0": {
+          "balanced_accuracy": 0.796875,
+          "fold_standard_deviation": 0.07987620630283672,
+          "minimum_fold_accuracy": 0.625,
+          "maximum_fold_accuracy": 0.875,
+          "folds": [
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.78125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.84375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.75,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.84375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.84375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.625,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.75,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.625,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.78125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.78125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.875,
+              "test_windows": 32
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "100.0": {
+          "balanced_accuracy": 0.890625,
+          "fold_standard_deviation": 0.08068715304598785,
+          "minimum_fold_accuracy": 0.6875,
+          "maximum_fold_accuracy": 1.0,
+          "folds": [
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.6875,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.875,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 0.875,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r0",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r1",
+              "balanced_accuracy": 0.875,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "jitter-r3",
+              "balanced_accuracy": 0.875,
+              "test_windows": 16
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        }
+      },
+      "useful_loss_tokens_per_second": 304.77617988240746,
+      "throughput_relative_to_original": 0.8571705268945828,
+      "trace_counts": {
+        "inference": 32,
+        "training": 32
+      },
+      "session_counts": {
+        "inference": 4,
+        "training": 4
+      },
+      "all_health_checks_passed": true
+    },
+    "fused-cover16": {
+      "label": "16 decode/update",
+      "stationary_similarities": {
+        "raw_amplitude_js_similarity": 0.9197057674017965,
+        "normalized_amplitude_js_similarity": 0.862299732713799,
+        "welch_psd_js_similarity": 0.8347467201217549,
+        "mean_similarity": 0.8722507400791167
+      },
+      "ridge_detector_by_horizon_ms": {
+        "5.0": {
+          "balanced_accuracy": 0.7281249999999999,
+          "fold_standard_deviation": 0.11097343901432753,
+          "minimum_fold_accuracy": 0.534375,
+          "maximum_fold_accuracy": 0.8968750000000001,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.7,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.734375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.590625,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.865625,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.715625,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.73125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.534375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.8968750000000001,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.734375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.74375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.5812499999999999,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.86875,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.734375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.74375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.6,
+              "test_windows": 320
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "10.0": {
+          "balanced_accuracy": 0.79296875,
+          "fold_standard_deviation": 0.08151798753444951,
+          "minimum_fold_accuracy": 0.7,
+          "maximum_fold_accuracy": 0.95,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.90625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.725,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.75625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.7,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.8687499999999999,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.7125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.7375,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.8500000000000001,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.8999999999999999,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.73125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.75625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.74375,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.8625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.73125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.75625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.95,
+              "test_windows": 160
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "20.0": {
+          "balanced_accuracy": 0.8312499999999999,
+          "fold_standard_deviation": 0.07958224257542214,
+          "minimum_fold_accuracy": 0.75,
+          "maximum_fold_accuracy": 0.9875,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.8374999999999999,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.775,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.7749999999999999,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.825,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.8999999999999999,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.75,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.75,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.9125000000000001,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.8,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.775,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.775,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.9624999999999999,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.925,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.775,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.775,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.9875,
+              "test_windows": 80
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "50.0": {
+          "balanced_accuracy": 0.828125,
+          "fold_standard_deviation": 0.10077822185373188,
+          "minimum_fold_accuracy": 0.65625,
+          "maximum_fold_accuracy": 1.0,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.75,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.75,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.96875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.78125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.78125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.96875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.65625,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.78125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.78125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.78125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "100.0": {
+          "balanced_accuracy": 0.82421875,
+          "fold_standard_deviation": 0.12336165919090637,
+          "minimum_fold_accuracy": 0.5,
+          "maximum_fold_accuracy": 0.9375,
+          "folds": [
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.75,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.875,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r0",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.625,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.8125,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.875,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r1",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.75,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.875,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.875,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r2",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.75,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r0",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r1",
+              "balanced_accuracy": 0.875,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r2",
+              "balanced_accuracy": 0.875,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "reference-r3",
+              "held_out_training_session": "fused-cover16-r3",
+              "balanced_accuracy": 0.5,
+              "test_windows": 16
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        }
+      },
+      "useful_loss_tokens_per_second": 253.9822167789715,
+      "throughput_relative_to_original": 0.7143145854189892,
+      "trace_counts": {
+        "inference": 32,
+        "training": 32
+      },
+      "session_counts": {
+        "inference": 4,
+        "training": 4
+      },
+      "all_health_checks_passed": true
+    },
+    "layercover3": {
+      "label": "11 decode, layer-interleaved",
+      "stationary_similarities": {
+        "raw_amplitude_js_similarity": 0.9300542051570118,
+        "normalized_amplitude_js_similarity": 0.9160916239432727,
+        "welch_psd_js_similarity": 0.9099588273827965,
+        "mean_similarity": 0.918701552161027
+      },
+      "ridge_detector_by_horizon_ms": {
+        "5.0": {
+          "balanced_accuracy": 0.6724609375,
+          "fold_standard_deviation": 0.14425282867496625,
+          "minimum_fold_accuracy": 0.35625,
+          "maximum_fold_accuracy": 0.83125,
+          "folds": [
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.7125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.778125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 0.7437499999999999,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.39375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.784375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.78125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 0.83125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.775,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.50625,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.63125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 0.68125,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.35625,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.584375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.659375,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 0.765625,
+              "test_windows": 320
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.775,
+              "test_windows": 320
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "10.0": {
+          "balanced_accuracy": 0.759375,
+          "fold_standard_deviation": 0.10999526504960717,
+          "minimum_fold_accuracy": 0.475,
+          "maximum_fold_accuracy": 0.88125,
+          "folds": [
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.78125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.81875,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 0.85625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.5875,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.81875,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.8062499999999999,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 0.88125,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.80625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.6625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.75,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 0.8,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.475,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.66875,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.75625,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 0.875,
+              "test_windows": 160
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.80625,
+              "test_windows": 160
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "20.0": {
+          "balanced_accuracy": 0.88359375,
+          "fold_standard_deviation": 0.061866581918943384,
+          "minimum_fold_accuracy": 0.7375,
+          "maximum_fold_accuracy": 0.9624999999999999,
+          "folds": [
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.8999999999999999,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.9125,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.7625,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.8875,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.9125,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 0.95,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.825,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.9125,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.9,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 0.9624999999999999,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.7375,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.8875,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.8625,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 0.9125000000000001,
+              "test_windows": 80
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.875,
+              "test_windows": 80
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "50.0": {
+          "balanced_accuracy": 0.919921875,
+          "fold_standard_deviation": 0.047005027989035386,
+          "minimum_fold_accuracy": 0.84375,
+          "maximum_fold_accuracy": 1.0,
+          "folds": [
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.84375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.84375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.90625,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 0.96875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.90625,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.90625,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.875,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.90625,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 32
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.875,
+              "test_windows": 32
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        },
+        "100.0": {
+          "balanced_accuracy": 0.96875,
+          "fold_standard_deviation": 0.03952847075210474,
+          "minimum_fold_accuracy": 0.875,
+          "maximum_fold_accuracy": 1.0,
+          "folds": [
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r0",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r1",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r2",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.875,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r0",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r1",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r2",
+              "balanced_accuracy": 1.0,
+              "test_windows": 16
+            },
+            {
+              "held_out_inference_session": "inference-r3",
+              "held_out_training_session": "layercover-r3",
+              "balanced_accuracy": 0.9375,
+              "test_windows": 16
+            }
+          ],
+          "split": "leave one complete inference session and one complete training session out",
+          "attacker_input": "power samples only"
+        }
+      },
+      "useful_loss_tokens_per_second": 317.47080613866063,
+      "throughput_relative_to_original": 0.8928736434603222,
+      "trace_counts": {
+        "inference": 32,
+        "training": 32
+      },
+      "session_counts": {
+        "inference": 4,
+        "training": 4
+      },
+      "all_health_checks_passed": true
+    }
+  }
+}

@@ -1,0 +1,228 @@
+{
+  "root": "/home/amodo/llama_continuous_whole_model_20260801/physical_sweep2/candidates/fused-cover16",
+  "sample_rate_hz": 1500000.0,
+  "trace_samples": 150000,
+  "trace_counts": {
+    "inference": 16,
+    "training": 6
+  },
+  "session_counts": {
+    "inference": 2,
+    "training": 1
+  },
+  "all_health_checks_passed": true,
+  "attacker_observable": "ADC power samples only",
+  "similarities": {
+    "raw_amplitude_js_similarity": 0.902817982397944,
+    "normalized_amplitude_js_similarity": 0.8877126360314473,
+    "welch_psd_js_similarity": 0.7012893706998118,
+    "mean_similarity": 0.8306066630430676
+  },
+  "detector_by_horizon_ms": {
+    "5.0": null,
+    "10.0": null,
+    "20.0": null,
+    "50.0": null,
+    "100.0": null
+  },
+  "per_trace": [
+    {
+      "process": "inference",
+      "session_id": "reference-after",
+      "index": 0,
+      "mean": 0.004001240234375,
+      "std": 0.024212483344001272,
+      "minimum": -0.125,
+      "maximum": 0.13330078125
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-after",
+      "index": 1,
+      "mean": 0.004300299479166667,
+      "std": 0.023380761618680457,
+      "minimum": -0.124755859375,
+      "maximum": 0.135986328125
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-after",
+      "index": 2,
+      "mean": 0.0043371956380208335,
+      "std": 0.023461543437137453,
+      "minimum": -0.126708984375,
+      "maximum": 0.136474609375
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-after",
+      "index": 3,
+      "mean": 0.0042296744791666665,
+      "std": 0.023764786742823254,
+      "minimum": -0.1279296875,
+      "maximum": 0.14013671875
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-after",
+      "index": 4,
+      "mean": 0.004078430989583334,
+      "std": 0.02439239341635055,
+      "minimum": -0.124755859375,
+      "maximum": 0.14013671875
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-after",
+      "index": 5,
+      "mean": 0.004078028971354166,
+      "std": 0.024627656406481183,
+      "minimum": -0.13232421875,
+      "maximum": 0.140380859375
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-after",
+      "index": 6,
+      "mean": 0.0040744514973958335,
+      "std": 0.02471589492802604,
+      "minimum": -0.1279296875,
+      "maximum": 0.1435546875
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-after",
+      "index": 7,
+      "mean": 0.004080598958333333,
+      "std": 0.024547289664833775,
+      "minimum": -0.125,
+      "maximum": 0.1455078125
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-before",
+      "index": 0,
+      "mean": 0.004041707356770834,
+      "std": 0.024269659625169474,
+      "minimum": -0.12451171875,
+      "maximum": 0.13330078125
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-before",
+      "index": 1,
+      "mean": 0.003971376953125,
+      "std": 0.024982545878073862,
+      "minimum": -0.125,
+      "maximum": 0.135986328125
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-before",
+      "index": 2,
+      "mean": 0.004280636393229167,
+      "std": 0.023697946506214346,
+      "minimum": -0.1396484375,
+      "maximum": 0.135986328125
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-before",
+      "index": 3,
+      "mean": 0.0040022509765625,
+      "std": 0.02494065861552317,
+      "minimum": -0.138916015625,
+      "maximum": 0.13818359375
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-before",
+      "index": 4,
+      "mean": 0.004004661458333334,
+      "std": 0.02498348938101907,
+      "minimum": -0.125,
+      "maximum": 0.140380859375
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-before",
+      "index": 5,
+      "mean": 0.004049710286458333,
+      "std": 0.02500461844529134,
+      "minimum": -0.126708984375,
+      "maximum": 0.1416015625
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-before",
+      "index": 6,
+      "mean": 0.004131642252604166,
+      "std": 0.024385701368774958,
+      "minimum": -0.12548828125,
+      "maximum": 0.140380859375
+    },
+    {
+      "process": "inference",
+      "session_id": "reference-before",
+      "index": 7,
+      "mean": 0.0041042333984375,
+      "std": 0.024561259479010767,
+      "minimum": -0.138427734375,
+      "maximum": 0.1376953125
+    },
+    {
+      "process": "training",
+      "session_id": "fused-cover16-smoke",
+      "index": 0,
+      "mean": 0.0042600537109375,
+      "std": 0.027923928022905786,
+      "minimum": -0.119140625,
+      "maximum": 0.1328125
+    },
+    {
+      "process": "training",
+      "session_id": "fused-cover16-smoke",
+      "index": 1,
+      "mean": 0.004301326497395833,
+      "std": 0.028443162983950783,
+      "minimum": -0.12158203125,
+      "maximum": 0.13720703125
+    },
+    {
+      "process": "training",
+      "session_id": "fused-cover16-smoke",
+      "index": 2,
+      "mean": 0.0045231656901041665,
+      "std": 0.0163294830678136,
+      "minimum": -0.127685546875,
+      "maximum": 0.1318359375
+    },
+    {
+      "process": "training",
+      "session_id": "fused-cover16-smoke",
+      "index": 3,
+      "mean": 0.004138369140625,
+      "std": 0.021863773919617455,
+      "minimum": -0.1201171875,
+      "maximum": 0.132080078125
+    },
+    {
+      "process": "training",
+      "session_id": "fused-cover16-smoke",
+      "index": 4,
+      "mean": 0.004485001627604166,
+      "std": 0.016115249951888212,
+      "minimum": -0.123046875,
+      "maximum": 0.142822265625
+    },
+    {
+      "process": "training",
+      "session_id": "fused-cover16-smoke",
+      "index": 5,
+      "mean": 0.00425904296875,
+      "std": 0.016536863878656004,
+      "minimum": -0.120361328125,
+      "maximum": 0.13671875
+    }
+  ]
+}

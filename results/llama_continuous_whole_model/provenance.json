@@ -1,0 +1,97 @@
+{
+  "recorded_at": "2026-08-01T18:00:00Z/2026-08-01T19:27:00Z",
+  "remote_host": "arboghast",
+  "raw_artifact_root": "/home/amodo/llama_continuous_whole_model_20260801",
+  "raw_artifact_subdirectories": {
+    "kernel_profiles": "kernel_profiles",
+    "schedule_benchmarks": "benchmarks",
+    "screening_sweep_1": "physical_sweep",
+    "screening_sweep_2": "physical_sweep2",
+    "four_session_candidate_evaluation": "final_eval",
+    "four_session_layer_interleaving": "layercover_final",
+    "four_session_randomized_cover": "jitter_final"
+  },
+  "model": {
+    "repository": "meta-llama/Llama-3.1-8B",
+    "cached_revision": "d04e592bb4f6aa9cfee91e2e20afa771667e1d4b",
+    "layers": 32,
+    "training_parameters": 8030261248,
+    "training_parameter_tensors": 291,
+    "inference_weight_format": "NF4 double quantization",
+    "compute_dtype": "bfloat16"
+  },
+  "gpu": {
+    "name": "NVIDIA H100 PCIe",
+    "uuid": "GPU-fdd47323-bd9b-906a-1ccf-cb58ff4b3a69",
+    "memory_mib": 81559,
+    "driver": "590.48.01"
+  },
+  "software": {
+    "python_environment": "/home/amodo/pytorch-example/.venv",
+    "torch": "2.10.0+cu130",
+    "cuda_runtime": "13.0",
+    "transformers": "5.2.0",
+    "bitsandbytes": "0.50.0",
+    "sidecapture": "0.1.1",
+    "sidecapture_source": "/home/amodo/sidecapture_e2e/main_20260720_132025",
+    "sidecapture_revision": "eeeb8bb321b68c1c24cc460c544b430c54351952",
+    "chipwhisperer": "6.0.0+isl.1",
+    "chipwhisperer_source": "/home/amodo/sidecapture_e2e/deps_v6.0.0-isl.1"
+  },
+  "measurement_chain": {
+    "gpu_feed": "H100 auxiliary PCIe supply wires",
+    "current_clamp": "PicoScope TA189",
+    "clamp_nominal_sensitivity": "100 mV/A into >100 kohm, <100 pF",
+    "clamp_rated_flat_bandwidth_hz": 100000,
+    "cable_path": "TA189 -> BNC/SMA -> SMA right-angle -> 6 dB attenuator -> Husky Plus measurement positive",
+    "external_50_ohm_termination": false,
+    "acquisition": "ChipWhisperer Husky Plus"
+  },
+  "resolved_capture": {
+    "mode": "burst",
+    "raw_clock_hz": 150000000,
+    "decimation": 100,
+    "sample_rate_hz": 1500000,
+    "duration_s": 0.1,
+    "samples": 150000,
+    "bits_per_sample": 12,
+    "gain_db": 10.0,
+    "trace_dtype": "float32",
+    "unit": "normalized_adc",
+    "trigger": "gpio/auto",
+    "usb_read_mode": "auto",
+    "random_delay_after_arm_s": [0.0, 0.5],
+    "workload_started_and_warmed_before_scope_arm": true
+  },
+  "validated_result_sets": {
+    "ordinary_baseline": {
+      "inference_sessions": 4,
+      "training_sessions": 4,
+      "traces_per_process": 32,
+      "all_accepted_trace_health_checks_passed": true
+    },
+    "fixed_cover_candidate_matrix": {
+      "inference_sessions": 4,
+      "training_sessions_per_candidate": 4,
+      "traces_per_process_per_candidate": 32,
+      "all_accepted_trace_health_checks_passed": true
+    },
+    "layer_interleaved_cover": {
+      "inference_sessions": 4,
+      "training_sessions": 4,
+      "traces_per_process": 32,
+      "all_accepted_trace_health_checks_passed": true
+    },
+    "randomized_cover": {
+      "inference_sessions": 4,
+      "training_sessions": 4,
+      "traces_per_process": 32,
+      "all_accepted_trace_health_checks_passed": true
+    }
+  },
+  "notes": [
+    "Raw ADC arrays and full CUDA event streams remain on the H100 and are intentionally excluded from Git history.",
+    "The TA189 response above its rated 100 kHz bandwidth is uncalibrated; results are comparative within this fixed chain.",
+    "Historical record manifests retain every then-active WorkerConfig field, including fields irrelevant to Llama."
+  ]
+}

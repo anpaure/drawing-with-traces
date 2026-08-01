@@ -1,0 +1,66 @@
+{
+  "root": "smoke_v1",
+  "sample_rate_hz": 1500000.0,
+  "trace_samples": 150000,
+  "trace_counts": {
+    "inference": 2,
+    "training": 2
+  },
+  "session_counts": {
+    "inference": 1,
+    "training": 1
+  },
+  "all_health_checks_passed": true,
+  "attacker_observable": "ADC power samples only",
+  "similarities": {
+    "raw_amplitude_js_similarity": 0.4590904529613302,
+    "normalized_amplitude_js_similarity": 0.7024636196300504,
+    "welch_psd_js_similarity": 0.5948013007327753,
+    "mean_similarity": 0.585451791108052
+  },
+  "detector_by_horizon_ms": {
+    "5.0": null,
+    "10.0": null,
+    "20.0": null,
+    "50.0": null,
+    "100.0": null
+  },
+  "per_trace": [
+    {
+      "process": "inference",
+      "session_id": "smoke-inference-00",
+      "index": 0,
+      "mean": 0.003928797200520833,
+      "std": 0.024405546542340943,
+      "minimum": -0.131591796875,
+      "maximum": 0.134521484375
+    },
+    {
+      "process": "inference",
+      "session_id": "smoke-inference-00",
+      "index": 1,
+      "mean": 0.003904231770833333,
+      "std": 0.024415282031303137,
+      "minimum": -0.127685546875,
+      "maximum": 0.136474609375
+    },
+    {
+      "process": "training",
+      "session_id": "smoke-training-00",
+      "index": 0,
+      "mean": 0.004467615559895833,
+      "std": 0.009887936097273837,
+      "minimum": -0.108154296875,
+      "maximum": 0.100341796875
+    },
+    {
+      "process": "training",
+      "session_id": "smoke-training-00",
+      "index": 1,
+      "mean": 0.004399609375,
+      "std": 0.00945180872439163,
+      "minimum": -0.1103515625,
+      "maximum": 0.109130859375
+    }
+  ]
+}
