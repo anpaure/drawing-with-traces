@@ -1,225 +1,142 @@
-# Drawing with traces
+# Can GPT-OSS training look like cached inference in a power trace?
 
-Draw a PNG silhouette with the **measured power activity of real GPU model training**.
+This branch contains the **GPT-OSS inference-shaped-training experiment**. It is a controlled precursor
+to the stronger continuous whole-model Llama study on
+[`experiment/llama-continuous-whole-model`](https://github.com/anpaure/drawing-with-traces/tree/experiment/llama-continuous-whole-model).
+The PNG-drawing project remains on [`main`](https://github.com/anpaure/drawing-with-traces/tree/main).
 
-This is a standalone experiment built on [SideCapture](https://github.com/anpaure/sidecapture).
-It uses a ChipWhisperer Husky Plus to capture an H100 PCIe while a hand-tiled training gradient changes
-GEMM width over time. The plotted result is measured data: it is not synthesized, shifted, or warped.
+![Experiment, result, and limits](results/gpt_oss_inference_shaped_training/readme_explainer.png)
 
-![Best practical model-training silhouette](results/resmlp-depth112-100ms-120/measured_silhouette.png)
+## Answer
 
-## Best practical model-training result
+**Inference cover can make the aggregate trace look close to inference, but it does not make training
+itself invisible.** The best run performs one genuine GPT-OSS attention-training update followed by
+eight genuine cached-decode covers.
 
-The current result trains a genuine **112-layer, 1,879,048,192-parameter residual MLP**. Lowering the
-batch from 4096 to 2048 makes narrow gradient tiles electrically distinct again; doubling model depth
-keeps ordinary training substantial, so the fixed 100 ms drawing window costs only 1.74× throughput.
+| External monitor result | Ordinary training | Cover 4 | Cover 8 |
+|---|---:|---:|---:|
+| Mean signal similarity to inference | 89.42% | 98.01% | **99.28%** |
+| 5 ms power-only detector | **95.83%** | 64.44% | **57.59%** |
+| Mean CUDA time / cycle | 91.34 ms | 254.17 ms | 408.86 ms |
+| Slowdown | 1.00× | 2.83× | **4.48×** |
 
-| Property | 112-layer residual-MLP result |
-|---|---:|
-| Profile duration | **100.037 ms measured** |
-| Distinct target positions | **120** (0.833 ms each) |
-| ChipWhisperer capture | **1.5 MSPS burst**, 165,000 samples |
-| Multiscale / native / smoothed fidelity | **93.66% / 92.97% / 94.43%** |
-| Pearson correlation / R² | **0.9791 / 0.9504** |
-| PyTorch autograd gradient error | **exactly zero** in BF16 |
-| Tiled versus untiled gradient error | **exactly zero** |
-| Train loss for promoted step | **0.276909 → 0.276827** |
-| Held-out loss for promoted step | **0.277317 → 0.277244** |
-| Drawing / ordinary training | **4.93 / 8.61 steps/s** (median) |
-| Drawing slowdown | **1.74×**; **57.3%** throughput retained |
+Chance is 50%. The important qualification is phase conditioning: cover-8 windows that begin with
+training remain **80.83%** detectable, while most windows beginning inside the eight decode covers are
+near chance. The 57.59% aggregate is therefore primarily a result about **cover-dominated windows**.
 
-The promoted picture is one unaveraged physical trace, not the median feedback curve. All 25 accepted
-captures passed SideCapture health checks. The curated raw evidence and independent recomputation are in
-[`results/resmlp-depth112-100ms-120`](results/resmlp-depth112-100ms-120).
+## What actually ran
 
-## Highest absolute waveform score (linear workload)
+### Inference reference
 
-| Property | Result |
-|---|---:|
-| Profile duration | **100.019 ms measured** |
-| Distinct target positions | **120** (0.833 ms each) |
-| ChipWhisperer capture | **1.5 MSPS burst**, 165,000 samples |
-| GPU / model | H100 PCIe / 16,777,216 parameters |
-| Multiscale fidelity | **94.26%** |
-| Native-bin fidelity | **94.42%** |
-| Smoothed fidelity | **94.09%** |
-| Pearson correlation | **0.9790** |
-| R² | **0.9441** |
-| Train loss for promoted step | **0.40575 → 0.34279** |
-| Held-out loss for promoted step | **0.93094 → 0.92316** |
-| Gradient relative L2 error vs untiled | **7.41 × 10⁻⁷** |
-| Drawing / ordinary training | **9.57 / 1764.56 steps/s** |
+- `openai/gpt-oss-20b` complete cached decode;
+- one generated token at a time with a real KV cache.
 
-The complete 17 MB result is committed under
-[`results/logo-100ms-120-active-lead`](results/logo-100ms-120-active-lead). It includes all raw
-SideCapture records, annotations, tile commands, health reports, calibration, candidate plots, training
-metrics, and a compact [`published_summary.json`](results/logo-100ms-120-active-lead/published_summary.json).
-The promoted result is capture **5**, accepted on its first attempt with all 165,000 samples present,
-no ADC clipping, no annotation bounds errors, and no health issues.
+### Training target
 
-## Earlier 14-layer residual-MLP result
+- a complete GPT-OSS forward and backward pass;
+- causal loss and real optimizer updates;
+- all 96 q/k/v/o attention-projection matrices across all 24 layers trainable;
+- **637,009,920 updated parameters**.
 
-The repository now also contains a closer Fable-style workload: a genuine **14-layer, 234,881,024
-parameter residual MLP** with a handwritten tiled forward/backward pass.
+This is not full-parameter GPT-OSS training. Non-attention weights participate in the full forward
+computation but are not optimizer targets. Ordinary and covered variants follow the same 27 accepted
+updates, with loss falling from `6.722904` to `0.012314`.
 
-![Residual MLP measured silhouette](results/resmlp-v1-100ms-120/measured_silhouette.png)
+### Best process
 
-| Property | Residual-MLP result |
-|---|---:|
-| Multiscale / native / smoothed fidelity | **93.08% / 92.11% / 94.21%** |
-| PyTorch autograd gradient error | **exactly zero** in BF16 |
-| Tiled versus untiled gradient error | **exactly zero** |
-| Train loss for promoted step | **0.07250 → 0.07174** |
-| Held-out loss for promoted step | **0.08020 → 0.08000** |
-| Drawing / ordinary training | **9.10 / 125.31 steps/s** (median) |
-| Drawing slowdown | **13.77×**, versus 184.39× for the linear workload |
+- one real attention-training update;
+- eight real cached-decode covers;
+- the starting cycle offset is rotated across captures.
 
-This was the first substantial residual-model result. The 112-layer workload now improves its fidelity
-from 93.08% to 93.66% and reduces slowdown from 13.77× to 1.74×. The curated 14-layer result includes the
-promoted physical trace, annotations, commands, layer/column coverage, health record, plots, and
-independently recomputed checksums under
-[`results/resmlp-v1-100ms-120`](results/resmlp-v1-100ms-120).
+Acquisition starts at a known workload call. It is not an indefinitely running, randomly sampled
+service. The detector receives only features derived from current-probe ADC samples—no CUDA markers,
+phase labels, loss, model metadata, timing counters, or NVML.
 
-## One-command reproduction
+![Measured cover-8 comparison](results/gpt_oss_inference_shaped_training/full_model_cover8_matched_27/shaped/continuous_power_comparison.png)
+
+## The local matmul experiment
+
+For one layer-2 projection, the exact weight gradient can be transposed and evaluated one input-feature
+row at a time:
+
+```text
+y  = x Wᵀ
+dX = dY W
+dWᵀ[j, :] = x[:, j]ᵀ dY
+```
+
+Zero-padding the reduction gives the same `M=1, K=input, N=output` geometry as one-token inference
+without changing the mathematical gradient. In the balanced 4,096-row test:
+
+- input gradients are bitwise identical;
+- weight-gradient relative L2 error is `1.253 × 10⁻⁴` from BF16 reduction order;
+- causal loss falls from `8.129142` to `8.117710` after the selected real update;
+- local kernel-process similarity rises from **0.3612** to **0.9399**.
+
+But the shaped local projection takes **1,705 ms instead of 35 ms**. At physical full-model scale,
+applying 128 shaped rows to the final layer makes the detector worse: **87.78% → 95.56%**. Matching one
+GEMM geometry created a highly regular launch burst rather than hiding the full temporal process.
+
+## What this proves—and does not prove
+
+**Supported by this experiment**
+
+- Real inference cover can dominate short aggregate windows and substantially reduce a power-only
+  classifier.
+- A real gradient can be decomposed into inference-shaped GEMMs with high local kernel similarity.
+- Local kernel matching and physical process matching are different objectives.
+
+**Not supported**
+
+- Backward or optimization became inference.
+- Full-parameter GPT-OSS training was hidden; only 637M attention parameters were updated.
+- The 57.59% result holds for training-centered windows: those remain 80.83% detectable.
+- The process is a realistic unsynchronized service, universally indistinguishable, or low-overhead.
+
+The implication is narrower than “power monitoring is broken”: a monitor that averages over unknown
+phase can be manipulated with cover work, while a phase-aware, long-horizon, or independent monitor can
+still accumulate evidence from recurring backward regions.
+
+## Comparison with `jacobcd52/silhouette`
+
+[`jacobcd52/silhouette`](https://github.com/jacobcd52/silhouette) is a related waveform-control
+implementation, not a replication of this experiment. Its documented 2-second A100 run uses an
+identified NVML channel, deconvolution, and iterative learning control to match a chosen contour.
+
+| | This branch | `silhouette` at commit `7042c4e` |
+|---|---|---|
+| Goal | Make an independent inference class and training process collide | Draw a chosen target curve |
+| Sensor | External clamp + ChipWhisperer, 1.5 MSPS | In-process NVML, 49.8 Hz |
+| Workload | Full GPT-OSS forward/backward; 637M attention parameters updated | ResNet-18 training for 67% of the trace; filler matmuls elsewhere |
+| Control | Fixed cover schedule with rotated offsets | System identification, deconvolution, target-specific feedback |
+| Primary evidence | Inference-vs-training detector accuracy | Replay MAE/correlation to the chosen contour |
+
+`silhouette` is better at **closed-loop reproduction of a known low-rate waveform**. This branch asks a
+harder classification question, but has weaker process realism than the later Llama branch because its
+capture is call-aligned and its optimizer scope is partial. See the external
+[controller](https://github.com/jacobcd52/silhouette/blob/7042c4eac5a7456fa38e0d8821189da8db5b0378/power_trace_2s.py),
+[engine](https://github.com/jacobcd52/silhouette/blob/7042c4eac5a7456fa38e0d8821189da8db5b0378/s2s.py),
+and [analysis](https://github.com/jacobcd52/silhouette/blob/7042c4eac5a7456fa38e0d8821189da8db5b0378/ANALYSIS_2S.md).
+
+## Reproduce and inspect
 
 ```bash
-python -m pip install -e .
+cd experiments/gpt_oss_inference_shaped_training
 
-draw-power-png assets/logo-top.png \
-  --output runs/logo-resmlp-depth112-100ms \
-  --engine timed \
-  --training-model residual-mlp \
-  --residual-depth 112 \
-  --drawing-layer-count 112 \
-  --residual-scale 0.04419417382415922 \
-  --residual-learning-rate 0.0000002 \
-  --silhouette-mode upper-boundary \
-  --points 120 \
-  --duration-ms 100 \
-  --capture-window-ms 110 \
-  --sample-rate 1.5MHz \
-  --batch-size 2048 \
-  --minimum-tile-width 32 \
-  --maximum-tile-width 3072 \
-  --trace-feature diff_rms \
-  --target-accuracy 96 \
-  --max-refinements 8 \
-  --replicates-per-refinement 3 \
-  --ilc-feedback-reference latest \
-  --ilc-correction-smoothing 0.7
+python run_balanced_projection.py \
+  --output-dir runs/balanced4096 --layer 2 \
+  --total-rows 4096 --microbatch-rows 256
+
+python capture_full_model_power.py \
+  --output-dir runs/cover8 --all-attention-projections \
+  --traces-per-process 27 --decode-repeats 3 --training-repeats 1 \
+  --duration 100ms --sample-rate 1.5MHz --gain-db 10 \
+  --shaped-inference-rows 0 --shaped-forward-rows 2 \
+  --shaped-input-gradient-rows 2 --shaped-cover-decodes 8
 ```
 
-For the earlier 14-layer residual MLP, use:
-
-```bash
-  --training-model residual-mlp \
-  --residual-depth 14 \
-  --residual-scale 0.125 \
-  --residual-learning-rate 0.002 \
-  --batch-size 256
-```
-
-This requires the installed H100/ChipWhisperer setup and SideCapture's hardware dependencies. Model and
-scope setup happen once. Every accepted drawing capture applies another optimizer step to the same
-persistent model.
-
-## What actually runs
-
-The original workload is a teacher–student linear model with the objective
-
-```text
-loss = 0.5 / batch × ||XW − Y||²
-gradient = Xᵀ(XW − Y) / batch
-```
-
-Each controlled block computes a real forward tile `X @ W[:, start:end]` and its real weight-gradient
-tile `X.T @ residual[:, start:end]`. Tile width changes Tensor Core occupancy and therefore measured
-power activity. Visits to an output column are averaged before deferred SGD, so scheduling changes the
-power waveform without changing the intended gradient. The result is numerically equivalent to the
-untiled BF16 gradient to approximately `7.4e-7` relative L2 for the promoted step.
-
-The residual engine trains
-
-```text
-h[l + 1] = h[l] + scale × relu(h[l] W[l])
-loss       = 0.5 / batch × ||h[depth] − Y||²
-```
-
-The promoted 112-layer run uses width 4096, scale `0.04419417382415922`, and batch 2048. It prepares the
-real reverse-mode delta for every layer, then schedules true blocks of `h[l].T @ delta[l]` across the 100
-ms profile. The scheduler traverses layers and output columns rather than replaying a fake burner kernel.
-Repeated visits are averaged, missing blocks are completed after capture, and the accepted update is
-compared with both an untiled handwritten gradient and PyTorch autograd. Both comparisons were
-bit-for-bit exact in the verified H100 run.
-
-### Why drawing is slower
-
-The fixed 100 ms profile imposes a hard throughput ceiling near 10 steps/s. The 14-layer model's ordinary
-step was only about 8 ms, so drawing made it 13.77× slower. The 112-layer model deliberately performs
-substantial ordinary training: its measured no-drawing step is about 116 ms, versus about 202 ms while
-drawing. Narrower batch geometry restores waveform control, while extra depth keeps useful training
-compute high. Repeated visits are averaged and missing blocks are completed, yielding 1.74× median
-slowdown rather than 13.77× or the linear workload's 184×.
-
-## Why the active baseline matters
-
-Earlier versions mapped target zero to GPU idle. That allowed H100 SM clocks to collapse between low
-bins and made the next power level depend on DVFS history. The verified linear and 14-layer paths use a
-128-column active floor. The 112-layer geometry remains separable down to a real 32-column gradient tile:
-
-- maps the lowest target level to a real **32-column gradient tile**;
-- runs that same narrow tile during the 2 ms lead period;
-- calibrates widths from 32 through 3072;
-- uses 120 **distinct target positions**, with no repeated target block inside the trace.
-
-`--replicates-per-refinement 3` means three separate physical training captures are used to form robust
-median feedback for one ILC round. It does **not** repeat or average blocks inside the promoted trace.
-The published picture and score belong to one unaveraged capture.
-
-## Measurement and score
-
-The Husky input is AC-coupled, so this experiment reports normalized ChipWhisperer activity rather than
-calibrated watts. The new result preselects `diff_rms`—RMS of adjacent ADC-sample differences inside each
-bin—based only on calibration, before seeing a drawing trace. It uses target-free 2nd/98th-percentile
-normalization. No target-aware affine fitting is applied.
-
-To prevent display smoothing from hiding bin-scale ripple, the primary fidelity combines native and
-smoothed errors:
-
-```text
-multiscale_rmse = sqrt((raw_rmse² + smoothed_rmse²) / 2)
-fidelity        = 100 × (1 − multiscale_rmse)
-```
-
-The faint red line in the plot is the native 120-bin measurement; the solid line is the sigma-2 scored
-curve. Both metrics are stored. “Fidelity” here is a waveform score, not classification accuracy.
-
-## SideCapture integrity
-
-SideCapture owns acquisition and durability:
-
-- plans, arms, and reads the Husky;
-- maps CUDA/host annotations into ADC sample boundaries;
-- validates length, finite values, variance, flatlines, clipping, and bounds;
-- retries failed acquisitions and recovers the sampler;
-- crash-safely commits raw channels, records, annotations, artifacts, and provenance.
-
-The workload update is transactional. A rejected trace clears accumulated gradients; only an accepted
-trace applies SGD. Post-profile gradient completion and active-lead arithmetic are included in the
-reported FLOPs and drawing-vs-no-drawing timing.
-
-## More documentation
-
-- [Experiment and implementation guide](docs/EXPERIMENT.md)
-- [Resolution and controller ablations](docs/RESULTS.md)
-- [GPT-OSS inference-shaped-training experiment](experiments/gpt_oss_inference_shaped_training/README.md)
-- [Compact published metrics](results/logo-100ms-120-active-lead/published_summary.json)
-- [112-layer residual-MLP compact metrics](results/resmlp-depth112-100ms-120/published_summary.json)
-- [Residual-MLP compact metrics](results/resmlp-v1-100ms-120/published_summary.json)
-
-## Earlier modes
-
-The repository retains the original smooth 10 ms/20-bin result under
-[`results/fast-10ms`](results/fast-10ms) and a 100 ms/60-bin result under
-[`results/fast-100ms`](results/fast-100ms). Their older headline scores use only smoothed RMSE and are
-therefore not directly comparable to the stricter multiscale fidelity above.
+- [Method and file guide](experiments/gpt_oss_inference_shaped_training/README.md)
+- [Balanced local projection evidence](results/gpt_oss_inference_shaped_training/balanced_projection/result.json)
+- [Cover-8 capture manifest](results/gpt_oss_inference_shaped_training/full_model_cover8_matched_27/capture_summary.json)
+- [Cover-8 detector and similarity metrics](results/gpt_oss_inference_shaped_training/full_model_cover8_matched_27/shaped/power_similarity.json)
+- [Whole-model kernel audit](results/gpt_oss_inference_shaped_training/kernel_audit/kernel_comparison.json)
