@@ -1,0 +1,80 @@
+{
+  "calibration": "runs/h100-calibration-final/calibration.json",
+  "capture_plan": {
+    "bits_per_sample": null,
+    "decimation": null,
+    "details": {
+      "gpu_index": 0,
+      "timestamps": "host_monotonic_ns"
+    },
+    "duration_s": 0.0,
+    "mode": "telemetry",
+    "pretrigger_samples": 0,
+    "raw_sample_rate_hz": null,
+    "sample_rate_hz": 100.0,
+    "samples": 0,
+    "warnings": []
+  },
+  "duty_max": 1.0,
+  "duty_min": 0.0,
+  "elapsed_s": 68.3119143685326,
+  "measured_plot": "/home/amodo/drawing_with_traces_curve/runs/h100-silhouette-final/measured_silhouette.png",
+  "metrics": {
+    "best_lag_s": 0.9999977999999743,
+    "display_smoothing_s": 0.25,
+    "measured_power_dynamic_range_w": 213.50059661865242,
+    "measured_power_max_w": 309.52160034179695,
+    "measured_power_min_w": 96.02100372314452,
+    "normalized_mae": 0.11347504579559323,
+    "nvml_median_interval_s": 0.009999977999999743,
+    "nvml_samples": 6001,
+    "pearson_r_at_best_lag": 0.9417666071117812,
+    "pearson_r_unshifted": 0.9122270195913905,
+    "plot_uses_lag_shift": false,
+    "power_source": "NVML power usage in watts",
+    "profile_duration_s": 59.999895301,
+    "target_power_max_w": 285.7070007324219,
+    "target_power_min_w": 102.28099822998047
+  },
+  "model_parameters": 67108864,
+  "record": {
+    "attempt": 1,
+    "channels": [
+      "nvml.gpu_utilization_pct",
+      "nvml.memory_clock_mhz",
+      "nvml.memory_utilization_pct",
+      "nvml.power_w",
+      "nvml.sm_clock_mhz",
+      "nvml.temperature_c"
+    ],
+    "health": {
+      "issues": [],
+      "metrics": {
+        "annotations.out_of_bounds": 0,
+        "nvml.gpu_utilization_pct.finite_fraction": 1.0,
+        "nvml.memory_clock_mhz.finite_fraction": 1.0,
+        "nvml.memory_utilization_pct.finite_fraction": 1.0,
+        "nvml.power_w.finite_fraction": 1.0,
+        "nvml.sm_clock_mhz.finite_fraction": 1.0,
+        "nvml.temperature_c.finite_fraction": 1.0,
+        "primary.expected_samples": 0,
+        "primary.max_equal_run_fraction": 0.0030298439630359036,
+        "primary.samples": 6601,
+        "primary.std": 70.44203838010203
+      },
+      "ok": true
+    },
+    "index": 0,
+    "labels": {
+      "max_quantum_overrun_us": 890.627,
+      "model_parameters": 67108864,
+      "profile_duration_s": 60.0,
+      "profile_points": 120,
+      "task": "silhouette-shaped-model-training",
+      "training_loss_before_update": 1.0378425121307373,
+      "training_microsteps": 36735
+    }
+  },
+  "run": "/home/amodo/drawing_with_traces_curve/runs/h100-silhouette-final",
+  "target_preview": "/home/amodo/drawing_with_traces_curve/runs/h100-silhouette-final/target_envelope.png"
+}

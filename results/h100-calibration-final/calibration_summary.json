@@ -1,0 +1,102 @@
+{
+  "calibration": {
+    "duty": [
+      0.0,
+      0.20000000298023224,
+      0.4000000059604645,
+      0.6000000238418579,
+      0.800000011920929,
+      1.0
+    ],
+    "dynamic_range_w": 183.4260025024414,
+    "maximum_power_w": 285.7070007324219,
+    "measured_power_w": [
+      102.28099822998047,
+      157.22249603271484,
+      179.16799926757812,
+      215.29100036621094,
+      256.07149505615234,
+      285.7070007324219
+    ],
+    "minimum_power_w": 102.28099822998047,
+    "monotonic_power_w": [
+      102.28099822998047,
+      157.22249603271484,
+      179.16799926757812,
+      215.29100036621094,
+      256.07149505615234,
+      285.7070007324219
+    ]
+  },
+  "calibration_file": "/home/amodo/drawing_with_traces_curve/runs/h100-calibration-final/calibration.json",
+  "capture_plan": {
+    "bits_per_sample": null,
+    "decimation": null,
+    "details": {
+      "gpu_index": 0,
+      "timestamps": "host_monotonic_ns"
+    },
+    "duration_s": 0.0,
+    "mode": "telemetry",
+    "pretrigger_samples": 0,
+    "raw_sample_rate_hz": null,
+    "sample_rate_hz": 100.0,
+    "samples": 0,
+    "warnings": []
+  },
+  "elapsed_s": 35.67562248278409,
+  "model_parameters": 67108864,
+  "plot": "/home/amodo/drawing_with_traces_curve/runs/h100-calibration-final/calibration.png",
+  "record": {
+    "attempt": 1,
+    "channels": [
+      "nvml.gpu_utilization_pct",
+      "nvml.memory_clock_mhz",
+      "nvml.memory_utilization_pct",
+      "nvml.power_w",
+      "nvml.sm_clock_mhz",
+      "nvml.temperature_c"
+    ],
+    "health": {
+      "issues": [],
+      "metrics": {
+        "annotations.out_of_bounds": 0,
+        "nvml.gpu_utilization_pct.finite_fraction": 1.0,
+        "nvml.memory_clock_mhz.finite_fraction": 1.0,
+        "nvml.memory_utilization_pct.finite_fraction": 1.0,
+        "nvml.power_w.finite_fraction": 1.0,
+        "nvml.sm_clock_mhz.finite_fraction": 1.0,
+        "nvml.temperature_c.finite_fraction": 1.0,
+        "primary.expected_samples": 0,
+        "primary.max_equal_run_fraction": 0.005968367651447329,
+        "primary.samples": 3351,
+        "primary.std": 63.52295789775298
+      },
+      "ok": true
+    },
+    "index": 0,
+    "labels": {
+      "max_quantum_overrun_us": 730.244,
+      "model_parameters": 67108864,
+      "profile_duration_s": 27.5,
+      "profile_points": 11,
+      "task": "silhouette-shaped-model-training",
+      "training_loss_before_update": 1.0378425121307373,
+      "training_microsteps": 13846
+    }
+  },
+  "run": "/home/amodo/drawing_with_traces_curve/runs/h100-calibration-final",
+  "schedule": [
+    0.0,
+    0.20000000298023224,
+    0.4000000059604645,
+    0.6000000238418579,
+    0.800000011920929,
+    1.0,
+    0.800000011920929,
+    0.6000000238418579,
+    0.4000000059604645,
+    0.20000000298023224,
+    0.0
+  ]
+}

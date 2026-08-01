@@ -1,0 +1,1 @@
+{"attempt": 1, "error": "ChipWhisperer reports ADC errors after capture: slow FIFO underflow. The trace is invalid; reduce stream rate or inspect FIFO/clock status.", "error_type": "sidecapture.errors.CaptureError", "health": null, "index": 0, "time": 1785585398.1746697}

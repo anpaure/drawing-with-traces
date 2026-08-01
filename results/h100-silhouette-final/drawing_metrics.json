@@ -1,0 +1,17 @@
+{
+  "best_lag_s": 0.9999977999999743,
+  "display_smoothing_s": 0.25,
+  "measured_power_dynamic_range_w": 213.50059661865242,
+  "measured_power_max_w": 309.52160034179695,
+  "measured_power_min_w": 96.02100372314452,
+  "normalized_mae": 0.11347504579559323,
+  "nvml_median_interval_s": 0.009999977999999743,
+  "nvml_samples": 6001,
+  "pearson_r_at_best_lag": 0.9417666071117812,
+  "pearson_r_unshifted": 0.9122270195913905,
+  "plot_uses_lag_shift": false,
+  "power_source": "NVML power usage in watts",
+  "profile_duration_s": 59.999895301,
+  "target_power_max_w": 285.7070007324219,
+  "target_power_min_w": 102.28099822998047
+}

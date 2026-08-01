@@ -1,0 +1,20 @@
+{
+  "best_lag_s": -0.10999981300000172,
+  "display_smoothing_s": 0.1,
+  "measured_power_dynamic_range_w": 135.08799743652338,
+  "measured_power_max_w": 267.6069946289062,
+  "measured_power_min_w": 132.5189971923828,
+  "normalized_mae": 0.05632598970928074,
+  "normalized_rmse": 0.07959011084719719,
+  "nvml_median_interval_s": 0.009999983000000157,
+  "nvml_samples": 1003,
+  "pearson_r_at_best_lag": 0.968238238950123,
+  "pearson_r_unshifted": 0.9583422327584589,
+  "plot_uses_lag_shift": false,
+  "power_source": "NVML power usage in watts",
+  "profile_duration_s": 10.026554241,
+  "r_squared": 0.9106779024829393,
+  "shape_accuracy_percent": 92.04098891528028,
+  "target_power_max_w": 285.7070007324219,
+  "target_power_min_w": 102.28099822998047
+}

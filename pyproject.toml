@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "drawing-with-traces"
+version = "0.1.0"
+description = "Draw silhouettes with measured GPU training power traces"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [{name = "Amir Nuriyev", email = "amir.ravnur@gmail.com"}]
+dependencies = [
+  "numpy>=1.23",
+  "Pillow>=10",
+  "matplotlib>=3.8",
+  "torch>=2.2",
+  "sidecapture @ git+https://github.com/anpaure/sidecapture.git@6717245e453d5f806ade2f9c027430bf326811b8",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.9,<0.16"]
+
+[project.scripts]
+drawing-with-traces = "drawing_with_traces.cli:main"
+
+[project.urls]
+Repository = "https://github.com/anpaure/drawing-with-traces"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/drawing_with_traces"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"

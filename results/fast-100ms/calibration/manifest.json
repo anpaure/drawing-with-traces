@@ -1,0 +1,139 @@
+{
+  "created_at": "2026-08-01T11:56:11.101725+00:00",
+  "experiment": {
+    "request": {
+      "bits_per_sample": 12,
+      "channel": "power",
+      "duration_s": 0.043000000000000003,
+      "gain_db": 10.0,
+      "mode": "burst",
+      "pretrigger_s": 0.0,
+      "sample_rate_hz": 1500000.0
+    },
+    "resolved": {
+      "bits_per_sample": 12,
+      "decimation": 100,
+      "details": {
+        "gain_db": 10.0,
+        "max_samples_hw": 327828,
+        "max_samples_safe": 213088,
+        "max_stream_rate_hz": 10000000.0,
+        "stream_arm_settle_s": null,
+        "stream_fast_fifo": null,
+        "stream_segment_size": null,
+        "trigger": "gpio",
+        "usb_read_mode": "auto"
+      },
+      "duration_s": 0.043,
+      "mode": "burst",
+      "pretrigger_samples": 0,
+      "raw_sample_rate_hz": 150000000.0,
+      "sample_rate_hz": 1500000.0,
+      "samples": 64500,
+      "warnings": []
+    },
+    "retry": {
+      "backoff_s": 0.2,
+      "max_attempts": 4,
+      "recover_sampler": true
+    },
+    "sampler": {
+      "backend": "chipwhisperer",
+      "chipwhisperer_version": "6.0.0+isl.1",
+      "clock_hz": 150000000.0,
+      "max_stream_rate_hz": 10000000.0,
+      "product_id": "0xace6",
+      "resolved": {
+        "bits_per_sample": 12,
+        "decimation": 100,
+        "details": {
+          "gain_db": 10.0,
+          "max_samples_hw": 327828,
+          "max_samples_safe": 213088,
+          "max_stream_rate_hz": 10000000.0,
+          "stream_arm_settle_s": null,
+          "stream_fast_fifo": null,
+          "stream_segment_size": null,
+          "trigger": "gpio",
+          "usb_read_mode": "auto"
+        },
+        "duration_s": 0.043,
+        "mode": "burst",
+        "pretrigger_samples": 0,
+        "raw_sample_rate_hz": 150000000.0,
+        "sample_rate_hz": 1500000.0,
+        "samples": 64500,
+        "warnings": []
+      },
+      "safe_memory_fraction": 0.65,
+      "serial_number": null,
+      "stream_arm_settle_s": 0.001,
+      "stream_fast_fifo": false,
+      "stream_segment_size": null,
+      "trigger": "auto",
+      "usb_read_mode": "auto"
+    },
+    "trigger_delay_s": 0.0,
+    "validators": [
+      "FiniteValidator",
+      "ExpectedLengthValidator",
+      "VarianceValidator",
+      "FlatlineValidator",
+      "ADCClippingValidator",
+      "AnnotationBoundsValidator"
+    ],
+    "warmup": 2,
+    "workload": {
+      "batch_size": 512,
+      "bin_duration_s": 0.002,
+      "commands_sha256": "f466d0972a08b6ec54f36b41a15e01d02e04b05e9fafd6aeeea31d86916d10df",
+      "dtype": "bfloat16 matmuls, float32 gradient accumulation/master weights",
+      "gradient": "X.T @ (XW - Y) / batch, tiled over output columns",
+      "hidden_size": 4096,
+      "lead_s": 0.002,
+      "learning_rate": 0.01,
+      "objective": "0.5 / batch * ||XW - Y||^2",
+      "optimizer": "exact deferred SGD",
+      "parameter_count": 16777216,
+      "profile_bins": 17,
+      "profile_duration_s": 0.034,
+      "seed": 1729,
+      "tail_s": 0.002,
+      "transactional_update": true,
+      "type": "drawing_with_traces.exact_tiled_linear_gradient"
+    },
+    "workload_sync": "cuda"
+  },
+  "identity_hash": "a2f5315a58cd4f84507b95e147875c6757f7707e020fe37c4934a32a6c9c1f8a",
+  "provenance": {
+    "cuda": {
+      "available": true,
+      "device_count": 1,
+      "devices": [
+        {
+          "index": 0,
+          "name": "NVIDIA H100 PCIe"
+        }
+      ],
+      "torch_cuda_version": "13.0"
+    },
+    "git": null,
+    "hostname": "arboghast",
+    "machine": "x86_64",
+    "packages": {
+      "chipwhisperer": "6.0.0+isl.1",
+      "numpy": "2.4.2",
+      "nvidia-ml-py": "13.590.48",
+      "torch": "2.10.0+cu130",
+      "transformers": "5.2.0"
+    },
+    "pid": 3378073,
+    "platform": "Linux-6.8.0-124-generic-x86_64-with-glibc2.39",
+    "python": "3.14.3 (main, Feb  3 2026, 22:52:18) [Clang 21.1.4 ]",
+    "python_executable": "/home/amodo/pytorch-example/.venv/bin/python"
+  },
+  "publishing": {
+    "sinks": []
+  },
+  "schema_version": "sidecapture.dataset/v1"
+}
