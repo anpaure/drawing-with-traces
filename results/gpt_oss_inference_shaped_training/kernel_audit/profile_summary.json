@@ -1,0 +1,67 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "tokens": [
+    [
+      43301,
+      665
+    ]
+  ],
+  "decode_checksum": -513254.5625,
+  "training_loss": 6.722904205322266,
+  "parameter_inventory": {
+    "total_numel": 1804459584,
+    "trainable_numel": 1804459584,
+    "total_bytes": 3622190208,
+    "by_dtype": {
+      "torch.bfloat16": {
+        "tensors": 315,
+        "numel": 1797824064,
+        "bytes": 3595648128,
+        "trainable_numel": 1797824064
+      },
+      "torch.float32": {
+        "tensors": 48,
+        "numel": 6635520,
+        "bytes": 26542080,
+        "trainable_numel": 6635520
+      }
+    }
+  },
+  "grad_parameter_tensors": 243,
+  "nonzero_grad_parameter_tensors": 243,
+  "gradient_l2_norm": 438.33678832544217,
+  "updated_parameter": "model.embed_tokens.weight",
+  "updated_parameter_max_absolute_delta": 0.0,
+  "profiles": {
+    "decode": {
+      "wall_ms": 166.26950073987246,
+      "cuda_kernel_count": 1642,
+      "cuda_kernel_total_us": 64252.54900000003,
+      "peak_allocated_bytes": 13823183360,
+      "peak_reserved_bytes": 17223909376
+    },
+    "training_forward": {
+      "wall_ms": 130.36123104393482,
+      "cuda_kernel_count": 1499,
+      "cuda_kernel_total_us": 69533.02699999984,
+      "peak_allocated_bytes": 13866496512,
+      "peak_reserved_bytes": 19549650944
+    },
+    "training_backward": {
+      "wall_ms": 125.66897738724947,
+      "cuda_kernel_count": 1734,
+      "cuda_kernel_total_us": 7212.580999999939,
+      "peak_allocated_bytes": 17453772288,
+      "peak_reserved_bytes": 19549650944
+    },
+    "optimizer_step": {
+      "wall_ms": 26.04464814066887,
+      "cuda_kernel_count": 88,
+      "cuda_kernel_total_us": 12642.337999999976,
+      "peak_allocated_bytes": 19769891328,
+      "peak_reserved_bytes": 24765267968
+    }
+  },
+  "torch": "2.10.0+cu130",
+  "cuda": "13.0"
+}

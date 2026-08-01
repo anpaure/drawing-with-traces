@@ -1,0 +1,302 @@
+{
+  "root": "full_model_cover4_final/shaped",
+  "sample_rate_hz": 1500000.0,
+  "trace_samples": 150000,
+  "duration_ms": 100.0,
+  "trace_counts": {
+    "inference": 9,
+    "training": 9
+  },
+  "cuda_ms": {
+    "inference": {
+      "mean": 120.64491780598958,
+      "median": 116.38851165771484,
+      "minimum": 115.63056182861328,
+      "maximum": 148.86915588378906
+    },
+    "training": {
+      "mean": 762.5154283311632,
+      "median": 762.2898559570312,
+      "minimum": 759.088134765625,
+      "maximum": 767.1884765625
+    }
+  },
+  "training_phase_counts": {
+    "decode": 7,
+    "training": 2
+  },
+  "training_phase_offset_counts": {
+    "0": 2,
+    "1": 2,
+    "2": 2,
+    "3": 2,
+    "4": 1
+  },
+  "all_health_checks_passed": true,
+  "similarities": {
+    "raw_amplitude_js_similarity": 0.9971736343182983,
+    "normalized_amplitude_js_similarity": 0.9906176047925547,
+    "welch_psd_js_similarity": 0.985419770938971,
+    "autocorrelation_cosine_similarity": 0.9470380087303627,
+    "block_rms_js_similarity": 0.9800674370804381,
+    "mean_signal_similarity": 0.980063291172125
+  },
+  "classifier": {
+    "accuracy": 0.6444444444444445,
+    "chance_accuracy": 0.5,
+    "indistinguishability": 0.711111111111111,
+    "fold_accuracy_standard_deviation": 0.16335246486593882,
+    "fold_accuracy_standard_error": 0.05445082162197961,
+    "approximate_95_percent_interval": [
+      0.5377208340653644,
+      0.7511680548235246
+    ],
+    "accuracy_by_training_phase_offset": {
+      "0": 0.8999999999999999,
+      "1": 0.55,
+      "2": 0.475,
+      "3": 0.6375,
+      "4": 0.675
+    },
+    "folds": [
+      {
+        "held_out_pair": 0,
+        "training_cycle_first": "training",
+        "training_phase_offset": 0,
+        "accuracy": 0.95
+      },
+      {
+        "held_out_pair": 1,
+        "training_cycle_first": "decode",
+        "training_phase_offset": 1,
+        "accuracy": 0.575
+      },
+      {
+        "held_out_pair": 2,
+        "training_cycle_first": "decode",
+        "training_phase_offset": 2,
+        "accuracy": 0.475
+      },
+      {
+        "held_out_pair": 3,
+        "training_cycle_first": "decode",
+        "training_phase_offset": 3,
+        "accuracy": 0.625
+      },
+      {
+        "held_out_pair": 4,
+        "training_cycle_first": "decode",
+        "training_phase_offset": 4,
+        "accuracy": 0.675
+      },
+      {
+        "held_out_pair": 5,
+        "training_cycle_first": "training",
+        "training_phase_offset": 0,
+        "accuracy": 0.85
+      },
+      {
+        "held_out_pair": 6,
+        "training_cycle_first": "decode",
+        "training_phase_offset": 1,
+        "accuracy": 0.525
+      },
+      {
+        "held_out_pair": 7,
+        "training_cycle_first": "decode",
+        "training_phase_offset": 2,
+        "accuracy": 0.475
+      },
+      {
+        "held_out_pair": 8,
+        "training_cycle_first": "decode",
+        "training_phase_offset": 3,
+        "accuracy": 0.65
+      }
+    ],
+    "window_ms": 5.0,
+    "split": "leave one inference trace and one training trace out per fold"
+  },
+  "per_trace": [
+    {
+      "process": "inference",
+      "index": 0,
+      "phase": "inference",
+      "phase_offset": null,
+      "mean": 0.00432849609375,
+      "std": 0.03067745307448323,
+      "minimum": -0.092529296875,
+      "maximum": 0.139892578125
+    },
+    {
+      "process": "inference",
+      "index": 2,
+      "phase": "inference",
+      "phase_offset": null,
+      "mean": 0.004307578125,
+      "std": 0.029497561004456614,
+      "minimum": -0.099853515625,
+      "maximum": 0.1435546875
+    },
+    {
+      "process": "inference",
+      "index": 4,
+      "phase": "inference",
+      "phase_offset": null,
+      "mean": 0.0043445052083333335,
+      "std": 0.029717131500006138,
+      "minimum": -0.0966796875,
+      "maximum": 0.144775390625
+    },
+    {
+      "process": "inference",
+      "index": 6,
+      "phase": "inference",
+      "phase_offset": null,
+      "mean": 0.0043394677734375,
+      "std": 0.029561398980686743,
+      "minimum": -0.094970703125,
+      "maximum": 0.14453125
+    },
+    {
+      "process": "inference",
+      "index": 8,
+      "phase": "inference",
+      "phase_offset": null,
+      "mean": 0.0043389827473958335,
+      "std": 0.02947014059453059,
+      "minimum": -0.105224609375,
+      "maximum": 0.1474609375
+    },
+    {
+      "process": "inference",
+      "index": 10,
+      "phase": "inference",
+      "phase_offset": null,
+      "mean": 0.004312540690104167,
+      "std": 0.029528254048501748,
+      "minimum": -0.098388671875,
+      "maximum": 0.14453125
+    },
+    {
+      "process": "inference",
+      "index": 12,
+      "phase": "inference",
+      "phase_offset": null,
+      "mean": 0.004336424153645833,
+      "std": 0.029451446930103674,
+      "minimum": -0.10888671875,
+      "maximum": 0.141845703125
+    },
+    {
+      "process": "inference",
+      "index": 14,
+      "phase": "inference",
+      "phase_offset": null,
+      "mean": 0.004303497721354166,
+      "std": 0.02949584651132662,
+      "minimum": -0.086669921875,
+      "maximum": 0.142333984375
+    },
+    {
+      "process": "inference",
+      "index": 16,
+      "phase": "inference",
+      "phase_offset": null,
+      "mean": 0.0043076416015625,
+      "std": 0.029351569153151454,
+      "minimum": -0.104248046875,
+      "maximum": 0.14697265625
+    },
+    {
+      "process": "training",
+      "index": 1,
+      "phase": "training",
+      "phase_offset": 0,
+      "mean": 0.0042871354166666665,
+      "std": 0.027460494420537603,
+      "minimum": -0.123291015625,
+      "maximum": 0.146728515625
+    },
+    {
+      "process": "training",
+      "index": 3,
+      "phase": "decode",
+      "phase_offset": 1,
+      "mean": 0.004288898111979167,
+      "std": 0.02952913163048784,
+      "minimum": -0.10302734375,
+      "maximum": 0.14794921875
+    },
+    {
+      "process": "training",
+      "index": 5,
+      "phase": "decode",
+      "phase_offset": 2,
+      "mean": 0.004333878580729166,
+      "std": 0.029545641768855546,
+      "minimum": -0.10302734375,
+      "maximum": 0.146484375
+    },
+    {
+      "process": "training",
+      "index": 7,
+      "phase": "decode",
+      "phase_offset": 3,
+      "mean": 0.004317809244791667,
+      "std": 0.029396214668516486,
+      "minimum": -0.095703125,
+      "maximum": 0.14208984375
+    },
+    {
+      "process": "training",
+      "index": 9,
+      "phase": "decode",
+      "phase_offset": 4,
+      "mean": 0.004289122721354167,
+      "std": 0.028737437857914754,
+      "minimum": -0.118896484375,
+      "maximum": 0.147216796875
+    },
+    {
+      "process": "training",
+      "index": 11,
+      "phase": "training",
+      "phase_offset": 0,
+      "mean": 0.004279703776041667,
+      "std": 0.026284774694988085,
+      "minimum": -0.121826171875,
+      "maximum": 0.140869140625
+    },
+    {
+      "process": "training",
+      "index": 13,
+      "phase": "decode",
+      "phase_offset": 1,
+      "mean": 0.0043205859375,
+      "std": 0.02951220986520976,
+      "minimum": -0.10595703125,
+      "maximum": 0.151123046875
+    },
+    {
+      "process": "training",
+      "index": 15,
+      "phase": "decode",
+      "phase_offset": 2,
+      "mean": 0.0042850537109375,
+      "std": 0.02947893793396254,
+      "minimum": -0.1044921875,
+      "maximum": 0.146728515625
+    },
+    {
+      "process": "training",
+      "index": 17,
+      "phase": "decode",
+      "phase_offset": 3,
+      "mean": 0.00430236328125,
+      "std": 0.02942876579717083,
+      "minimum": -0.10888671875,
+      "maximum": 0.153564453125
+    }
+  ]
+}

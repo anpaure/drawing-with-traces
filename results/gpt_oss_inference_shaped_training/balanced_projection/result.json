@@ -1,0 +1,166 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "target_parameter": "model.layers.2.self_attn.o_proj.weight",
+  "target_shape": [
+    2880,
+    4096
+  ],
+  "total_rows": 4096,
+  "microbatch_rows": 256,
+  "stream_gemm_shapes": {
+    "forward": [
+      4096,
+      1,
+      4096,
+      2880
+    ],
+    "backward_data": [
+      4096,
+      1,
+      2880,
+      4096
+    ],
+    "backward_weight": [
+      4096,
+      1,
+      4096,
+      2880
+    ]
+  },
+  "useful_flops": {
+    "forward": 96636764160,
+    "backward_data": 96636764160,
+    "backward_weight": 96636764160,
+    "backward_to_forward_ratio": 2.0,
+    "redundant_weight_gradient_flops": 0
+  },
+  "causal_loss_before": 8.129142045974731,
+  "causal_loss_after": 8.117710292339325,
+  "selected_update": {
+    "learning_rate": 0.01,
+    "causal_loss": 8.117710292339325,
+    "changed_elements": 40312,
+    "max_parameter_delta": 6.103515625e-05
+  },
+  "update_trials": [
+    {
+      "learning_rate": 0.0001,
+      "causal_loss": 8.129142045974731,
+      "changed_elements": 442,
+      "max_parameter_delta": 2.384185791015625e-07
+    },
+    {
+      "learning_rate": 0.0003,
+      "causal_loss": 8.129980385303497,
+      "changed_elements": 1287,
+      "max_parameter_delta": 9.5367431640625e-07
+    },
+    {
+      "learning_rate": 0.001,
+      "causal_loss": 8.129414021968842,
+      "changed_elements": 4046,
+      "max_parameter_delta": 3.814697265625e-06
+    },
+    {
+      "learning_rate": 0.003,
+      "causal_loss": 8.132973849773407,
+      "changed_elements": 12149,
+      "max_parameter_delta": 1.52587890625e-05
+    },
+    {
+      "learning_rate": 0.01,
+      "causal_loss": 8.117710292339325,
+      "changed_elements": 40312,
+      "max_parameter_delta": 6.103515625e-05
+    },
+    {
+      "learning_rate": 0.03,
+      "causal_loss": 8.121536374092102,
+      "changed_elements": 119108,
+      "max_parameter_delta": 0.000244140625
+    },
+    {
+      "learning_rate": 0.1,
+      "causal_loss": 8.125157296657562,
+      "changed_elements": 368258,
+      "max_parameter_delta": 0.00048828125
+    }
+  ],
+  "forward_equivalence": {
+    "max_absolute": 0.015625,
+    "mean_absolute": 7.925409590825438e-07,
+    "relative_l2": 7.111703598638996e-05,
+    "equal_fraction": 0.9974481463432312
+  },
+  "inference_forward_equivalence": {
+    "max_absolute": 0.015625,
+    "mean_absolute": 7.925409590825438e-07,
+    "relative_l2": 7.111703598638996e-05,
+    "equal_fraction": 0.9974481463432312
+  },
+  "weight_gradient_equivalence": {
+    "max_absolute": 7.62939453125e-06,
+    "mean_absolute": 2.4914412546928055e-11,
+    "relative_l2": 0.00012525585771072656,
+    "equal_fraction": 0.999595582485199
+  },
+  "input_gradient_equivalence": {
+    "max_absolute": 0.0,
+    "mean_absolute": 0.0,
+    "relative_l2": 0.0,
+    "equal_fraction": 1.0
+  },
+  "comparisons": {
+    "inference_vs_ordinary": {
+      "family_duration_js_similarity": 0.9466928791333798,
+      "exact_kernel_duration_js_similarity": 1.1102230246251565e-16,
+      "family_bigram_js_similarity": 0.0,
+      "family_trigram_js_similarity": 0.0,
+      "launch_gap_js_similarity": 0.35048533070759635,
+      "kernel_duration_js_similarity": 0.24632628937782364,
+      "continuous_kernel_similarity": 0.3612132922839358
+    },
+    "inference_vs_balanced_shaped": {
+      "family_duration_js_similarity": 0.998223562332626,
+      "exact_kernel_duration_js_similarity": 0.8484173327887841,
+      "family_bigram_js_similarity": 0.9937254968302761,
+      "family_trigram_js_similarity": 0.9278976803898884,
+      "launch_gap_js_similarity": 0.8610446440870145,
+      "kernel_duration_js_similarity": 0.9581845493654948,
+      "continuous_kernel_similarity": 0.9399482967507318
+    }
+  },
+  "profiles": {
+    "ordinary_projection_training": {
+      "wall_ms": 35.05530580878258,
+      "actual_cuda_kernel_count": 6,
+      "actual_cuda_busy_ms": 0.5793360000000003,
+      "peak_allocated_bytes": 14198345216,
+      "peak_reserved_bytes": 16859004928
+    },
+    "balanced_inference_shaped_training": {
+      "wall_ms": 1705.19900880754,
+      "actual_cuda_kernel_count": 32872,
+      "actual_cuda_busy_ms": 135.1885510000025,
+      "peak_allocated_bytes": 14452114944,
+      "peak_reserved_bytes": 16884170752
+    },
+    "inference_projection_stream": {
+      "wall_ms": 551.5064662322402,
+      "actual_cuda_kernel_count": 12320,
+      "actual_cuda_busy_ms": 47.149854000001405,
+      "peak_allocated_bytes": 14452100608,
+      "peak_reserved_bytes": 16884170752
+    }
+  },
+  "checksums": {
+    "activations": 32798.1796875,
+    "upstream_gradient": -0.022764291614294052,
+    "ordinary_output": 68032.953125,
+    "shaped_output": 68032.453125,
+    "ordinary_weight_gradient": -0.1791078895330429,
+    "shaped_weight_gradient": -0.17911522090435028
+  },
+  "torch": "2.10.0+cu130",
+  "cuda": "13.0"
+}

@@ -212,6 +212,7 @@ reported FLOPs and drawing-vs-no-drawing timing.
 
 - [Experiment and implementation guide](docs/EXPERIMENT.md)
 - [Resolution and controller ablations](docs/RESULTS.md)
+- [GPT-OSS inference-shaped-training experiment](experiments/gpt_oss_inference_shaped_training/README.md)
 - [Compact published metrics](results/logo-100ms-120-active-lead/published_summary.json)
 - [112-layer residual-MLP compact metrics](results/resmlp-depth112-100ms-120/published_summary.json)
 - [Residual-MLP compact metrics](results/resmlp-v1-100ms-120/published_summary.json)

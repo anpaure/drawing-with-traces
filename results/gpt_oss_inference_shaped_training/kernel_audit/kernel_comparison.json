@@ -1,0 +1,49 @@
+{
+  "profiles": {
+    "decode": {
+      "wall_ms": 166.26950073987246,
+      "actual_cuda_kernel_count": 1641,
+      "actual_cuda_busy_ms": 6.2621580000000225,
+      "peak_allocated_bytes": 13823183360,
+      "peak_reserved_bytes": 17223909376
+    },
+    "training_forward": {
+      "wall_ms": 130.36123104393482,
+      "actual_cuda_kernel_count": 1498,
+      "actual_cuda_busy_ms": 7.252222999999839,
+      "peak_allocated_bytes": 13866496512,
+      "peak_reserved_bytes": 19549650944
+    },
+    "training_backward": {
+      "wall_ms": 125.66897738724947,
+      "actual_cuda_kernel_count": 1733,
+      "actual_cuda_busy_ms": 7.211491999999939,
+      "peak_allocated_bytes": 17453772288,
+      "peak_reserved_bytes": 19549650944
+    },
+    "optimizer_step": {
+      "wall_ms": 26.04464814066887,
+      "actual_cuda_kernel_count": 88,
+      "actual_cuda_busy_ms": 12.642337999999976,
+      "peak_allocated_bytes": 19769891328,
+      "peak_reserved_bytes": 24765267968
+    }
+  },
+  "comparisons_to_decode": {
+    "training_forward": {
+      "exact_kernel_duration_jaccard": 0.4454701233898636,
+      "family_duration_jaccard": 0.8107998018547299,
+      "family_sequence_match": 0.9206753743230328
+    },
+    "training_backward": {
+      "exact_kernel_duration_jaccard": 0.08496589081081833,
+      "family_duration_jaccard": 0.43697612439583866,
+      "family_sequence_match": 0.5542382928275045
+    },
+    "optimizer_step": {
+      "exact_kernel_duration_jaccard": 0.0,
+      "family_duration_jaccard": 0.0,
+      "family_sequence_match": 0.0
+    }
+  }
+}
