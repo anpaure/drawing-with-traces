@@ -1,226 +1,137 @@
-# Drawing with traces
+# Can full-parameter Llama training look like inference in a power trace?
 
-Draw a PNG silhouette with the **measured power activity of real GPU model training**.
+This branch contains the **continuous whole-model Llama experiment**. It compares real cached inference
+with real full-parameter training as seen by an external current probe. The PNG-drawing project remains
+on [`main`](https://github.com/anpaure/drawing-with-traces/tree/main); the earlier GPT-OSS study is on
+[`experiment/gpt-oss-inference-shaped-training`](https://github.com/anpaure/drawing-with-traces/tree/experiment/gpt-oss-inference-shaped-training).
 
-This is a standalone experiment built on [SideCapture](https://github.com/anpaure/sidecapture).
-It uses a ChipWhisperer Husky Plus to capture an H100 PCIe while a hand-tiled training gradient changes
-GEMM width over time. The plotted result is measured data: it is not synthesized, shifted, or warped.
+![Experiment, result, and limits](results/llama_continuous_whole_model/readme_explainer.png)
 
-![Best practical model-training silhouette](results/resmlp-depth112-100ms-120/measured_silhouette.png)
+## Answer
 
-## Best practical model-training result
+**Partly, at a real cost.** Ordinary training is essentially trivial to distinguish from inference.
+The best tested schedule performs one genuine training update and then 12 genuine NF4 cached-decode
+tokens. It makes short power windows substantially harder to classify, but it does not erase the
+training signal.
 
-The current result trains a genuine **112-layer, 1,879,048,192-parameter residual MLP**. Lowering the
-batch from 4096 to 2048 makes narrow gradient tiles electrically distinct again; doubling model depth
-keeps ordinary training substantial, so the fixed 100 ms drawing window costs only 1.74× throughput.
+| External monitor result | Ordinary training | Best schedule |
+|---|---:|---:|
+| 5 ms ridge balanced accuracy | **99.98%** | **62.77%** |
+| 5 ms raw-waveform CNN | — | **71.70%** |
+| 100 ms ridge balanced accuracy | **100.00%** | **77.73%** |
+| Stationary signal similarity to inference | 0.678 | **0.896** |
+| Useful causal-loss targets/s | 356 | **307** |
 
-| Property | 112-layer residual-MLP result |
-|---|---:|
-| Profile duration | **100.037 ms measured** |
-| Distinct target positions | **120** (0.833 ms each) |
-| ChipWhisperer capture | **1.5 MSPS burst**, 165,000 samples |
-| Multiscale / native / smoothed fidelity | **93.66% / 92.97% / 94.43%** |
-| Pearson correlation / R² | **0.9791 / 0.9504** |
-| PyTorch autograd gradient error | **exactly zero** in BF16 |
-| Tiled versus untiled gradient error | **exactly zero** |
-| Train loss for promoted step | **0.276909 → 0.276827** |
-| Held-out loss for promoted step | **0.277317 → 0.277244** |
-| Drawing / ordinary training | **4.93 / 8.61 steps/s** (median) |
-| Drawing slowdown | **1.74×**; **57.3%** throughput retained |
+Chance is 50%. Splits hold out complete workload sessions, not random windows from the same trace.
+The 307 targets/s result retains 86% of the original 8-bit-Adam baseline, but only 33% of the faster
+no-cover fused-Adam implementation. The camouflage is useful computation, not free computation.
 
-The promoted picture is one unaveraged physical trace, not the median feedback curve. All 25 accepted
-captures passed SideCapture health checks. The curated raw evidence and independent recomputation are in
-[`results/resmlp-depth112-100ms-120`](results/resmlp-depth112-100ms-120).
+## What actually ran
 
-## Highest absolute waveform score (linear workload)
+### Inference reference
 
-| Property | Result |
-|---|---:|
-| Profile duration | **100.019 ms measured** |
-| Distinct target positions | **120** (0.833 ms each) |
-| ChipWhisperer capture | **1.5 MSPS burst**, 165,000 samples |
-| GPU / model | H100 PCIe / 16,777,216 parameters |
-| Multiscale fidelity | **94.26%** |
-| Native-bin fidelity | **94.42%** |
-| Smoothed fidelity | **94.09%** |
-| Pearson correlation | **0.9790** |
-| R² | **0.9441** |
-| Train loss for promoted step | **0.40575 → 0.34279** |
-| Held-out loss for promoted step | **0.93094 → 0.92316** |
-| Gradient relative L2 error vs untiled | **7.41 × 10⁻⁷** |
-| Drawing / ordinary training | **9.57 / 1764.56 steps/s** |
+- `meta-llama/Llama-3.1-8B`, all 32 layers;
+- NF4 double-quantized weights with BF16 compute;
+- changing prompt prefills and genuine autoregressive KV-cached decode.
 
-The complete 17 MB result is committed under
-[`results/logo-100ms-120-active-lead`](results/logo-100ms-120-active-lead). It includes all raw
-SideCapture records, annotations, tile commands, health reports, calibration, candidate plots, training
-metrics, and a compact [`published_summary.json`](results/logo-100ms-120-active-lead/published_summary.json).
-The promoted result is capture **5**, accepted on its first attempt with all 165,000 samples present,
-no ADC clipping, no annotation bounds errors, and no health issues.
+### Training target
 
-## Earlier 14-layer residual-MLP result
+- the same 32-layer architecture in BF16;
+- all **8,030,261,248 parameters** and all 291 parameter tensors trainable;
+- causal loss, full forward, reverse-mode backward, and AdamW update;
+- changing token slices; every parameter tensor receives a gradient and belongs to the optimizer.
 
-The repository now also contains a closer Fable-style workload: a genuine **14-layer, 234,881,024
-parameter residual MLP** with a handwritten tiled forward/backward pass.
+### Best schedule
 
-![Residual MLP measured silhouette](results/resmlp-v1-100ms-120/measured_silhouette.png)
+- one complete fused-AdamW training update;
+- then 12 real decode tokens from a second NF4 model with a real KV cache;
+- repeated continuously before the scope is armed.
 
-| Property | Residual-MLP result |
-|---|---:|
-| Multiscale / native / smoothed fidelity | **93.08% / 92.11% / 94.21%** |
-| PyTorch autograd gradient error | **exactly zero** in BF16 |
-| Tiled versus untiled gradient error | **exactly zero** |
-| Train loss for promoted step | **0.07250 → 0.07174** |
-| Held-out loss for promoted step | **0.08020 → 0.08000** |
-| Drawing / ordinary training | **9.10 / 125.31 steps/s** (median) |
-| Drawing slowdown | **13.77×**, versus 184.39× for the linear workload |
+The monitor receives only current-probe ADC samples. It does not receive CUDA markers, iteration
+boundaries, labels, loss, model metadata, NVML, or host timing. Every 100 ms capture starts after an
+independent random 0–500 ms armed delay.
 
-This was the first substantial residual-model result. The 112-layer workload now improves its fidelity
-from 93.08% to 93.66% and reduces slowdown from 13.77× to 1.74×. The curated 14-layer result includes the
-promoted physical trace, annotations, commands, layer/column coverage, health record, plots, and
-independently recomputed checksums under
-[`results/resmlp-v1-100ms-120`](results/resmlp-v1-100ms-120).
+![Representative measured power comparison](results/llama_continuous_whole_model/final_eval/fused-cover12/continuous_power_overview.png)
 
-## One-command reproduction
+## What worked—and what failed
+
+1. **Real inference cover worked best.** It changes the whole kernel and physical process, including
+   cadence, quantized GEMMs, memory traffic, and idle gaps.
+2. **Making individual matmuls look like decode did not work.** Exact token-row decomposition made 96%
+   of profiled ATen GEMMs use `M=1`, yet kernel-process similarity fell from 0.411 to 0.342 and useful
+   training throughput fell about 30×.
+3. **Marginal waveform similarity was not enough.** Randomized cover reached the highest stationary
+   similarity (0.931) but was easier to detect than fixed cover-12. Layer-interleaved cover reached
+   0.919 similarity but 96.88% detector accuracy at 100 ms because its cadence was regular.
+4. **Longer observation still helps the defender.** The best ridge result rises from 62.77% at 5 ms to
+   77.73% at 100 ms, and the raw CNN reaches 71.70% at 5 ms.
+
+The practical lesson is that matching one kernel shape, spectrum, or amplitude distribution is only a
+proxy. The objective must be evaluated with held-out temporal detectors on the physical channel.
+
+## What this proves—and does not prove
+
+**Supported by this experiment**
+
+- An adaptive scheduler can materially manipulate a power-only workload classifier.
+- Full-parameter transformer training can continue while real inference cover changes its measured
+  signature.
+- Short observation windows are much more vulnerable than long ones.
+
+**Not supported**
+
+- Backward or AdamW became mathematically equivalent to inference.
+- Training is universally indistinguishable: both tested detectors retain signal.
+- Every sensor is broken. A faster, independent, longer-horizon, or multi-modal monitor may do better.
+- The result transfers unchanged to another GPU, probe, model, serving mix, or software stack.
+
+## Comparison with `jacobcd52/silhouette`
+
+[`jacobcd52/silhouette`](https://github.com/jacobcd52/silhouette) is a useful implementation of a
+related but different problem. Its strongest documented 2-second controller identifies an A100→NVML
+channel, deconvolves it, and uses iterative learning control to reproduce an arbitrary contour. Its
+reported training-on run reaches 3.05% mean absolute error over the target span and 0.9876 correlation.
+
+| | This branch | `silhouette` at commit `7042c4e` |
+|---|---|---|
+| Goal | Make independently defined inference and training harder to classify | Draw a chosen target curve |
+| Sensor | External clamp + ChipWhisperer, 1.5 MSPS | In-process NVML, 49.8 Hz |
+| Workload | Whole Llama training continuously, plus decode cover | ResNet-18 training for 67% of the trace; calibrated filler matmuls elsewhere |
+| Control | Fixed schedules evaluated on held-out sessions | System identification, deconvolution, and target-specific feedback |
+| Primary evidence | Inference-vs-training detector accuracy | Replay MAE/correlation to the chosen contour |
+
+`silhouette` is stronger at **closed-loop waveform tracking**. This branch is stronger evidence for
+**workload camouflage against an external observer**. The former does not test whether training looks
+like an independent inference process; the latter does not attempt to draw an arbitrary target.
+See its [controller](https://github.com/jacobcd52/silhouette/blob/7042c4eac5a7456fa38e0d8821189da8db5b0378/power_trace_2s.py),
+[workload engine](https://github.com/jacobcd52/silhouette/blob/7042c4eac5a7456fa38e0d8821189da8db5b0378/s2s.py),
+and [2-second analysis](https://github.com/jacobcd52/silhouette/blob/7042c4eac5a7456fa38e0d8821189da8db5b0378/ANALYSIS_2S.md).
+
+## Reproduce and inspect
+
+The hardware run requires the cached Llama checkpoint, SideCapture, the validated ChipWhisperer fork,
+and the installed H100 sensor chain.
 
 ```bash
-python -m pip install -e .
+python experiments/llama_continuous_whole_model/benchmark_schedule.py \
+  --sequence-length 128 --optimizer adamw_fused \
+  --cover-decode-tokens-per-microbatch 12 \
+  --output runs/fused-cover12-benchmark.json
 
-draw-power-png assets/logo-top.png \
-  --output runs/logo-resmlp-depth112-100ms \
-  --engine timed \
-  --training-model residual-mlp \
-  --residual-depth 112 \
-  --drawing-layer-count 112 \
-  --residual-scale 0.04419417382415922 \
-  --residual-learning-rate 0.0000002 \
-  --silhouette-mode upper-boundary \
-  --points 120 \
-  --duration-ms 100 \
-  --capture-window-ms 110 \
-  --sample-rate 1.5MHz \
-  --batch-size 2048 \
-  --minimum-tile-width 32 \
-  --maximum-tile-width 3072 \
-  --trace-feature diff_rms \
-  --target-accuracy 96 \
-  --max-refinements 8 \
-  --replicates-per-refinement 3 \
-  --ilc-feedback-reference latest \
-  --ilc-correction-smoothing 0.7
+python experiments/llama_continuous_whole_model/capture_continuous.py \
+  --mode inference --session-id inference-00 \
+  --output-dir runs/fused-cover12 --captures 8
+
+python experiments/llama_continuous_whole_model/capture_continuous.py \
+  --mode training --session-id training-00 \
+  --output-dir runs/fused-cover12 --captures 8 \
+  --optimizer adamw_fused --cover-decode-tokens-per-microbatch 12
+
+python experiments/llama_continuous_whole_model/analyze_continuous.py \
+  --root runs/fused-cover12
 ```
 
-For the earlier 14-layer residual MLP, use:
-
-```bash
-  --training-model residual-mlp \
-  --residual-depth 14 \
-  --residual-scale 0.125 \
-  --residual-learning-rate 0.002 \
-  --batch-size 256
-```
-
-This requires the installed H100/ChipWhisperer setup and SideCapture's hardware dependencies. Model and
-scope setup happen once. Every accepted drawing capture applies another optimizer step to the same
-persistent model.
-
-## What actually runs
-
-The original workload is a teacher–student linear model with the objective
-
-```text
-loss = 0.5 / batch × ||XW − Y||²
-gradient = Xᵀ(XW − Y) / batch
-```
-
-Each controlled block computes a real forward tile `X @ W[:, start:end]` and its real weight-gradient
-tile `X.T @ residual[:, start:end]`. Tile width changes Tensor Core occupancy and therefore measured
-power activity. Visits to an output column are averaged before deferred SGD, so scheduling changes the
-power waveform without changing the intended gradient. The result is numerically equivalent to the
-untiled BF16 gradient to approximately `7.4e-7` relative L2 for the promoted step.
-
-The residual engine trains
-
-```text
-h[l + 1] = h[l] + scale × relu(h[l] W[l])
-loss       = 0.5 / batch × ||h[depth] − Y||²
-```
-
-The promoted 112-layer run uses width 4096, scale `0.04419417382415922`, and batch 2048. It prepares the
-real reverse-mode delta for every layer, then schedules true blocks of `h[l].T @ delta[l]` across the 100
-ms profile. The scheduler traverses layers and output columns rather than replaying a fake burner kernel.
-Repeated visits are averaged, missing blocks are completed after capture, and the accepted update is
-compared with both an untiled handwritten gradient and PyTorch autograd. Both comparisons were
-bit-for-bit exact in the verified H100 run.
-
-### Why drawing is slower
-
-The fixed 100 ms profile imposes a hard throughput ceiling near 10 steps/s. The 14-layer model's ordinary
-step was only about 8 ms, so drawing made it 13.77× slower. The 112-layer model deliberately performs
-substantial ordinary training: its measured no-drawing step is about 116 ms, versus about 202 ms while
-drawing. Narrower batch geometry restores waveform control, while extra depth keeps useful training
-compute high. Repeated visits are averaged and missing blocks are completed, yielding 1.74× median
-slowdown rather than 13.77× or the linear workload's 184×.
-
-## Why the active baseline matters
-
-Earlier versions mapped target zero to GPU idle. That allowed H100 SM clocks to collapse between low
-bins and made the next power level depend on DVFS history. The verified linear and 14-layer paths use a
-128-column active floor. The 112-layer geometry remains separable down to a real 32-column gradient tile:
-
-- maps the lowest target level to a real **32-column gradient tile**;
-- runs that same narrow tile during the 2 ms lead period;
-- calibrates widths from 32 through 3072;
-- uses 120 **distinct target positions**, with no repeated target block inside the trace.
-
-`--replicates-per-refinement 3` means three separate physical training captures are used to form robust
-median feedback for one ILC round. It does **not** repeat or average blocks inside the promoted trace.
-The published picture and score belong to one unaveraged capture.
-
-## Measurement and score
-
-The Husky input is AC-coupled, so this experiment reports normalized ChipWhisperer activity rather than
-calibrated watts. The new result preselects `diff_rms`—RMS of adjacent ADC-sample differences inside each
-bin—based only on calibration, before seeing a drawing trace. It uses target-free 2nd/98th-percentile
-normalization. No target-aware affine fitting is applied.
-
-To prevent display smoothing from hiding bin-scale ripple, the primary fidelity combines native and
-smoothed errors:
-
-```text
-multiscale_rmse = sqrt((raw_rmse² + smoothed_rmse²) / 2)
-fidelity        = 100 × (1 − multiscale_rmse)
-```
-
-The faint red line in the plot is the native 120-bin measurement; the solid line is the sigma-2 scored
-curve. Both metrics are stored. “Fidelity” here is a waveform score, not classification accuracy.
-
-## SideCapture integrity
-
-SideCapture owns acquisition and durability:
-
-- plans, arms, and reads the Husky;
-- maps CUDA/host annotations into ADC sample boundaries;
-- validates length, finite values, variance, flatlines, clipping, and bounds;
-- retries failed acquisitions and recovers the sampler;
-- crash-safely commits raw channels, records, annotations, artifacts, and provenance.
-
-The workload update is transactional. A rejected trace clears accumulated gradients; only an accepted
-trace applies SGD. Post-profile gradient completion and active-lead arithmetic are included in the
-reported FLOPs and drawing-vs-no-drawing timing.
-
-## More documentation
-
-- [Experiment and implementation guide](docs/EXPERIMENT.md)
-- [Resolution and controller ablations](docs/RESULTS.md)
-- [GPT-OSS inference-shaped-training experiment](experiments/gpt_oss_inference_shaped_training/README.md)
-- [Continuous whole-model Llama experiment](experiments/llama_continuous_whole_model/README.md)
-- [Compact published metrics](results/logo-100ms-120-active-lead/published_summary.json)
-- [112-layer residual-MLP compact metrics](results/resmlp-depth112-100ms-120/published_summary.json)
-- [Residual-MLP compact metrics](results/resmlp-v1-100ms-120/published_summary.json)
-
-## Earlier modes
-
-The repository retains the original smooth 10 ms/20-bin result under
-[`results/fast-10ms`](results/fast-10ms) and a 100 ms/60-bin result under
-[`results/fast-100ms`](results/fast-100ms). Their older headline scores use only smoothed RMSE and are
-therefore not directly comparable to the stricter multiscale fidelity above.
+- [Compact final metrics](results/llama_continuous_whole_model/final_summary.json)
+- [Kernel audit](results/llama_continuous_whole_model/kernel_audit_summary.json)
+- [Hardware and software provenance](results/llama_continuous_whole_model/provenance.json)
+- [Method and file guide](experiments/llama_continuous_whole_model/README.md)
