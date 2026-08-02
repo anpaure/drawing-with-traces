@@ -30,6 +30,7 @@ class SharedCarrierConfig:
         "inference-balanced",
         "inference-balanced-strided",
     ] = "direct"
+    gemm_backend: Literal["torch-mm", "identical-triton"] = "torch-mm"
 
     def __post_init__(self) -> None:
         if self.row_tile < 1:
@@ -47,12 +48,21 @@ class SharedCarrierConfig:
                 "weight_gradient_layout must be direct, inference-balanced, "
                 "or inference-balanced-strided"
             )
+        if self.gemm_backend not in {"torch-mm", "identical-triton"}:
+            raise ValueError("gemm_backend must be torch-mm or identical-triton")
 
     def metadata(self) -> dict[str, Any]:
         return {
             **asdict(self),
-            "carrier": "custom autograd schedule over torch.mm/cuBLAS",
+            "carrier": (
+                "one runtime-shape/stride Triton GEMM binary"
+                if self.gemm_backend == "identical-triton"
+                else "custom autograd schedule over torch.mm/cuBLAS"
+            ),
             "single_vendor_kernel_binary_claimed": False,
+            "single_compiled_kernel_binary_requires_runtime_audit": (
+                self.gemm_backend == "identical-triton"
+            ),
             "all_carrier_gemms_are_useful_training_arithmetic": True,
         }
 
@@ -65,6 +75,7 @@ class CarrierExecutionPlan:
     input_features: int
     output_features: int
     row_tile: int
+    gemm_backend: str
     weight_gradient_layout: str
     forward_launches: int
     input_gradient_launches: int
@@ -86,6 +97,7 @@ class SharedCarrierGradientAudit:
 
     schedule: str
     weight_gradient_layout: str
+    gemm_backend: str
     registered_modules: int
     registered_parameter_tensors: int
     recorded_invocations: int
@@ -148,6 +160,7 @@ class SharedCarrierGradientScheduler:
             "inference-balanced",
             "inference-balanced-strided",
         ] = "direct",
+        gemm_backend: Literal["torch-mm", "identical-triton"] = "torch-mm",
     ) -> None:
         if row_tile < 1:
             raise ValueError("row_tile must be positive")
@@ -162,9 +175,12 @@ class SharedCarrierGradientScheduler:
                 "weight_gradient_layout must be direct, inference-balanced, "
                 "or inference-balanced-strided"
             )
+        if gemm_backend not in {"torch-mm", "identical-triton"}:
+            raise ValueError("gemm_backend must be torch-mm or identical-triton")
         self.row_tile = int(row_tile)
         self.tasks_per_record = int(tasks_per_record)
         self.weight_gradient_layout = weight_gradient_layout
+        self.gemm_backend = gemm_backend
         self._registrations: dict[str, tuple[int, Tensor, bool]] = {}
         self._records: list[_GradientRecord] = []
         self._states: list[_GradientState] = []
@@ -180,6 +196,7 @@ class SharedCarrierGradientScheduler:
         self._last_audit = SharedCarrierGradientAudit(
             schedule="streaming-inference-cycle",
             weight_gradient_layout=self.weight_gradient_layout,
+            gemm_backend=self.gemm_backend,
             registered_modules=0,
             registered_parameter_tensors=0,
             recorded_invocations=0,
@@ -331,13 +348,18 @@ class SharedCarrierGradientScheduler:
     @torch.no_grad()
     def _execute(self, state: _GradientState) -> None:
         destination, left, right = state.tasks[state.next_task]
-        if (
+        accumulate = (
             state.transposed_gradient is None
             and id(state.record.weight) in self._deferred_parameter_ids
-        ):
-            destination.addmm_(left, right)
-        else:
-            torch.mm(left, right, out=destination)
+            and self.gemm_backend == "torch-mm"
+        )
+        _matrix_multiply_into(
+            left,
+            right,
+            destination,
+            backend=self.gemm_backend,
+            accumulate=accumulate,
+        )
         family = self._projection_family(state.record.module_name)
         self._execution_families.append(family)
         self._execution_geometries.append(
@@ -447,6 +469,7 @@ class SharedCarrierGradientScheduler:
         self._last_audit = SharedCarrierGradientAudit(
             schedule="streaming-inference-cycle",
             weight_gradient_layout=self.weight_gradient_layout,
+            gemm_backend=self.gemm_backend,
             registered_modules=len(self._registrations),
             registered_parameter_tensors=len(self.parameter_ids),
             recorded_invocations=len(self._records),
@@ -488,7 +511,39 @@ def _validate_matrix(name: str, value: Tensor) -> None:
         raise ValueError(f"{name} must be a matrix, got shape {tuple(value.shape)}")
 
 
-def tiled_mm(lhs: Tensor, rhs: Tensor, *, row_tile: int) -> Tensor:
+def _matrix_multiply_into(
+    lhs: Tensor,
+    rhs: Tensor,
+    output: Tensor,
+    *,
+    backend: Literal["torch-mm", "identical-triton"],
+    accumulate: bool = False,
+) -> None:
+    if backend == "torch-mm":
+        if accumulate:
+            output.addmm_(lhs, rhs)
+        else:
+            torch.mm(lhs, rhs, out=output)
+        return
+    if backend != "identical-triton":
+        raise ValueError(f"unknown GEMM backend: {backend!r}")
+    if accumulate:
+        raise RuntimeError(
+            "identical Triton GEMM deliberately has one overwrite-only epilogue; "
+            "shared linear parameters must have one carrier contribution"
+        )
+    from ..llama_identical_microkernel_carrier.backend import triton_mm_into
+
+    triton_mm_into(lhs, rhs, output)
+
+
+def tiled_mm(
+    lhs: Tensor,
+    rhs: Tensor,
+    *,
+    row_tile: int,
+    backend: Literal["torch-mm", "identical-triton"] = "torch-mm",
+) -> Tensor:
     """Compute ``lhs @ rhs`` as independent fixed-row cuBLAS launches."""
 
     _validate_matrix("lhs", lhs)
@@ -500,7 +555,12 @@ def tiled_mm(lhs: Tensor, rhs: Tensor, *, row_tile: int) -> Tensor:
     output = lhs.new_empty((lhs.shape[0], rhs.shape[1]))
     for start in range(0, lhs.shape[0], row_tile):
         end = min(start + row_tile, lhs.shape[0])
-        torch.mm(lhs[start:end], rhs, out=output[start:end])
+        _matrix_multiply_into(
+            lhs[start:end],
+            rhs,
+            output[start:end],
+            backend=backend,
+        )
     return output
 
 
@@ -509,6 +569,7 @@ def tiled_weight_gradient(
     grad_output: Tensor,
     *,
     row_tile: int,
+    backend: Literal["torch-mm", "identical-triton"] = "torch-mm",
 ) -> Tensor:
     """Compute exact ``dW = dY.T @ X`` in fixed output-row tiles."""
 
@@ -521,7 +582,12 @@ def tiled_weight_gradient(
     gradient = x.new_empty((grad_output.shape[1], x.shape[1]))
     for start in range(0, grad_output.shape[1], row_tile):
         end = min(start + row_tile, grad_output.shape[1])
-        torch.mm(grad_output[:, start:end].transpose(0, 1), x, out=gradient[start:end])
+        _matrix_multiply_into(
+            grad_output[:, start:end].transpose(0, 1),
+            x,
+            gradient[start:end],
+            backend=backend,
+        )
     return gradient
 
 
@@ -530,6 +596,7 @@ def tiled_inference_balanced_weight_gradient(
     grad_output: Tensor,
     *,
     row_tile: int,
+    backend: Literal["torch-mm", "identical-triton"] = "torch-mm",
 ) -> Tensor:
     """Compute exact dW while preferring forward-inference GEMM geometry.
 
@@ -545,8 +612,18 @@ def tiled_inference_balanced_weight_gradient(
     if x.shape[0] != grad_output.shape[0]:
         raise ValueError("x and grad_output must have the same row count")
     if x.shape[0] != x.shape[1]:
-        return tiled_weight_gradient(x, grad_output, row_tile=row_tile)
-    transposed = tiled_mm(x.transpose(0, 1), grad_output, row_tile=row_tile)
+        return tiled_weight_gradient(
+            x,
+            grad_output,
+            row_tile=row_tile,
+            backend=backend,
+        )
+    transposed = tiled_mm(
+        x.transpose(0, 1),
+        grad_output,
+        row_tile=row_tile,
+        backend=backend,
+    )
     return transposed.transpose(0, 1).contiguous()
 
 
@@ -578,6 +655,7 @@ def execution_plan(
         input_features=input_features,
         output_features=output_features,
         row_tile=config.row_tile,
+        gemm_backend=config.gemm_backend,
         weight_gradient_layout=(
             (
                 "transposed-strided"
@@ -624,7 +702,12 @@ class _SharedCarrierLinearFunction(torch.autograd.Function):
                 f"{config.expected_training_rows} flattened rows; got {flat_x.shape[0]}"
             )
         matrix = weight if weight_is_transposed else weight.transpose(0, 1)
-        output = tiled_mm(flat_x, matrix, row_tile=config.row_tile)
+        output = tiled_mm(
+            flat_x,
+            matrix,
+            row_tile=config.row_tile,
+            backend=config.gemm_backend,
+        )
         if bias is not None:
             output.add_(bias)
         ctx.save_for_backward(flat_x, weight)
@@ -649,6 +732,7 @@ class _SharedCarrierLinearFunction(torch.autograd.Function):
                 flat_grad_output,
                 input_matrix,
                 row_tile=config.row_tile,
+                backend=config.gemm_backend,
             ).reshape(ctx.input_shape)
 
         grad_weight = None
@@ -659,18 +743,21 @@ class _SharedCarrierLinearFunction(torch.autograd.Function):
                         flat_x.transpose(0, 1),
                         flat_grad_output,
                         row_tile=config.row_tile,
+                        backend=config.gemm_backend,
                     )
                 elif config.weight_gradient_layout == "inference-balanced":
                     grad_weight = tiled_inference_balanced_weight_gradient(
                         flat_x,
                         flat_grad_output,
                         row_tile=config.row_tile,
+                        backend=config.gemm_backend,
                     )
                 else:
                     grad_weight = tiled_weight_gradient(
                         flat_x,
                         flat_grad_output,
                         row_tile=config.row_tile,
+                        backend=config.gemm_backend,
                     )
             else:
                 ctx.scheduler.record(
@@ -727,6 +814,8 @@ class SharedCarrierLinear(nn.Module):
                 raise ValueError(
                     "scheduler and shared-carrier weight-gradient layouts must match"
                 )
+            if scheduler.gemm_backend != config.gemm_backend:
+                raise ValueError("scheduler and shared-carrier GEMM backends must match")
             if not module_name:
                 raise ValueError("deferred shared-carrier dW requires a module name")
             scheduler.register(

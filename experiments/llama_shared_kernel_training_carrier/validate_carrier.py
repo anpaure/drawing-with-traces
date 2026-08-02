@@ -33,6 +33,11 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("direct", "inference-balanced", "inference-balanced-strided"),
         default="direct",
     )
+    parser.add_argument(
+        "--gemm-backend",
+        choices=("torch-mm", "identical-triton"),
+        default="torch-mm",
+    )
     parser.add_argument("--streaming-dw-tasks-per-record", type=int, default=5)
     parser.add_argument("--learning-rate", type=float, default=3e-4)
     parser.add_argument("--optimizer-bucket-size", type=int, default=8)
@@ -54,6 +59,7 @@ def main() -> None:
         row_tile=args.row_tile,
         expected_training_rows=flattened_rows,
         weight_gradient_layout=args.weight_gradient_layout,
+        gemm_backend=args.gemm_backend,
     )
     scheduler = (
         None
@@ -62,6 +68,7 @@ def main() -> None:
             row_tile=args.row_tile,
             tasks_per_record=args.streaming_dw_tasks_per_record,
             weight_gradient_layout=args.weight_gradient_layout,
+            gemm_backend=args.gemm_backend,
         )
     )
     torch.manual_seed(args.seed)
@@ -117,6 +124,12 @@ def main() -> None:
         manual_update_bucket_size=args.optimizer_bucket_size,
     )
     carrier_optimizer.zero_grad(set_to_none=False)
+    if args.gemm_backend == "identical-triton":
+        from ..llama_identical_microkernel_carrier.backend import (
+            reset_identical_kernel_audit,
+        )
+
+        reset_identical_kernel_audit()
     carrier_start = torch.cuda.Event(enable_timing=True)
     carrier_end = torch.cuda.Event(enable_timing=True)
     carrier_start.record()
@@ -134,6 +147,13 @@ def main() -> None:
             deferred_parameter_ids=carrier_optimizer.deferred_parameter_ids,
         )
     carrier_optimizer.step_deferred()
+    identical_kernel_audit = None
+    if args.gemm_backend == "identical-triton":
+        from ..llama_identical_microkernel_carrier.backend import (
+            lock_identical_kernel_audit,
+        )
+
+        identical_kernel_audit = lock_identical_kernel_audit().to_dict()
     carrier_end.record()
     carrier_end.synchronize()
 
@@ -183,6 +203,8 @@ def main() -> None:
         "carrier": config.metadata(),
         "weight_gradient_schedule": args.weight_gradient_schedule,
         "weight_gradient_layout": args.weight_gradient_layout,
+        "gemm_backend": args.gemm_backend,
+        "identical_kernel_audit": identical_kernel_audit,
         "streaming_dw_tasks_per_record": (
             args.streaming_dw_tasks_per_record if scheduler is not None else None
         ),

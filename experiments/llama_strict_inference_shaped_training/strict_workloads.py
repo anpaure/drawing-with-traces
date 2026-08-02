@@ -55,6 +55,9 @@ class StrictWorkloadConfig:
     shared_carrier_weight_gradient_layout: Literal[
         "direct", "inference-balanced", "inference-balanced-strided"
     ] = "direct"
+    shared_carrier_gemm_backend: Literal[
+        "torch-mm", "identical-triton"
+    ] = "torch-mm"
     weight_gradient_schedule: Literal[
         "inline",
         "round-robin",
@@ -100,6 +103,13 @@ class StrictWorkloadConfig:
                 "shared_carrier_weight_gradient_layout must be direct, "
                 "inference-balanced, or inference-balanced-strided"
             )
+        if self.shared_carrier_gemm_backend not in {
+            "torch-mm",
+            "identical-triton",
+        }:
+            raise ValueError(
+                "shared_carrier_gemm_backend must be torch-mm or identical-triton"
+            )
         if not self.session_id:
             raise ValueError("session_id cannot be empty")
         for name in (
@@ -119,7 +129,10 @@ class StrictWorkloadConfig:
         if self.shaping_backend == "shared-carrier":
             if self.weight_gradient_schedule not in {"inline", "streaming-inference-cycle"}:
                 raise ValueError("shared-carrier supports only inline or streaming-inference-cycle dW")
-            if self.training_batch_size * self.training_sequence_length % self.tile_rows:
+            if (
+                self.mode == "shaped-training"
+                and self.training_batch_size * self.training_sequence_length % self.tile_rows
+            ):
                 raise ValueError("shared-carrier flattened training rows must be divisible by tile_rows")
             if self.kernel_launch_period_us:
                 raise ValueError("shared-carrier does not support host kernel pacing")
@@ -128,6 +141,10 @@ class StrictWorkloadConfig:
         elif self.shared_carrier_weight_gradient_layout != "direct":
             raise ValueError(
                 "inference-balanced dW layout requires --shaping-backend shared-carrier"
+            )
+        elif self.shared_carrier_gemm_backend != "torch-mm":
+            raise ValueError(
+                "identical-triton GEMM requires --shaping-backend shared-carrier"
             )
         if self.warmup_updates < 1:
             raise ValueError("warmup_updates must be positive for CUDA graph allocation stability")
@@ -343,12 +360,14 @@ def _training_process(
                 row_tile=config.tile_rows,
                 expected_training_rows=(config.training_batch_size * config.training_sequence_length),
                 weight_gradient_layout=config.shared_carrier_weight_gradient_layout,
+                gemm_backend=config.shared_carrier_gemm_backend,
             )
             if config.weight_gradient_schedule != "inline":
                 gradient_scheduler = SharedCarrierGradientScheduler(
                     row_tile=config.tile_rows,
                     tasks_per_record=config.streaming_weight_gradient_tasks_per_record,
                     weight_gradient_layout=config.shared_carrier_weight_gradient_layout,
+                    gemm_backend=config.shared_carrier_gemm_backend,
                 )
             shaped_names = replace_linear_modules_with_shared_carrier(
                 model,
@@ -424,6 +443,14 @@ def _training_process(
         if launch_pacer is not None:
             launch_pacer.finish_step()
 
+    identical_kernel = config.shared_carrier_gemm_backend == "identical-triton"
+    if identical_kernel:
+        from ..llama_identical_microkernel_carrier.backend import (
+            reset_identical_kernel_audit,
+        )
+
+        reset_identical_kernel_audit()
+
     last_loss = None
     for _ in range(config.warmup_updates):
         optimizer.zero_grad(set_to_none=False)
@@ -433,6 +460,13 @@ def _training_process(
         finish_gradient_step()
     torch.cuda.synchronize()
     warmup_loss = float(last_loss.detach())
+    identical_kernel_audit = None
+    if identical_kernel:
+        from ..llama_identical_microkernel_carrier.backend import (
+            lock_identical_kernel_audit,
+        )
+
+        identical_kernel_audit = lock_identical_kernel_audit().to_dict()
     del warmup_output, last_loss
     if gradient_scheduler is not None:
         gradient_scheduler.release_step_tensors()
@@ -523,6 +557,7 @@ def _training_process(
         "model_instances_loaded": 1,
         "shaped_linear_modules": len(shaped_names),
         "shared_carrier": None if carrier_config is None else carrier_config.metadata(),
+        "identical_kernel_audit": identical_kernel_audit,
         "strict_invariants": config.strict_invariants(),
         "cuda_graph": graph is not None,
         "cuda_allocated_bytes": int(torch.cuda.memory_allocated()),
@@ -664,6 +699,24 @@ def _inference_process(
     torch.cuda.manual_seed_all(config.seed)
     torch.backends.cuda.matmul.allow_tf32 = False
     model = _load_model(config).eval()
+    carrier_config = None
+    carrier_names: list[str] = []
+    identical_kernel = config.shared_carrier_gemm_backend == "identical-triton"
+    if config.shaping_backend == "shared-carrier":
+        carrier_config = SharedCarrierConfig(
+            row_tile=config.tile_rows,
+            expected_training_rows=2048,
+            require_exact_training_rows=False,
+            weight_gradient_layout=config.shared_carrier_weight_gradient_layout,
+            gemm_backend=config.shared_carrier_gemm_backend,
+        )
+        carrier_names = replace_linear_modules_with_shared_carrier(model, carrier_config)
+    if identical_kernel:
+        from ..llama_identical_microkernel_carrier.backend import (
+            reset_identical_kernel_audit,
+        )
+
+        reset_identical_kernel_audit()
     generator = torch.Generator(device="cuda").manual_seed(config.seed + 211)
 
     def run_request() -> tuple[int, int]:
@@ -700,6 +753,13 @@ def _inference_process(
     for _ in range(config.warmup_inference_requests):
         _, warmup_checksum = run_request()
     torch.cuda.synchronize()
+    identical_kernel_audit = None
+    if identical_kernel:
+        from ..llama_identical_microkernel_carrier.backend import (
+            lock_identical_kernel_audit,
+        )
+
+        identical_kernel_audit = lock_identical_kernel_audit().to_dict()
 
     requests = 0
     generated_tokens = 0
@@ -712,6 +772,9 @@ def _inference_process(
         "parameters": sum(parameter.numel() for parameter in model.parameters()),
         "dtype": str(next(model.parameters()).dtype),
         "model_instances_loaded": 1,
+        "shaped_linear_modules": len(carrier_names),
+        "shared_carrier": None if carrier_config is None else carrier_config.metadata(),
+        "identical_kernel_audit": identical_kernel_audit,
         "decode_batch_size": config.inference_batch_size,
         "warmup_inference_requests": config.warmup_inference_requests,
         "strict_invariants": config.strict_invariants(),

@@ -1,0 +1,84 @@
+{
+  "status": "classifier_gate_failed",
+  "gate_met": false,
+  "gate_definition": "balanced_accuracy < 0.60 at every 5/10/20/50/100 ms horizon",
+  "reason": "Inference and training share one GEMM binary but retain different full computation-block sequences and cadence.",
+  "model": "unsloth/Llama-3.2-1B-Instruct",
+  "hardware": "NVIDIA H100 PCIe",
+  "capture": {
+    "instrument": "ChipWhisperer Husky Plus",
+    "sample_rate_hz": 1500000,
+    "duration_s": 0.1,
+    "samples_per_trace": 150000,
+    "gain_db": 10,
+    "inference_traces": 36,
+    "training_traces": 36,
+    "inference_sessions": 5,
+    "training_sessions": 5,
+    "all_health_checks_passed": true
+  },
+  "numerical_validation": {
+    "parameter_values": 1235814400,
+    "loss_absolute_difference": 0.0,
+    "gradient_relative_l2": 0.0,
+    "updated_parameter_relative_l2": 0.0,
+    "forward_gemm_launches": 226,
+    "input_gradient_gemm_launches": 226,
+    "weight_gradient_gemm_launches": 226,
+    "useful_linear_flops_per_update": 15184856875008,
+    "executed_linear_flops_per_update": 15184856875008,
+    "redundant_linear_flops_per_update": 0,
+    "carrier_cuda_ms_per_update": 2167.2255859375
+  },
+  "kernel_identity": {
+    "training_calls_audited": 678,
+    "training_logical_shape_stride_signatures": 15,
+    "inference_calls_audited": 1130,
+    "inference_logical_shape_stride_signatures": 5,
+    "compiled_binaries_per_mode": 1,
+    "triton_hash": "93db11e4cae8ba5863bd7b799861f5d8d47b6b6d41dc0a7430283e23e8f3d12b",
+    "cubin_sha256": "fda8b87d8622f58315d3e69a5b0d7de74008e621ee6d6855f64a9a99dd6842a4",
+    "kernel_name": "identical_gemm_kernel",
+    "block_m": 64,
+    "block_n": 64,
+    "block_k": 32,
+    "num_warps": 4,
+    "num_stages": 3
+  },
+  "inference_benchmark": {
+    "batch_size": 1024,
+    "decode_tokens_per_request": 4,
+    "generated_tokens_per_second": 4994.916190914902
+  },
+  "stationary_trace_similarity": {
+    "raw_amplitude_js": 0.997900355519792,
+    "normalized_amplitude_js": 0.9970883886840842,
+    "welch_psd_js": 0.919502902510263,
+    "mean": 0.9714972155713797
+  },
+  "grouped_detector": {
+    "attacker_input": "ADC power samples only",
+    "split": "leave one complete inference session and one complete training session out",
+    "balanced_accuracy_by_horizon_ms": {
+      "5": 0.828875,
+      "10": 0.89325,
+      "20": 0.922,
+      "50": 0.9475,
+      "100": 0.97
+    },
+    "classifier_error_by_horizon_ms": {
+      "5": 0.171125,
+      "10": 0.10675,
+      "20": 0.078,
+      "50": 0.0525,
+      "100": 0.03
+    }
+  },
+  "strict_baseline_invariants": {
+    "inference_cover_tokens": 0,
+    "secondary_model_instances": 0,
+    "filler_kernels": 0,
+    "all_carrier_gemms_are_useful_training_arithmetic": true
+  },
+  "next_method": "minimum-cost cyclic shortest common supersequence over measured inference and training computation blocks"
+}

@@ -117,6 +117,11 @@ def build_parser() -> argparse.ArgumentParser:
         default="direct",
     )
     parser.add_argument(
+        "--shared-carrier-gemm-backend",
+        choices=("torch-mm", "identical-triton"),
+        default="torch-mm",
+    )
+    parser.add_argument(
         "--weight-gradient-schedule",
         choices=(
             "inline",
@@ -189,6 +194,7 @@ def main() -> None:
         tile_rows=args.tile_rows,
         shaping_backend=args.shaping_backend,
         shared_carrier_weight_gradient_layout=args.shared_carrier_dw_layout,
+        shared_carrier_gemm_backend=args.shared_carrier_gemm_backend,
         weight_gradient_schedule=args.weight_gradient_schedule,
         streaming_weight_gradient_tasks_per_record=args.streaming_dw_tasks_per_record,
         grouped_weight_gradient_min_batch=args.grouped_dw_min_batch,
