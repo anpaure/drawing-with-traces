@@ -1,0 +1,102 @@
+{
+  "root": "artifacts/cyclic_scs_capture_bitmatched_screen",
+  "sample_rate_hz": 1500000.0,
+  "trace_samples": 150000,
+  "trace_counts": {
+    "inference": 4,
+    "training": 4
+  },
+  "session_counts": {
+    "inference": 1,
+    "training": 1
+  },
+  "all_health_checks_passed": true,
+  "attacker_observable": "ADC power samples only",
+  "similarities": {
+    "raw_amplitude_js_similarity": 0.9761494997748251,
+    "normalized_amplitude_js_similarity": 0.9730188866850135,
+    "welch_psd_js_similarity": 0.7430195712753855,
+    "mean_similarity": 0.8973959859117414
+  },
+  "detector_by_horizon_ms": {
+    "5.0": null,
+    "10.0": null,
+    "20.0": null,
+    "50.0": null,
+    "100.0": null
+  },
+  "per_trace": [
+    {
+      "process": "inference",
+      "session_id": "bitmatched-inference-s0",
+      "index": 0,
+      "mean": 0.00431115234375,
+      "std": 0.030055435464960215,
+      "minimum": -0.122314453125,
+      "maximum": 0.138916015625
+    },
+    {
+      "process": "inference",
+      "session_id": "bitmatched-inference-s0",
+      "index": 1,
+      "mean": 0.004332169596354167,
+      "std": 0.0304202442987496,
+      "minimum": -0.07763671875,
+      "maximum": 0.113525390625
+    },
+    {
+      "process": "inference",
+      "session_id": "bitmatched-inference-s0",
+      "index": 2,
+      "mean": 0.004266100260416667,
+      "std": 0.030365558018754447,
+      "minimum": -0.0791015625,
+      "maximum": 0.121826171875
+    },
+    {
+      "process": "inference",
+      "session_id": "bitmatched-inference-s0",
+      "index": 3,
+      "mean": 0.004317000325520833,
+      "std": 0.03005687199709935,
+      "minimum": -0.078125,
+      "maximum": 0.135986328125
+    },
+    {
+      "process": "training",
+      "session_id": "bitmatched-training-s0",
+      "index": 0,
+      "mean": 0.0043530712890625,
+      "std": 0.029088517695935696,
+      "minimum": -0.076904296875,
+      "maximum": 0.11328125
+    },
+    {
+      "process": "training",
+      "session_id": "bitmatched-training-s0",
+      "index": 1,
+      "mean": 0.004384825846354167,
+      "std": 0.028648275435076576,
+      "minimum": -0.08349609375,
+      "maximum": 0.14013671875
+    },
+    {
+      "process": "training",
+      "session_id": "bitmatched-training-s0",
+      "index": 2,
+      "mean": 0.0043531396484375,
+      "std": 0.02380842968243058,
+      "minimum": -0.073974609375,
+      "maximum": 0.080810546875
+    },
+    {
+      "process": "training",
+      "session_id": "bitmatched-training-s0",
+      "index": 3,
+      "mean": 0.004449309895833333,
+      "std": 0.026550007762260443,
+      "minimum": -0.09423828125,
+      "maximum": 0.11279296875
+    }
+  ]
+}

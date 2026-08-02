@@ -359,6 +359,9 @@ class SharedCarrierGradientScheduler:
             destination,
             backend=self.gemm_backend,
             accumulate=accumulate,
+            semantic_id=(
+                f"{state.record.module_name}:dw:{state.layout}:tile{state.next_task}"
+            ),
         )
         family = self._projection_family(state.record.module_name)
         self._execution_families.append(family)
@@ -518,6 +521,7 @@ def _matrix_multiply_into(
     *,
     backend: Literal["torch-mm", "identical-triton"],
     accumulate: bool = False,
+    semantic_id: str = "unlabeled",
 ) -> None:
     if backend == "torch-mm":
         if accumulate:
@@ -534,7 +538,7 @@ def _matrix_multiply_into(
         )
     from ..llama_identical_microkernel_carrier.backend import triton_mm_into
 
-    triton_mm_into(lhs, rhs, output)
+    triton_mm_into(lhs, rhs, output, semantic_id=semantic_id)
 
 
 def tiled_mm(
@@ -543,6 +547,7 @@ def tiled_mm(
     *,
     row_tile: int,
     backend: Literal["torch-mm", "identical-triton"] = "torch-mm",
+    semantic_prefix: str = "unlabeled",
 ) -> Tensor:
     """Compute ``lhs @ rhs`` as independent fixed-row cuBLAS launches."""
 
@@ -553,13 +558,14 @@ def tiled_mm(
     if row_tile < 1:
         raise ValueError("row_tile must be positive")
     output = lhs.new_empty((lhs.shape[0], rhs.shape[1]))
-    for start in range(0, lhs.shape[0], row_tile):
+    for tile_index, start in enumerate(range(0, lhs.shape[0], row_tile)):
         end = min(start + row_tile, lhs.shape[0])
         _matrix_multiply_into(
             lhs[start:end],
             rhs,
             output[start:end],
             backend=backend,
+            semantic_id=f"{semantic_prefix}:tile{tile_index}",
         )
     return output
 
@@ -570,6 +576,7 @@ def tiled_weight_gradient(
     *,
     row_tile: int,
     backend: Literal["torch-mm", "identical-triton"] = "torch-mm",
+    semantic_prefix: str = "unlabeled:dw",
 ) -> Tensor:
     """Compute exact ``dW = dY.T @ X`` in fixed output-row tiles."""
 
@@ -580,13 +587,14 @@ def tiled_weight_gradient(
     if row_tile < 1:
         raise ValueError("row_tile must be positive")
     gradient = x.new_empty((grad_output.shape[1], x.shape[1]))
-    for start in range(0, grad_output.shape[1], row_tile):
+    for tile_index, start in enumerate(range(0, grad_output.shape[1], row_tile)):
         end = min(start + row_tile, grad_output.shape[1])
         _matrix_multiply_into(
             grad_output[:, start:end].transpose(0, 1),
             x,
             gradient[start:end],
             backend=backend,
+            semantic_id=f"{semantic_prefix}:tile{tile_index}",
         )
     return gradient
 
@@ -597,6 +605,7 @@ def tiled_inference_balanced_weight_gradient(
     *,
     row_tile: int,
     backend: Literal["torch-mm", "identical-triton"] = "torch-mm",
+    semantic_prefix: str = "unlabeled:dw",
 ) -> Tensor:
     """Compute exact dW while preferring forward-inference GEMM geometry.
 
@@ -617,12 +626,14 @@ def tiled_inference_balanced_weight_gradient(
             grad_output,
             row_tile=row_tile,
             backend=backend,
+            semantic_prefix=semantic_prefix,
         )
     transposed = tiled_mm(
         x.transpose(0, 1),
         grad_output,
         row_tile=row_tile,
         backend=backend,
+        semantic_prefix=semantic_prefix,
     )
     return transposed.transpose(0, 1).contiguous()
 
@@ -707,6 +718,7 @@ class _SharedCarrierLinearFunction(torch.autograd.Function):
             matrix,
             row_tile=config.row_tile,
             backend=config.gemm_backend,
+            semantic_prefix=f"{module_name}:forward",
         )
         if bias is not None:
             output.add_(bias)
@@ -733,6 +745,7 @@ class _SharedCarrierLinearFunction(torch.autograd.Function):
                 input_matrix,
                 row_tile=config.row_tile,
                 backend=config.gemm_backend,
+                semantic_prefix=f"{ctx.module_name}:dx",
             ).reshape(ctx.input_shape)
 
         grad_weight = None
@@ -744,6 +757,7 @@ class _SharedCarrierLinearFunction(torch.autograd.Function):
                         flat_grad_output,
                         row_tile=config.row_tile,
                         backend=config.gemm_backend,
+                        semantic_prefix=f"{ctx.module_name}:dw:transposed",
                     )
                 elif config.weight_gradient_layout == "inference-balanced":
                     grad_weight = tiled_inference_balanced_weight_gradient(
@@ -751,6 +765,7 @@ class _SharedCarrierLinearFunction(torch.autograd.Function):
                         flat_grad_output,
                         row_tile=config.row_tile,
                         backend=config.gemm_backend,
+                        semantic_prefix=f"{ctx.module_name}:dw:balanced",
                     )
                 else:
                     grad_weight = tiled_weight_gradient(
@@ -758,6 +773,7 @@ class _SharedCarrierLinearFunction(torch.autograd.Function):
                         flat_grad_output,
                         row_tile=config.row_tile,
                         backend=config.gemm_backend,
+                        semantic_prefix=f"{ctx.module_name}:dw:direct",
                     )
             else:
                 ctx.scheduler.record(

@@ -85,6 +85,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--optimizer-bucket-size", type=int, default=8)
     parser.add_argument("--kernel-launch-period-us", type=float, default=0.0)
+    parser.add_argument("--period-profile-output", default="")
+    parser.add_argument("--common-gemm-schedule", default="")
+    parser.add_argument("--common-gemm-max-scratch-gib", type=float, default=16.0)
     parser.add_argument("--output", type=Path)
     return parser
 
@@ -131,6 +134,9 @@ def main() -> None:
         optimizer_bucket_size=args.optimizer_bucket_size,
         replays_per_heartbeat=args.replays_per_heartbeat,
         kernel_launch_period_us=args.kernel_launch_period_us,
+        period_profile_output=args.period_profile_output,
+        common_gemm_schedule=args.common_gemm_schedule,
+        common_gemm_max_scratch_gib=args.common_gemm_max_scratch_gib,
     )
     process, stop_event, messages = start_workload(config)
     ready = wait_for_ready(process, messages, timeout_seconds=args.startup_timeout_seconds)

@@ -11,6 +11,7 @@ import time
 import traceback
 import gc
 from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Any, Literal
 
 import sidecapture as sc
@@ -81,6 +82,9 @@ class StrictWorkloadConfig:
     actuator_bin_duration_us: float = 0.0
     optimizer_bucket_size: int = 8
     kernel_launch_period_us: float = 0.0
+    period_profile_output: str = ""
+    common_gemm_schedule: str = ""
+    common_gemm_max_scratch_gib: float = 16.0
 
     def __post_init__(self) -> None:
         if self.mode not in {"inference", "ordinary-training", "shaped-training"}:
@@ -189,13 +193,28 @@ class StrictWorkloadConfig:
                 raise ValueError("gradient actuation requires a deferred weight-gradient schedule")
             if not self.cuda_graph:
                 raise ValueError("gradient actuation requires CUDA graphs")
+        if self.period_profile_output and not self.period_profile_output.strip():
+            raise ValueError("period_profile_output cannot contain only whitespace")
+        if not math.isfinite(self.common_gemm_max_scratch_gib) or self.common_gemm_max_scratch_gib <= 0:
+            raise ValueError("common_gemm_max_scratch_gib must be finite and positive")
+        if self.common_gemm_schedule:
+            if self.mode == "ordinary-training":
+                raise ValueError("common GEMM scheduling requires inference or shaped-training")
+            if self.shaping_backend != "shared-carrier":
+                raise ValueError("common GEMM scheduling requires --shaping-backend shared-carrier")
+            if self.shared_carrier_gemm_backend != "identical-triton":
+                raise ValueError("common GEMM scheduling requires --shared-carrier-gemm-backend identical-triton")
+            if self.cuda_graph:
+                raise ValueError("common GEMM scheduling currently requires --no-cuda-graph")
+            if self.actuator_operations:
+                raise ValueError("common GEMM scheduling cannot be combined with gradient actuation")
 
     @property
     def is_training(self) -> bool:
         return self.mode != "inference"
 
     def strict_invariants(self) -> dict[str, Any]:
-        return {
+        invariants = {
             "inference_cover_tokens": 0,
             "secondary_model_instances": 0,
             "filler_kernels": 0,
@@ -204,6 +223,15 @@ class StrictWorkloadConfig:
             "redundant_gradient_recomputation_flops_are_accounted": True,
             "optimizer_updates_use_real_current_gradients": True,
         }
+        if self.common_gemm_schedule:
+            invariants.update(
+                {
+                    "filler_kernels": "accounted_common_schedule_padding",
+                    "common_schedule_padding_outputs_discarded": True,
+                    "common_schedule_manifest_required": True,
+                }
+            )
+        return invariants
 
     def metadata(self) -> dict[str, Any]:
         return {**asdict(self), "strict_invariants": self.strict_invariants()}
@@ -473,23 +501,77 @@ def _training_process(
     gc.collect()
     torch.cuda.empty_cache()
 
+    common_coordinator = None
+    if config.common_gemm_schedule:
+        from ..llama_cyclic_scs_carrier.gemm_coordinator import CommonGemmCoordinator
+        from ..llama_identical_microkernel_carrier.backend import (
+            install_identical_kernel_coordinator,
+        )
+
+        common_coordinator = CommonGemmCoordinator(
+            Path(config.common_gemm_schedule),
+            mode="training",
+            maximum_scratch_bytes=int(config.common_gemm_max_scratch_gib * (1 << 30)),
+            seed=config.seed ^ 0x5C5,
+        )
+        install_identical_kernel_coordinator(common_coordinator)
+        common_coordinator.begin_template_collection()
+        for _ in range(common_coordinator.real_period_repeats):
+            optimizer.zero_grad(set_to_none=False)
+            begin_gradient_step()
+            _collection_output, last_loss = forward_loss()
+            last_loss.backward()
+            finish_gradient_step()
+        common_coordinator.finish_template_collection()
+        common_gemm_real_operand_statistics = common_coordinator.template_statistics()
+        common_coordinator.prepare_padding_templates()
+        torch.cuda.synchronize()
+        del _collection_output
+    else:
+        common_gemm_real_operand_statistics = None
+
     graph = None
+    graph_logical_gemm_calls = None
     if config.cuda_graph:
         optimizer.zero_grad(set_to_none=False)
         graph = torch.cuda.CUDAGraph()
-        with torch.cuda.graph(graph):
-            optimizer.zero_grad(set_to_none=False)
-            begin_gradient_step()
-            _graph_output, graph_loss = forward_loss()
-            graph_loss.backward()
-            finish_gradient_step()
+        record_graph_calls = bool(config.period_profile_output and identical_kernel)
+        if record_graph_calls:
+            from ..llama_identical_microkernel_carrier.backend import (
+                begin_identical_kernel_sequence,
+                cancel_identical_kernel_sequence,
+                end_identical_kernel_sequence,
+            )
+
+            begin_identical_kernel_sequence()
+        try:
+            with torch.cuda.graph(graph):
+                optimizer.zero_grad(set_to_none=False)
+                begin_gradient_step()
+                _graph_output, graph_loss = forward_loss()
+                graph_loss.backward()
+                finish_gradient_step()
+            if record_graph_calls:
+                graph_logical_gemm_calls = end_identical_kernel_sequence()
+        except BaseException:
+            if record_graph_calls:
+                cancel_identical_kernel_sequence()
+            raise
         last_loss = graph_loss
     else:
-        optimizer.zero_grad(set_to_none=False)
-        begin_gradient_step()
-        _eager_output, last_loss = forward_loss()
-        last_loss.backward()
-        finish_gradient_step()
+        if common_coordinator is not None:
+            common_coordinator.begin_period()
+        repetitions = (
+            1 if common_coordinator is None else common_coordinator.real_period_repeats
+        )
+        for _ in range(repetitions):
+            optimizer.zero_grad(set_to_none=False)
+            begin_gradient_step()
+            _eager_output, last_loss = forward_loss()
+            last_loss.backward()
+            finish_gradient_step()
+        if common_coordinator is not None:
+            common_coordinator.finish_period()
         torch.cuda.synchronize()
 
     actuator = None
@@ -537,6 +619,47 @@ def _training_process(
         actuator.reset()
         sleep_until_ns = wait_until_ns
 
+    period_profile = None
+    if config.period_profile_output:
+        from ..llama_cyclic_scs_carrier.profile_events import (
+            capture_cuda_period,
+            compact_profile_metadata,
+        )
+
+        if graph is not None:
+            _, period_profile = capture_cuda_period(
+                "training_update_cuda_graph",
+                graph.replay,
+                Path(config.period_profile_output),
+                logical_gemm_calls=graph_logical_gemm_calls,
+            )
+        else:
+            def profiled_eager_period() -> None:
+                nonlocal last_loss
+                if common_coordinator is not None:
+                    common_coordinator.begin_period()
+                repetitions = (
+                    1
+                    if common_coordinator is None
+                    else common_coordinator.real_period_repeats
+                )
+                for _ in range(repetitions):
+                    optimizer.zero_grad(set_to_none=False)
+                    begin_gradient_step()
+                    _profile_output, last_loss = forward_loss()
+                    last_loss.backward()
+                    finish_gradient_step()
+                if common_coordinator is not None:
+                    common_coordinator.finish_period()
+
+            _, period_profile = capture_cuda_period(
+                "training_common_superperiod_eager",
+                profiled_eager_period,
+                Path(config.period_profile_output),
+                record_logical_gemm_calls=identical_kernel,
+            )
+        period_profile = compact_profile_metadata(period_profile)
+
     shape_audit = (
         _aggregate_carrier_plans(model)
         if carrier_config is not None
@@ -576,12 +699,17 @@ def _training_process(
         "actuator_redundant_flops_per_update": actuator_profile_flops,
         "actuator_timing": actuator_timing.metadata(),
         "kernel_launch_pacing": None if launch_pacer is None else launch_pacer.metadata(),
+        "period_profile": period_profile,
+        "common_gemm_schedule": (
+            None if common_coordinator is None else common_coordinator.metadata()
+        ),
     }
     _send(
         messages,
         {
             "event": "ready",
             **common,
+            "common_gemm_real_operand_statistics": common_gemm_real_operand_statistics,
             "shape_audit": shape_audit,
             "deferred_weight_gradient_audit": (
                 None if gradient_scheduler is None else asdict(gradient_scheduler.audit())
@@ -598,6 +726,17 @@ def _training_process(
     started = time.monotonic()
     while not stop_event.is_set():
         for _ in range(config.replays_per_heartbeat):
+            if common_coordinator is not None:
+                common_coordinator.begin_period()
+                for _ in range(common_coordinator.real_period_repeats):
+                    optimizer.zero_grad(set_to_none=False)
+                    begin_gradient_step()
+                    _eager_output, last_loss = forward_loss()
+                    last_loss.backward()
+                    finish_gradient_step()
+                    updates += 1
+                common_coordinator.finish_period()
+                continue
             if graph is None:
                 optimizer.zero_grad(set_to_none=False)
                 begin_gradient_step()
@@ -681,6 +820,9 @@ def _training_process(
                 "actuator_redundant_flops": (None if actuator is None else actuator.executed_flops),
                 "actuator_timing": actuator_timing.metadata(),
                 "kernel_launch_pacing": (None if launch_pacer is None else launch_pacer.metadata()),
+                "common_gemm_schedule": (
+                    None if common_coordinator is None else common_coordinator.metadata()
+                ),
             },
         )
     torch.cuda.synchronize()
@@ -761,6 +903,61 @@ def _inference_process(
 
         identical_kernel_audit = lock_identical_kernel_audit().to_dict()
 
+    common_coordinator = None
+    if config.common_gemm_schedule:
+        from ..llama_cyclic_scs_carrier.gemm_coordinator import CommonGemmCoordinator
+        from ..llama_identical_microkernel_carrier.backend import (
+            install_identical_kernel_coordinator,
+        )
+
+        common_coordinator = CommonGemmCoordinator(
+            Path(config.common_gemm_schedule),
+            mode="inference",
+            maximum_scratch_bytes=int(config.common_gemm_max_scratch_gib * (1 << 30)),
+            seed=config.seed ^ 0x5C5,
+        )
+        install_identical_kernel_coordinator(common_coordinator)
+        common_coordinator.begin_template_collection()
+        for _ in range(common_coordinator.real_period_repeats):
+            _, warmup_checksum = run_request()
+        common_coordinator.finish_template_collection()
+        common_gemm_real_operand_statistics = common_coordinator.template_statistics()
+        common_coordinator.prepare_padding_templates()
+        torch.cuda.synchronize()
+    else:
+        common_gemm_real_operand_statistics = None
+
+    def run_common_period() -> tuple[int, int]:
+        if common_coordinator is None:
+            return run_request()
+        common_coordinator.begin_period()
+        generated_total = 0
+        checksum = 0
+        for _ in range(common_coordinator.real_period_repeats):
+            generated, checksum = run_request()
+            generated_total += generated
+        common_coordinator.finish_period()
+        return generated_total, checksum
+
+    period_profile = None
+    if config.period_profile_output:
+        from ..llama_cyclic_scs_carrier.profile_events import (
+            capture_cuda_period,
+            compact_profile_metadata,
+        )
+
+        (_, _), period_profile = capture_cuda_period(
+            (
+                "inference_request"
+                if common_coordinator is None
+                else "inference_common_superperiod"
+            ),
+            run_common_period,
+            Path(config.period_profile_output),
+            record_logical_gemm_calls=identical_kernel,
+        )
+        period_profile = compact_profile_metadata(period_profile)
+
     requests = 0
     generated_tokens = 0
     started = time.monotonic()
@@ -778,13 +975,27 @@ def _inference_process(
         "decode_batch_size": config.inference_batch_size,
         "warmup_inference_requests": config.warmup_inference_requests,
         "strict_invariants": config.strict_invariants(),
+        "period_profile": period_profile,
+        "common_gemm_schedule": (
+            None if common_coordinator is None else common_coordinator.metadata()
+        ),
     }
-    _send(messages, {"event": "ready", **common, "warmup_checksum": warmup_checksum})
+    _send(
+        messages,
+        {
+            "event": "ready",
+            **common,
+            "common_gemm_real_operand_statistics": common_gemm_real_operand_statistics,
+            "warmup_checksum": warmup_checksum,
+        },
+    )
 
     while not stop_event.is_set():
-        generated, last_token_checksum = run_request()
+        generated, last_token_checksum = run_common_period()
         generated_tokens += generated
-        requests += 1
+        requests += (
+            1 if common_coordinator is None else common_coordinator.real_period_repeats
+        )
         elapsed = time.monotonic() - started
         _send(
             messages,
@@ -798,6 +1009,9 @@ def _inference_process(
                 "elapsed_seconds": elapsed,
                 "cuda_allocated_bytes": int(torch.cuda.memory_allocated()),
                 "cuda_peak_allocated_bytes": int(torch.cuda.max_memory_allocated()),
+                "common_gemm_schedule": (
+                    None if common_coordinator is None else common_coordinator.metadata()
+                ),
             },
         )
 

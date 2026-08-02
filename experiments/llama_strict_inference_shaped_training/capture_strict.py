@@ -159,6 +159,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--optimizer-bucket-size", type=int, default=8)
     parser.add_argument("--kernel-launch-period-us", type=float, default=0.0)
+    parser.add_argument("--period-profile-output", default="")
+    parser.add_argument("--common-gemm-schedule", default="")
+    parser.add_argument("--common-gemm-max-scratch-gib", type=float, default=16.0)
+    parser.add_argument("--replays-per-heartbeat", type=int, default=8)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--startup-timeout-seconds", type=float, default=900.0)
     parser.add_argument("--shutdown-timeout-seconds", type=float, default=30.0)
@@ -207,6 +211,10 @@ def main() -> None:
         actuator_bin_duration_us=args.actuator_bin_duration_us,
         optimizer_bucket_size=args.optimizer_bucket_size,
         kernel_launch_period_us=args.kernel_launch_period_us,
+        period_profile_output=args.period_profile_output,
+        common_gemm_schedule=args.common_gemm_schedule,
+        common_gemm_max_scratch_gib=args.common_gemm_max_scratch_gib,
+        replays_per_heartbeat=args.replays_per_heartbeat,
     )
     base_sampler = sc.ChipWhispererSampler(
         sc.CaptureRequest.create(

@@ -36,6 +36,50 @@ class IdenticalKernelAudit:
         return asdict(self)
 
 
+@dataclass(frozen=True)
+class IdenticalKernelCall:
+    """Ordered logical launch metadata used only during explicit profiling."""
+
+    semantic_id: str
+    m: int
+    n: int
+    k: int
+    lhs_strides: tuple[int, int]
+    rhs_strides: tuple[int, int]
+    output_strides: tuple[int, int]
+    grid: tuple[int, int, int]
+    operand_class: str
+
+    @property
+    def logical_shape(self) -> str:
+        return f"m{self.m}-n{self.n}-k{self.k}"
+
+    @property
+    def layout_class(self) -> str:
+        return (
+            f"a{self.lhs_strides[0]}x{self.lhs_strides[1]}"
+            f"-b{self.rhs_strides[0]}x{self.rhs_strides[1]}"
+            f"-c{self.output_strides[0]}x{self.output_strides[1]}"
+        )
+
+    @property
+    def executed_flops(self) -> int:
+        return 2 * self.m * self.n * self.k
+
+    @property
+    def estimated_memory_bytes(self) -> int:
+        return 2 * (self.m * self.k + self.k * self.n + self.m * self.n)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            **asdict(self),
+            "logical_shape": self.logical_shape,
+            "layout_class": self.layout_class,
+            "executed_flops": self.executed_flops,
+            "estimated_memory_bytes": self.estimated_memory_bytes,
+        }
+
+
 _locked = False
 _calls = 0
 _signatures: Counter[str] = Counter()
@@ -43,6 +87,9 @@ _compiled_object_ids: set[int] = set()
 _triton_hashes: set[str] = set()
 _cubin_hashes: set[str] = set()
 _kernel_names: set[str] = set()
+_sequence_recording = False
+_ordered_calls: list[IdenticalKernelCall] = []
+_coordinator: Any | None = None
 
 
 def reset_identical_kernel_audit() -> None:
@@ -54,6 +101,34 @@ def reset_identical_kernel_audit() -> None:
     _triton_hashes.clear()
     _cubin_hashes.clear()
     _kernel_names.clear()
+
+
+def begin_identical_kernel_sequence() -> None:
+    """Start a bounded, profiling-only logical launch recording."""
+
+    global _sequence_recording
+    if _sequence_recording:
+        raise RuntimeError("identical-kernel sequence recording is already active")
+    _ordered_calls.clear()
+    _sequence_recording = True
+
+
+def end_identical_kernel_sequence() -> tuple[IdenticalKernelCall, ...]:
+    """Stop logical launch recording and return the ordered immutable trace."""
+
+    global _sequence_recording
+    if not _sequence_recording:
+        raise RuntimeError("identical-kernel sequence recording is not active")
+    _sequence_recording = False
+    return tuple(_ordered_calls)
+
+
+def cancel_identical_kernel_sequence() -> None:
+    """Abort a failed profiling attempt without retaining partial events."""
+
+    global _sequence_recording
+    _sequence_recording = False
+    _ordered_calls.clear()
 
 
 def _signature(lhs, rhs, output) -> str:
@@ -99,7 +174,18 @@ def lock_identical_kernel_audit() -> IdenticalKernelAudit:
     return identical_kernel_audit()
 
 
-def triton_mm_into(lhs, rhs, output) -> None:
+def _operand_class(semantic_id: str) -> str:
+    lowered = semantic_id.lower()
+    if ":dx" in lowered:
+        return "bf16-gradient-times-weight"
+    if ":dw" in lowered:
+        return "bf16-activation-times-gradient"
+    if ":forward" in lowered:
+        return "bf16-activation-times-weight"
+    return "bf16-dense-unclassified"
+
+
+def _triton_mm_into_raw(lhs, rhs, output, *, semantic_id: str = "unlabeled") -> None:
     """Compute ``output = lhs @ rhs`` with the one audited BF16 kernel."""
 
     global _calls
@@ -143,6 +229,20 @@ def triton_mm_into(lhs, rhs, output) -> None:
         ((rows + BLOCK_M - 1) // BLOCK_M)
         * ((columns + BLOCK_N - 1) // BLOCK_N),
     )
+    if _sequence_recording:
+        _ordered_calls.append(
+            IdenticalKernelCall(
+                semantic_id=semantic_id,
+                m=int(rows),
+                n=int(columns),
+                k=int(reduction),
+                lhs_strides=tuple(map(int, lhs.stride())),
+                rhs_strides=tuple(map(int, rhs.stride())),
+                output_strides=tuple(map(int, output.stride())),
+                grid=(int(grid[0]), 1, 1),
+                operand_class=_operand_class(semantic_id),
+            )
+        )
     if not _locked:
         compiled = identical_gemm_kernel.warmup(
             *arguments,
@@ -166,4 +266,37 @@ def triton_mm_into(lhs, rhs, output) -> None:
         BLOCK_K=BLOCK_K,
         num_warps=NUM_WARPS,
         num_stages=NUM_STAGES,
+    )
+
+
+def install_identical_kernel_coordinator(coordinator: Any) -> None:
+    """Route subsequent real GEMMs through one explicit schedule coordinator."""
+
+    global _coordinator
+    if coordinator is None:
+        raise ValueError("coordinator cannot be None")
+    if _coordinator is not None:
+        raise RuntimeError("an identical-kernel coordinator is already installed")
+    _coordinator = coordinator
+
+
+def uninstall_identical_kernel_coordinator(coordinator: Any) -> None:
+    global _coordinator
+    if _coordinator is not coordinator:
+        raise RuntimeError("attempted to uninstall a different kernel coordinator")
+    _coordinator = None
+
+
+def triton_mm_into(lhs, rhs, output, *, semantic_id: str = "unlabeled") -> None:
+    """Compute a real GEMM, optionally inserting common-schedule padding first."""
+
+    if _coordinator is None:
+        _triton_mm_into_raw(lhs, rhs, output, semantic_id=semantic_id)
+        return
+    _coordinator.execute_real(
+        lhs,
+        rhs,
+        output,
+        semantic_id=semantic_id,
+        launcher=_triton_mm_into_raw,
     )
