@@ -17,6 +17,7 @@ the representative plot, profiler summaries, benchmarks, and numerical validatio
 | `validation/fused_optimizer_bitwise_equivalence.json` | Scalar-vs-fused shaped update comparison over 1.235B values |
 | `validation/selected_backend_vs_ordinary.json` | Grouped-M1 shaped step versus ordinary BF16 training |
 | `ablations/summary.json` | Final and smoke metrics for independent alternatives |
+| `actuator_controls/summary.json` | Physical width/cadence controls and the failed <60% detector gate |
 
 ## Interpretation guardrails
 
@@ -29,3 +30,5 @@ the representative plot, profiler summaries, benchmarks, and numerical validatio
   training work.
 - Fusion is bitwise equivalent within the selected shaped algorithm. The selected BF16 grouped-M1
   algorithm is not bitwise identical to ordinary dense PyTorch.
+- The later actuator controls are negative evidence: none beats the retrained classifier more than 40%
+  of the time. A fixed pre-existing classifier is not accepted as confirmation.

@@ -131,6 +131,33 @@ The implementation includes alternatives because they tested distinct hypotheses
 The actuator is not the selected continuous result. Appending its profile after a full update produced a
 separable two-regime process and is retained only as a failed control.
 
+### Physical actuator follow-up
+
+The follow-up did not rescue this PyTorch-level design:
+
+1. A 1 ms calibration varied both tile width and the number of exact current-gradient `dW` blocks. It
+   achieved 3.689 us maximum deadline overrun across 68 bins, so the scope and replay machinery were
+   capable of delivering the requested schedule.
+2. Back-to-back fixed-width profiles remained detectable. The best complete control was four profile
+   repetitions: held-out balanced accuracy was 85.1%, 85.4%, 86.0%, 86.3%, and 86.3% at 5, 10, 20,
+   50, and 100 ms.
+3. Fixed-duration bins made the periodic signature stronger. A 2 ms-bin/four-repetition run scored
+   82.8–93.8%; a superficially promising 1.1 ms-bin/thirteen-repetition screen scored 93.8–96.1% after
+   the attacker was retrained on two fresh sessions.
+4. Aperiodic width programs removed the explicit 1 ms cadence and matched gross RMS, but introduced a
+   different spectral fingerprint. Those one-session runs are diagnostics only, not held-out evidence.
+
+An offline convex-hull diagnostic combined the standardized feature means of 22 physically measured
+strict-training regimes. Even the optimal nonnegative mixture retained RMS feature residuals of 0.910,
+0.934, 0.920, 0.968, and 1.103 standard deviations across the same horizons. This is not a detector
+score, but it shows why another duty-ratio sweep is not a credible route to the 60% gate: the measured
+PyTorch regimes do not surround the inference feature distribution.
+
+The compact physical results are in
+[`../../results/llama_strict_inference_shaped_training/actuator_controls/summary.json`](../../results/llama_strict_inference_shaped_training/actuator_controls/summary.json).
+The next experiment therefore needs a shared lower-level carrier for forward, `dX`, and `dW`, rather
+than appending more gradient work after an already distinctive training update.
+
 ## Files
 
 | File | Purpose |

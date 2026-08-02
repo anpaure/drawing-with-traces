@@ -135,7 +135,18 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--actuator-commands", type=Path)
     parser.add_argument("--actuator-width", type=int, default=768)
+    parser.add_argument(
+        "--actuator-width-commands",
+        type=Path,
+        help="Optional one-dimensional .npy width schedule matching --actuator-commands.",
+    )
     parser.add_argument("--actuator-repetitions-per-update", type=int, default=1)
+    parser.add_argument(
+        "--actuator-bin-duration-us",
+        type=float,
+        default=0.0,
+        help="Replay each actuator command in a fixed-duration bin; zero replays back-to-back.",
+    )
     parser.add_argument("--optimizer-bucket-size", type=int, default=8)
     parser.add_argument("--kernel-launch-period-us", type=float, default=0.0)
     parser.add_argument("--seed", type=int, default=0)
@@ -149,11 +160,17 @@ def main() -> None:
     if args.captures < 1:
         raise ValueError("--captures must be positive")
     actuator_operations: tuple[int, ...] = ()
+    actuator_width_commands: tuple[int, ...] = ()
     if args.actuator_commands is not None:
         values = np.load(args.actuator_commands, allow_pickle=False)
         if values.ndim != 1 or values.size < 2:
             raise ValueError("--actuator-commands must contain a one-dimensional schedule")
         actuator_operations = tuple(int(value) for value in values)
+    if args.actuator_width_commands is not None:
+        values = np.load(args.actuator_width_commands, allow_pickle=False)
+        if values.ndim != 1 or values.size < 2:
+            raise ValueError("--actuator-width-commands must contain a one-dimensional schedule")
+        actuator_width_commands = tuple(int(value) for value in values)
     config = StrictWorkloadConfig(
         mode=args.mode,
         session_id=args.session_id,
@@ -172,8 +189,10 @@ def main() -> None:
         grouped_weight_gradient_max_batch=args.grouped_dw_max_batch,
         cuda_graph=args.cuda_graph,
         actuator_width=args.actuator_width,
+        actuator_width_commands=actuator_width_commands,
         actuator_operations=actuator_operations,
         actuator_repetitions_per_update=args.actuator_repetitions_per_update,
+        actuator_bin_duration_us=args.actuator_bin_duration_us,
         optimizer_bucket_size=args.optimizer_bucket_size,
         kernel_launch_period_us=args.kernel_launch_period_us,
     )
@@ -219,6 +238,10 @@ def main() -> None:
             "minimum_pretrigger_delay_ms": args.minimum_pretrigger_delay_ms,
             "maximum_pretrigger_delay_ms": args.maximum_pretrigger_delay_ms,
             "actuator_commands": (None if args.actuator_commands is None else str(args.actuator_commands)),
+            "actuator_width_commands": (
+                None if args.actuator_width_commands is None else str(args.actuator_width_commands)
+            ),
+            "actuator_bin_duration_us": args.actuator_bin_duration_us,
         },
     }
     (session_root / "session_summary.json").write_text(json.dumps(summary, indent=2))

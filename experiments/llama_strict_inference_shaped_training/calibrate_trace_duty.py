@@ -53,6 +53,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--fixed-width", type=int, default=160)
+    parser.add_argument("--training-batch-size", type=int, default=1024)
+    parser.add_argument("--training-sequence-length", type=int, default=1)
+    parser.add_argument("--tile-rows", type=int, default=1024)
     parser.add_argument("--maximum-operations", type=int, default=160)
     parser.add_argument("--level-count", type=int)
     parser.add_argument("--bin-ms", type=float, default=1.0)
@@ -72,6 +75,9 @@ def main() -> None:
         widths,
         operation_commands=operations,
         bin_duration_s=args.bin_ms / 1e3,
+        training_batch_size=args.training_batch_size,
+        training_sequence_length=args.training_sequence_length,
+        tile_rows=args.tile_rows,
         execution_backend="cuda-graph",
         seed=args.seed,
     )
@@ -105,6 +111,9 @@ def main() -> None:
         "output": str(args.output),
         "record_index": int(records[0]["index"]),
         "fixed_width": args.fixed_width,
+        "training_batch_size": args.training_batch_size,
+        "training_sequence_length": args.training_sequence_length,
+        "tile_rows": args.tile_rows,
         "operation_levels": levels.tolist(),
         "commands": operations.tolist(),
         "bin_ms": args.bin_ms,

@@ -277,6 +277,12 @@ def test_grouped_detector_holds_out_complete_sessions_and_uses_adc_windows() -> 
     assert result["split"].startswith("leave one complete inference session")
     assert len(result["folds"]) == 4
     assert result["balanced_accuracy"] > 0.95
+    assert result["classifier_error_rate"] < 0.05
+    assert result["inference_recall"] > 0.95
+    assert result["training_recall"] > 0.95
+    assert result["training_as_inference_rate"] < 0.05
+    assert result["orientation_normalized_balanced_accuracy"] > 0.95
+    assert all("training_as_inference_rate" in fold for fold in result["folds"])
 
 
 def test_trace_analysis_shapes_and_similarity_ranges() -> None:
@@ -292,9 +298,7 @@ def test_trace_analysis_shapes_and_similarity_ranges() -> None:
 
 def test_cnn_windows_and_session_mask_do_not_mix_held_out_sessions() -> None:
     traces = [
-        _synthetic_trace(process, session, 0)
-        for process in ("inference", "training")
-        for session in range(2)
+        _synthetic_trace(process, session, 0) for process in ("inference", "training") for session in range(2)
     ]
     windows = make_windows(traces, horizon_ms=5)
     mask = held_out_mask(windows, "inference-1", "training-0")

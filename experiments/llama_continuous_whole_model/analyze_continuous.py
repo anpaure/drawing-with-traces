@@ -55,9 +55,7 @@ def load_traces(root: Path, process: str) -> list[ContinuousTrace]:
             if labels.get("process") != process:
                 continue
             descriptor = record["channels"][record["primary_channel"]]
-            values = np.load(session_root / descriptor["path"], allow_pickle=False).astype(
-                np.float64
-            )
+            values = np.load(session_root / descriptor["path"], allow_pickle=False).astype(np.float64)
             traces.append(
                 ContinuousTrace(
                     process=process,
@@ -95,9 +93,7 @@ def enhanced_power_features(values: np.ndarray, sample_rate_hz: float) -> np.nda
     spectrum = np.abs(np.fft.rfft(normalized * np.hanning(len(normalized)))) ** 2
     spectrum /= max(float(spectrum.sum()), np.finfo(np.float64).tiny)
     frequencies = np.fft.rfftfreq(len(normalized), d=1 / sample_rate_hz)
-    spectral_entropy = -float(np.sum(spectrum * np.log(spectrum + 1e-30))) / math.log(
-        len(spectrum)
-    )
+    spectral_entropy = -float(np.sum(spectrum * np.log(spectrum + 1e-30))) / math.log(len(spectrum))
     spectral_centroid = float(np.sum(frequencies * spectrum) / sample_rate_hz)
 
     autocorrelation_features = []
@@ -137,11 +133,27 @@ def trace_windows(trace: ContinuousTrace, horizon_ms: float) -> np.ndarray:
 
 
 def balanced_accuracy(prediction: np.ndarray, truth: np.ndarray) -> float:
-    return float(
-        np.mean(
-            [np.mean(prediction[truth == label] == label) for label in (-1.0, 1.0)]
-        )
-    )
+    return float(np.mean([np.mean(prediction[truth == label] == label) for label in (-1.0, 1.0)]))
+
+
+def classification_rates(prediction: np.ndarray, truth: np.ndarray) -> dict[str, float]:
+    """Return oriented rates for an inference=-1, training=+1 classifier."""
+
+    inference_mask = truth == -1.0
+    training_mask = truth == 1.0
+    if not inference_mask.any() or not training_mask.any():
+        raise ValueError("classification rates require both inference and training labels")
+    inference_recall = float(np.mean(prediction[inference_mask] == -1.0))
+    training_recall = float(np.mean(prediction[training_mask] == 1.0))
+    accuracy = (inference_recall + training_recall) / 2
+    return {
+        "balanced_accuracy": accuracy,
+        "classifier_error_rate": 1.0 - accuracy,
+        "inference_recall": inference_recall,
+        "training_recall": training_recall,
+        "training_as_inference_rate": 1.0 - training_recall,
+        "orientation_normalized_balanced_accuracy": max(accuracy, 1.0 - accuracy),
+    }
 
 
 def grouped_ridge_accuracy(
@@ -171,9 +183,9 @@ def grouped_ridge_accuracy(
             for trace in [*inference, *training]:
                 features = feature_rows[(trace.process, trace.session_id, trace.index)]
                 label = -1.0 if trace.process == "inference" else 1.0
-                held_out = (
-                    trace.process == "inference" and trace.session_id == held_inference
-                ) or (trace.process == "training" and trace.session_id == held_training)
+                held_out = (trace.process == "inference" and trace.session_id == held_inference) or (
+                    trace.process == "training" and trace.session_id == held_training
+                )
                 target_x = test_x if held_out else train_x
                 target_y = test_y if held_out else train_y
                 target_x.append(features)
@@ -200,13 +212,24 @@ def grouped_ridge_accuracy(
                 {
                     "held_out_inference_session": held_inference,
                     "held_out_training_session": held_training,
-                    "balanced_accuracy": balanced_accuracy(prediction, test_y_array),
+                    **classification_rates(prediction, test_y_array),
                     "test_windows": len(test_y_array),
                 }
             )
     accuracies = np.asarray([fold["balanced_accuracy"] for fold in folds])
+    aggregate_rates = {
+        key: float(np.mean([fold[key] for fold in folds]))
+        for key in (
+            "classifier_error_rate",
+            "inference_recall",
+            "training_recall",
+            "training_as_inference_rate",
+            "orientation_normalized_balanced_accuracy",
+        )
+    }
     return {
         "balanced_accuracy": float(accuracies.mean()),
+        **aggregate_rates,
         "fold_standard_deviation": float(accuracies.std(ddof=1)),
         "minimum_fold_accuracy": float(accuracies.min()),
         "maximum_fold_accuracy": float(accuracies.max()),
@@ -226,12 +249,8 @@ def stationary_similarities(
     inference_psd = np.mean([welch_psd(trace.values) for trace in inference], axis=0)
     training_psd = np.mean([welch_psd(trace.values) for trace in training], axis=0)
     metrics = {
-        "raw_amplitude_js_similarity": histogram_similarity(
-            inference_values, training_values
-        ),
-        "normalized_amplitude_js_similarity": histogram_similarity(
-            inference_normalized, training_normalized
-        ),
+        "raw_amplitude_js_similarity": histogram_similarity(inference_values, training_values),
+        "normalized_amplitude_js_similarity": histogram_similarity(inference_normalized, training_normalized),
         "welch_psd_js_similarity": js_similarity(inference_psd, training_psd),
     }
     metrics["mean_similarity"] = float(np.mean(list(metrics.values())))
@@ -359,9 +378,7 @@ def analyze(root: Path, horizons_ms: list[float]) -> dict[str, Any]:
             "inference": len({trace.session_id for trace in inference}),
             "training": len({trace.session_id for trace in training}),
         },
-        "all_health_checks_passed": all(
-            trace.health_ok for trace in [*inference, *training]
-        ),
+        "all_health_checks_passed": all(trace.health_ok for trace in [*inference, *training]),
         "attacker_observable": "ADC power samples only",
         "similarities": similarities,
         "detector_by_horizon_ms": horizon_results,

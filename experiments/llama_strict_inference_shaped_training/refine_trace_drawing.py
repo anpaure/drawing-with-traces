@@ -76,6 +76,9 @@ def main() -> None:
         default="width",
     )
     parser.add_argument("--fixed-width", type=int, default=160)
+    parser.add_argument("--training-batch-size", type=int, default=1024)
+    parser.add_argument("--training-sequence-length", type=int, default=1)
+    parser.add_argument("--tile-rows", type=int, default=1024)
     parser.add_argument("--operation-command-quantum", type=int, default=1)
     parser.add_argument("--seed", type=int, default=6400)
     args = parser.parse_args()
@@ -111,6 +114,9 @@ def main() -> None:
         execution_backend=args.execution_backend,
         graph_target_utilization=args.graph_target_utilization,
         graph_maximum_operations=args.graph_maximum_operations,
+        training_batch_size=args.training_batch_size,
+        training_sequence_length=args.training_sequence_length,
+        tile_rows=args.tile_rows,
         seed=args.seed,
     )
     duration_ms = (workload.total_duration_s + 0.005) * 1e3
@@ -225,6 +231,9 @@ def main() -> None:
             "graph_maximum_operations": args.graph_maximum_operations,
             "command_mode": args.command_mode,
             "fixed_width": args.fixed_width if args.command_mode == "operations" else None,
+            "training_batch_size": args.training_batch_size,
+            "training_sequence_length": args.training_sequence_length,
+            "tile_rows": args.tile_rows,
             "command_quantum": command_quantum,
         },
         "iterations": args.iterations,

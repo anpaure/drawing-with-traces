@@ -10,6 +10,12 @@ from pathlib import Path
 import numpy as np
 import sidecapture as sc
 
+from drawing_with_traces.fast import (
+    calibrate_fast,
+    render_fast_calibration,
+    save_fast_calibration,
+)
+
 from .trace_drawing import (
     DEFAULT_ACTUATOR_MODULE,
     TransformerGradientCalibrationWorkload,
@@ -60,6 +66,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--module-name", default=DEFAULT_ACTUATOR_MODULE)
+    parser.add_argument("--training-batch-size", type=int, default=1024)
+    parser.add_argument("--training-sequence-length", type=int, default=1)
+    parser.add_argument("--tile-rows", type=int, default=1024)
     parser.add_argument("--bin-ms", type=float, default=1.0)
     parser.add_argument("--repeats", type=int, default=4)
     parser.add_argument("--sample-rate", default="1.5MHz")
@@ -86,6 +95,9 @@ def main() -> None:
         commands,
         bin_duration_s=args.bin_ms / 1e3,
         module_name=args.module_name,
+        training_batch_size=args.training_batch_size,
+        training_sequence_length=args.training_sequence_length,
+        tile_rows=args.tile_rows,
         synchronize_each_operation=args.sync_each_operation,
         execution_backend=args.execution_backend,
         graph_target_utilization=args.graph_target_utilization,
@@ -111,6 +123,9 @@ def main() -> None:
         workload_sync="none",
     ) as experiment:
         records = experiment.run(1)
+    calibration = calibrate_fast(args.output, command_key="requested_width")
+    save_fast_calibration(args.output, calibration)
+    render_fast_calibration(calibration, args.output / "calibration.png")
     summary = {
         "output": str(args.output),
         "record_index": int(records[0]["index"]),
@@ -120,10 +135,15 @@ def main() -> None:
         "repeats": args.repeats,
         "capture_duration_ms": duration_s * 1e3,
         "module_name": args.module_name,
+        "training_batch_size": args.training_batch_size,
+        "training_sequence_length": args.training_sequence_length,
+        "tile_rows": args.tile_rows,
         "synchronize_each_operation": args.sync_each_operation,
         "execution_backend": args.execution_backend,
         "graph_target_utilization": args.graph_target_utilization,
         "graph_maximum_operations": args.graph_maximum_operations,
+        "calibration": calibration.to_dict(),
+        "last_profile": workload.last_profile,
         "strict_invariants": {
             "inference_cover_tokens": 0,
             "secondary_model_instances": 0,

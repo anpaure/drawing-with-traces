@@ -91,6 +91,13 @@ Single-session similarities are triage measurements, not substitutes for held-ou
 Machine-readable values are in
 [`ablations/summary.json`](results/llama_strict_inference_shaped_training/ablations/summary.json).
 
+A subsequent physical actuator sweep varied exact-gradient tile width, operation count, fixed cadence,
+and aperiodic schedules. None reached the required **<60% balanced-accuracy** gate. The best complete
+actuator control still scored 85.1–86.3% across 5–100 ms; a fixed-classifier screen that appeared better
+reverted to 93.8–96.1% when evaluated correctly with fresh sessions and a retrained attacker. This rules
+out appending a PyTorch-level carrier as the solution, not the broader shared-kernel hypothesis. See the
+[compact control summary](results/llama_strict_inference_shaped_training/actuator_controls/summary.json).
+
 ## Numerical validation
 
 Two different statements are validated and kept separate:

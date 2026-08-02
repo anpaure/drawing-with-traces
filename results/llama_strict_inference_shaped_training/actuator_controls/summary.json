@@ -1,0 +1,109 @@
+{
+  "status": "negative result: appended exact-gradient carriers do not pass the detector gate",
+  "required_gate": {
+    "session_held_out_balanced_accuracy_below": 0.6,
+    "equivalent_classifier_error_rate_above": 0.4,
+    "required_horizons_ms": [5.0, 10.0, 20.0, 50.0, 100.0],
+    "fixed_pretrained_classifier_is_not_accepted": true
+  },
+  "acquisition": {
+    "gpu": "NVIDIA H100 PCIe",
+    "sample_rate_hz": 1500000.0,
+    "duration_ms": 100.0,
+    "samples": 150000,
+    "gain_db": 10.0,
+    "sensor": "external current clamp through ChipWhisperer Husky Plus"
+  },
+  "strict_invariants": {
+    "inference_cover_tokens": 0,
+    "secondary_model_instances": 0,
+    "filler_kernels": 0,
+    "actuator_operation": "redundant exact current-step dW.T blocks",
+    "optimizer_updates_use_real_current_gradients": true
+  },
+  "physical_controls": {
+    "untimed_fixed_width_repetitions_2": {
+      "session_held_out_balanced_accuracy": {
+        "5.0": 0.83625,
+        "10.0": 0.903125,
+        "20.0": 0.8875,
+        "50.0": 0.9,
+        "100.0": 0.8875
+      },
+      "mean_stationary_similarity": 0.9657022665039614
+    },
+    "untimed_fixed_width_repetitions_4": {
+      "session_held_out_balanced_accuracy": {
+        "5.0": 0.85125,
+        "10.0": 0.854375,
+        "20.0": 0.86,
+        "50.0": 0.8625,
+        "100.0": 0.8625
+      },
+      "mean_stationary_similarity": 0.9393665505934186
+    },
+    "untimed_fixed_width_repetitions_8": {
+      "session_held_out_balanced_accuracy": {
+        "5.0": 0.8665625,
+        "10.0": 0.903125,
+        "20.0": 0.89375,
+        "50.0": 0.93125,
+        "100.0": 0.98125
+      },
+      "mean_stationary_similarity": 0.95864438959163
+    },
+    "timed_2ms_bins_repetitions_4": {
+      "session_held_out_balanced_accuracy": {
+        "5.0": 0.828125,
+        "10.0": 0.90875,
+        "20.0": 0.89625,
+        "50.0": 0.9375,
+        "100.0": 0.90625
+      },
+      "mean_stationary_similarity": 0.7954131919893791
+    },
+    "timed_1p1ms_bins_repetitions_13_fresh_confirmation": {
+      "session_held_out_balanced_accuracy": {
+        "5.0": 0.94125,
+        "10.0": 0.96125,
+        "20.0": 0.96125,
+        "50.0": 0.95,
+        "100.0": 0.9375
+      },
+      "mean_stationary_similarity": 0.8114190549177113,
+      "interpretation": "a fixed older classifier appeared fooled, but a retrained session-held-out attacker rejected the candidate"
+    }
+  },
+  "width_calibration": {
+    "training_batch_size": 128,
+    "training_sequence_length": 1,
+    "bin_duration_ms": 1.0,
+    "bins": 68,
+    "tested_widths": [32, 64, 96, 128, 192, 256, 384, 512, 768, 1024, 1280, 1536, 2048, 3072, 4096, 6144, 8192],
+    "maximum_deadline_overrun_us": 3.689,
+    "feature": "mean_abs",
+    "interpretation": "the hardware delivered the programs, but width-to-signal response was non-monotone and gross amplitude matching did not remove temporal features"
+  },
+  "aperiodic_program_screen": {
+    "programs": 5,
+    "commands_per_program": 1000,
+    "captures_per_program": 4,
+    "sessions_per_program": 1,
+    "held_out_detector_claim": false,
+    "interpretation": "removing the explicit bin clock changed the fingerprint rather than matching inference"
+  },
+  "convex_hull_diagnostic": {
+    "physically_measured_strict_training_regimes": 22,
+    "objective": "minimum RMS standardized feature-mean residual under nonnegative weights summing to one",
+    "residual_by_horizon_ms": {
+      "5.0": 0.9098358505920022,
+      "10.0": 0.9339461524060297,
+      "20.0": 0.9195411823390903,
+      "50.0": 0.968326962476875,
+      "100.0": 1.1025687279420615
+    },
+    "is_security_metric": false,
+    "interpretation": "another mixture or duty-ratio sweep cannot interpolate the measured PyTorch regimes onto inference"
+  },
+  "conclusion": "change the underlying forward/dX/dW launch and memory carrier; do not append another separable carrier after the full training graph"
+}

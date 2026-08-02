@@ -63,8 +63,10 @@ class StrictWorkloadConfig:
     replays_per_heartbeat: int = 8
     actuator_module: str = "model.layers.0.mlp.down_proj"
     actuator_width: int = 768
+    actuator_width_commands: tuple[int, ...] = ()
     actuator_operations: tuple[int, ...] = ()
     actuator_repetitions_per_update: int = 1
+    actuator_bin_duration_us: float = 0.0
     optimizer_bucket_size: int = 8
     kernel_launch_period_us: float = 0.0
 
@@ -100,10 +102,22 @@ class StrictWorkloadConfig:
             raise ValueError("warmup_updates must be positive for CUDA graph allocation stability")
         if self.actuator_width < 32 or self.actuator_width % 32:
             raise ValueError("actuator_width must be a positive multiple of 32")
+        if any(width < 32 or width % 32 for width in self.actuator_width_commands):
+            raise ValueError("every actuator width command must be a positive multiple of 32")
         if any(operations < 1 for operations in self.actuator_operations):
             raise ValueError("every actuator operation count must be positive")
+        if self.actuator_width_commands and not self.actuator_operations:
+            raise ValueError("actuator_width_commands require actuator_operations")
+        if self.actuator_width_commands and len(self.actuator_width_commands) != len(
+            self.actuator_operations
+        ):
+            raise ValueError("actuator width and operation commands must have matching lengths")
         if self.actuator_repetitions_per_update < 1:
             raise ValueError("actuator_repetitions_per_update must be positive")
+        if not math.isfinite(self.actuator_bin_duration_us) or self.actuator_bin_duration_us < 0:
+            raise ValueError("actuator_bin_duration_us must be finite and nonnegative")
+        if self.actuator_bin_duration_us and not self.actuator_operations:
+            raise ValueError("actuator_bin_duration_us requires actuator_operations")
         if self.optimizer_bucket_size < 1:
             raise ValueError("optimizer_bucket_size must be positive")
         if self.streaming_weight_gradient_tasks_per_record < 1:
@@ -145,6 +159,74 @@ class StrictWorkloadConfig:
 
     def metadata(self) -> dict[str, Any]:
         return {**asdict(self), "strict_invariants": self.strict_invariants()}
+
+
+@dataclass
+class ActuatorTimingAudit:
+    """Cumulative deadline audit for cadence-faithful actuator profiles."""
+
+    bin_duration_us: float
+    bins_per_profile: int
+    repetitions_per_update: int
+    profiles_completed: int = 0
+    bins_completed: int = 0
+    work_overrun_bins: int = 0
+    requested_host_wait_ns: int = 0
+    maximum_work_overrun_ns: int = 0
+    maximum_deadline_lateness_ns: int = 0
+    total_profile_duration_ns: int = 0
+    maximum_profile_duration_ns: int = 0
+
+    @property
+    def enabled(self) -> bool:
+        return self.bin_duration_us > 0
+
+    @property
+    def bin_duration_ns(self) -> int:
+        return int(round(self.bin_duration_us * 1e3))
+
+    def record_bin(self, *, work_completed_ns: int, deadline_ns: int, finished_ns: int) -> None:
+        work_overrun_ns = max(0, work_completed_ns - deadline_ns)
+        if work_overrun_ns:
+            self.work_overrun_bins += 1
+        self.maximum_work_overrun_ns = max(self.maximum_work_overrun_ns, work_overrun_ns)
+        self.requested_host_wait_ns += max(0, deadline_ns - work_completed_ns)
+        self.maximum_deadline_lateness_ns = max(
+            self.maximum_deadline_lateness_ns,
+            max(0, finished_ns - deadline_ns),
+        )
+        self.bins_completed += 1
+
+    def finish_profile(self, *, started_ns: int, finished_ns: int) -> None:
+        duration_ns = finished_ns - started_ns
+        self.total_profile_duration_ns += duration_ns
+        self.maximum_profile_duration_ns = max(self.maximum_profile_duration_ns, duration_ns)
+        self.profiles_completed += 1
+
+    def metadata(self) -> dict[str, Any]:
+        planned_profile_duration_us = self.bin_duration_us * self.bins_per_profile
+        return {
+            "enabled": self.enabled,
+            "bin_duration_us": self.bin_duration_us,
+            "bins_per_profile": self.bins_per_profile,
+            "repetitions_per_update": self.repetitions_per_update,
+            "planned_profile_duration_us": planned_profile_duration_us,
+            "planned_actuation_duration_per_update_us": (
+                planned_profile_duration_us * self.repetitions_per_update
+            ),
+            "profiles_completed": self.profiles_completed,
+            "bins_completed": self.bins_completed,
+            "work_overrun_bins": self.work_overrun_bins,
+            "requested_host_wait_us": self.requested_host_wait_ns / 1e3,
+            "maximum_work_overrun_us": self.maximum_work_overrun_ns / 1e3,
+            "maximum_deadline_lateness_us": self.maximum_deadline_lateness_ns / 1e3,
+            "mean_profile_duration_us": (
+                0.0
+                if self.profiles_completed == 0
+                else self.total_profile_duration_ns / self.profiles_completed / 1e3
+            ),
+            "maximum_profile_duration_us": self.maximum_profile_duration_ns / 1e3,
+        }
 
 
 def _send(messages: mp.Queue, payload: dict[str, Any]) -> None:
@@ -304,31 +386,48 @@ def _training_process(
 
     actuator = None
     actuator_profile_flops = 0
+    actuator_widths = (
+        config.actuator_width_commands
+        if config.actuator_width_commands
+        else (config.actuator_width,) * len(config.actuator_operations)
+    )
+    actuator_timing = ActuatorTimingAudit(
+        bin_duration_us=config.actuator_bin_duration_us,
+        bins_per_profile=len(config.actuator_operations),
+        repetitions_per_update=config.actuator_repetitions_per_update,
+    )
+    sleep_until_ns = None
     if config.actuator_operations:
         if gradient_scheduler is None:
             raise RuntimeError("gradient actuation requires the deferred gradient scheduler")
-        from .trace_drawing import CudaGraphGradientTileActuator
+        from .trace_drawing import CudaGraphGradientTileActuator, sleep_until_ns as wait_until_ns
 
-        unique_operations = sorted(set(config.actuator_operations))
+        programs = set(zip(actuator_widths, config.actuator_operations, strict=True))
+        first_width, first_operations = min(programs)
         actuator = CudaGraphGradientTileActuator(
             gradient_scheduler,
             config.actuator_module,
-            {config.actuator_width: unique_operations[0]},
+            {first_width: first_operations},
             copy_operands=False,
         )
-        actuator.add_explicit_programs(
-            {(config.actuator_width, operations) for operations in unique_operations}
-        )
+        actuator.add_explicit_programs(programs)
         x_operand, grad_output_operand = gradient_scheduler.gradient_operands(config.actuator_module)
         actuator_profile_flops = (
             config.actuator_repetitions_per_update
-            * sum(config.actuator_operations)
             * 2
-            * config.actuator_width
             * int(x_operand.shape[0])
             * int(grad_output_operand.shape[1])
+            * sum(
+                width * operations
+                for width, operations in zip(
+                    actuator_widths,
+                    config.actuator_operations,
+                    strict=True,
+                )
+            )
         )
         actuator.reset()
+        sleep_until_ns = wait_until_ns
 
     shape_audit = _aggregate_plans(model) if shaped_names else None
     optimizer_audit = asdict(optimizer.audit())
@@ -351,10 +450,17 @@ def _training_process(
         "cuda_peak_allocated_bytes": int(torch.cuda.max_memory_allocated()),
         "gradient_actuation": actuator is not None,
         "actuator_module": config.actuator_module if actuator is not None else None,
-        "actuator_width": config.actuator_width if actuator is not None else None,
+        "actuator_width": (
+            config.actuator_width if actuator is not None and not config.actuator_width_commands else None
+        ),
+        "actuator_width_commands": (
+            list(config.actuator_width_commands) if config.actuator_width_commands else None
+        ),
+        "actuator_unique_programs": len(set(zip(actuator_widths, config.actuator_operations, strict=True))),
         "actuator_profile_points": len(config.actuator_operations),
         "actuator_repetitions_per_update": config.actuator_repetitions_per_update,
         "actuator_redundant_flops_per_update": actuator_profile_flops,
+        "actuator_timing": actuator_timing.metadata(),
         "kernel_launch_pacing": None if launch_pacer is None else launch_pacer.metadata(),
     }
     _send(
@@ -388,12 +494,60 @@ def _training_process(
                 graph.replay()
             if actuator is not None:
                 for _ in range(config.actuator_repetitions_per_update):
-                    for operations in config.actuator_operations:
-                        actuator.execute(
-                            config.actuator_width,
-                            operations=operations,
-                            synchronize=False,
+                    if not actuator_timing.enabled:
+                        for width, operations in zip(
+                            actuator_widths,
+                            config.actuator_operations,
+                            strict=True,
+                        ):
+                            actuator.execute(
+                                width,
+                                operations=operations,
+                                synchronize=False,
+                            )
+                    else:
+                        if sleep_until_ns is None:
+                            raise RuntimeError("timed gradient actuation has no deadline waiter")
+                        # The full update graph was launched asynchronously. Start the actuator's
+                        # calibrated cadence only after that genuine training work has completed.
+                        torch.cuda.synchronize()
+                        profile_started_ns = time.monotonic_ns()
+                        profile_maximum_work_overrun_ns = 0
+                        for index, (width, operations) in enumerate(
+                            zip(actuator_widths, config.actuator_operations, strict=True)
+                        ):
+                            deadline_ns = profile_started_ns + (index + 1) * actuator_timing.bin_duration_ns
+                            actuator.execute(
+                                width,
+                                operations=operations,
+                                synchronize=False,
+                            )
+                            torch.cuda.synchronize()
+                            work_completed_ns = time.monotonic_ns()
+                            profile_maximum_work_overrun_ns = max(
+                                profile_maximum_work_overrun_ns,
+                                max(0, work_completed_ns - deadline_ns),
+                            )
+                            if work_completed_ns < deadline_ns:
+                                sleep_until_ns(deadline_ns)
+                            finished_ns = time.monotonic_ns()
+                            actuator_timing.record_bin(
+                                work_completed_ns=work_completed_ns,
+                                deadline_ns=deadline_ns,
+                                finished_ns=finished_ns,
+                            )
+                        actuator_timing.finish_profile(
+                            started_ns=profile_started_ns,
+                            finished_ns=time.monotonic_ns(),
                         )
+                        allowed_overrun_ns = max(500_000, actuator_timing.bin_duration_ns // 2)
+                        if profile_maximum_work_overrun_ns > allowed_overrun_ns:
+                            raise RuntimeError(
+                                f"a {config.actuator_bin_duration_us / 1e3:.3f} ms actuator bin "
+                                f"overran its deadline by "
+                                f"{profile_maximum_work_overrun_ns / 1e6:.3f} ms; "
+                                "reduce actuator operations or increase actuator_bin_duration_us"
+                            )
             updates += 1
         torch.cuda.synchronize()
         elapsed = time.monotonic() - started
@@ -411,6 +565,7 @@ def _training_process(
                 "elapsed_seconds": elapsed,
                 "actuator_replays": None if actuator is None else actuator.replays,
                 "actuator_redundant_flops": (None if actuator is None else actuator.executed_flops),
+                "actuator_timing": actuator_timing.metadata(),
                 "kernel_launch_pacing": (None if launch_pacer is None else launch_pacer.metadata()),
             },
         )

@@ -9,6 +9,9 @@ from torch import nn
 
 from experiments.llama_strict_inference_shaped_training.build_inference_target import bin_feature
 from experiments.llama_strict_inference_shaped_training.calibrate_trace_duty import operation_levels
+from experiments.llama_strict_inference_shaped_training.benchmark_strict import (
+    build_parser as benchmark_parser,
+)
 from experiments.llama_strict_inference_shaped_training.capture_strict import build_parser as capture_parser
 from experiments.llama_strict_inference_shaped_training.validate_strict import (
     build_parser as validation_parser,
@@ -30,6 +33,7 @@ from experiments.llama_strict_inference_shaped_training.strict_optimizer import 
     shared_parameter_ids,
 )
 from experiments.llama_strict_inference_shaped_training.strict_workloads import (
+    ActuatorTimingAudit,
     PersistentStrictWorkload,
     StrictWorkloadConfig,
 )
@@ -789,11 +793,47 @@ def test_continuous_gradient_actuation_is_no_cover_and_accounted() -> None:
         session_id="actuated",
         actuator_width=768,
         actuator_operations=(160, 176, 184),
+        actuator_bin_duration_us=2_000.0,
     )
     assert config.actuator_operations == (160, 176, 184)
+    assert config.actuator_bin_duration_us == 2_000.0
     assert config.strict_invariants()["inference_cover_tokens"] == 0
     assert config.strict_invariants()["filler_kernels"] == 0
     assert config.strict_invariants()["redundant_gradient_recomputation_flops_are_accounted"]
+
+
+def test_continuous_gradient_actuation_accepts_per_bin_width_programs() -> None:
+    config = StrictWorkloadConfig(
+        mode="shaped-training",
+        session_id="width-program",
+        actuator_width_commands=(256, 512, 768),
+        actuator_operations=(64, 48, 32),
+        actuator_bin_duration_us=1_000.0,
+    )
+    assert config.actuator_width_commands == (256, 512, 768)
+    assert config.actuator_operations == (64, 48, 32)
+
+
+@pytest.mark.parametrize(
+    "widths,operations,message",
+    [
+        ((31, 64), (8, 8), "positive multiple of 32"),
+        ((64, 96), (), "require actuator_operations"),
+        ((64, 96), (8, 8, 8), "matching lengths"),
+    ],
+)
+def test_actuator_width_program_is_validated(
+    widths: tuple[int, ...],
+    operations: tuple[int, ...],
+    message: str,
+) -> None:
+    with pytest.raises(ValueError, match=message):
+        StrictWorkloadConfig(
+            mode="shaped-training",
+            session_id="bad-width-program",
+            actuator_width_commands=widths,
+            actuator_operations=operations,
+        )
 
 
 @pytest.mark.parametrize("mode", ["inference", "ordinary-training"])
@@ -804,3 +844,80 @@ def test_gradient_actuation_rejects_non_shaped_modes(mode: str) -> None:
             session_id="bad-actuation",
             actuator_operations=(8, 16),
         )
+
+
+@pytest.mark.parametrize("duration", [-1.0, float("inf"), float("nan")])
+def test_actuator_bin_duration_must_be_finite_and_nonnegative(duration: float) -> None:
+    with pytest.raises(ValueError, match="finite and nonnegative"):
+        StrictWorkloadConfig(
+            mode="shaped-training",
+            session_id="bad-actuator-duration",
+            actuator_operations=(8, 16),
+            actuator_bin_duration_us=duration,
+        )
+
+
+def test_timed_actuator_requires_commands() -> None:
+    with pytest.raises(ValueError, match="requires actuator_operations"):
+        StrictWorkloadConfig(
+            mode="shaped-training",
+            session_id="missing-actuator-commands",
+            actuator_bin_duration_us=2_000.0,
+        )
+
+
+def test_actuator_timing_audit_separates_work_overrun_from_wakeup_lateness() -> None:
+    audit = ActuatorTimingAudit(
+        bin_duration_us=2_000.0,
+        bins_per_profile=2,
+        repetitions_per_update=3,
+    )
+    audit.record_bin(work_completed_ns=1_500_000, deadline_ns=2_000_000, finished_ns=2_010_000)
+    audit.record_bin(work_completed_ns=4_250_000, deadline_ns=4_000_000, finished_ns=4_250_000)
+    audit.finish_profile(started_ns=0, finished_ns=4_250_000)
+
+    metadata = audit.metadata()
+    assert metadata["enabled"] is True
+    assert metadata["planned_profile_duration_us"] == 4_000.0
+    assert metadata["planned_actuation_duration_per_update_us"] == 12_000.0
+    assert metadata["work_overrun_bins"] == 1
+    assert metadata["maximum_work_overrun_us"] == 250.0
+    assert metadata["maximum_deadline_lateness_us"] == 250.0
+    assert metadata["requested_host_wait_us"] == 500.0
+    assert metadata["mean_profile_duration_us"] == 4_250.0
+
+
+@pytest.mark.parametrize("parser_factory", [capture_parser, benchmark_parser])
+def test_strict_clis_accept_timed_actuator_bins(parser_factory) -> None:
+    required = (
+        ["--mode", "shaped-training", "--session-id", "timed"]
+        if parser_factory is benchmark_parser
+        else [
+            "--mode",
+            "shaped-training",
+            "--session-id",
+            "timed",
+            "--output-dir",
+            "captures",
+        ]
+    )
+    args = parser_factory().parse_args([*required, "--actuator-bin-duration-us", "2000"])
+    assert args.actuator_bin_duration_us == 2_000.0
+
+
+@pytest.mark.parametrize("parser_factory", [capture_parser, benchmark_parser])
+def test_strict_clis_accept_per_bin_width_commands(parser_factory) -> None:
+    required = (
+        ["--mode", "shaped-training", "--session-id", "widths"]
+        if parser_factory is benchmark_parser
+        else [
+            "--mode",
+            "shaped-training",
+            "--session-id",
+            "widths",
+            "--output-dir",
+            "captures",
+        ]
+    )
+    args = parser_factory().parse_args([*required, "--actuator-width-commands", "widths.npy"])
+    assert args.actuator_width_commands.name == "widths.npy"
