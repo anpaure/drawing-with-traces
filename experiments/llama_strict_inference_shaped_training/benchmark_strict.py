@@ -53,7 +53,16 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--grouped-dw-min-batch", type=int, default=4)
     parser.add_argument("--grouped-dw-max-batch", type=int, default=16)
     parser.add_argument("--learning-rate", type=float, default=3e-4)
-    parser.add_argument("--shaping-backend", choices=("grouped-m1", "tiled-gemm"), default="tiled-gemm")
+    parser.add_argument(
+        "--shaping-backend",
+        choices=("grouped-m1", "tiled-gemm", "shared-carrier"),
+        default="tiled-gemm",
+    )
+    parser.add_argument(
+        "--shared-carrier-dw-layout",
+        choices=("direct", "inference-balanced", "inference-balanced-strided"),
+        default="direct",
+    )
     parser.add_argument("--cuda-graph", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--actuator-commands", type=Path)
     parser.add_argument("--actuator-width", type=int, default=768)
@@ -102,6 +111,7 @@ def main() -> None:
         tile_rows=args.tile_rows,
         learning_rate=args.learning_rate,
         shaping_backend=args.shaping_backend,
+        shared_carrier_weight_gradient_layout=args.shared_carrier_dw_layout,
         weight_gradient_schedule=args.weight_gradient_schedule,
         streaming_weight_gradient_tasks_per_record=args.streaming_dw_tasks_per_record,
         grouped_weight_gradient_min_batch=args.grouped_dw_min_batch,

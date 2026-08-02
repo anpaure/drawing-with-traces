@@ -15,6 +15,12 @@ from typing import Any, Literal
 
 import sidecapture as sc
 
+from ..llama_shared_kernel_training_carrier.shared_carrier import (
+    SharedCarrierConfig,
+    SharedCarrierGradientScheduler,
+    carrier_execution_plans,
+    replace_linear_modules_with_shared_carrier,
+)
 from .strict_optimizer import InterleavedSGD
 from .strict_shapes import (
     DeferredWeightGradientScheduler,
@@ -45,7 +51,10 @@ class StrictWorkloadConfig:
     inference_decode_tokens: int = 64
     learning_rate: float = 3e-4
     tile_rows: int = 128
-    shaping_backend: Literal["grouped-m1", "tiled-gemm"] = "tiled-gemm"
+    shaping_backend: Literal["grouped-m1", "tiled-gemm", "shared-carrier"] = "tiled-gemm"
+    shared_carrier_weight_gradient_layout: Literal[
+        "direct", "inference-balanced", "inference-balanced-strided"
+    ] = "direct"
     weight_gradient_schedule: Literal[
         "inline",
         "round-robin",
@@ -82,6 +91,15 @@ class StrictWorkloadConfig:
             "streaming-grouped",
         }:
             raise ValueError(f"unknown weight-gradient schedule: {self.weight_gradient_schedule!r}")
+        if self.shared_carrier_weight_gradient_layout not in {
+            "direct",
+            "inference-balanced",
+            "inference-balanced-strided",
+        }:
+            raise ValueError(
+                "shared_carrier_weight_gradient_layout must be direct, "
+                "inference-balanced, or inference-balanced-strided"
+            )
         if not self.session_id:
             raise ValueError("session_id cannot be empty")
         for name in (
@@ -98,6 +116,19 @@ class StrictWorkloadConfig:
                 raise ValueError(f"{name} must be positive, got {getattr(self, name)}")
         if self.learning_rate <= 0:
             raise ValueError(f"learning_rate must be positive, got {self.learning_rate}")
+        if self.shaping_backend == "shared-carrier":
+            if self.weight_gradient_schedule not in {"inline", "streaming-inference-cycle"}:
+                raise ValueError("shared-carrier supports only inline or streaming-inference-cycle dW")
+            if self.training_batch_size * self.training_sequence_length % self.tile_rows:
+                raise ValueError("shared-carrier flattened training rows must be divisible by tile_rows")
+            if self.kernel_launch_period_us:
+                raise ValueError("shared-carrier does not support host kernel pacing")
+            if self.actuator_operations:
+                raise ValueError("shared-carrier does not support appended gradient actuation")
+        elif self.shared_carrier_weight_gradient_layout != "direct":
+            raise ValueError(
+                "inference-balanced dW layout requires --shaping-backend shared-carrier"
+            )
         if self.warmup_updates < 1:
             raise ValueError("warmup_updates must be positive for CUDA graph allocation stability")
         if self.actuator_width < 32 or self.actuator_width % 32:
@@ -263,6 +294,28 @@ def _aggregate_plans(model) -> dict[str, Any]:
     }
 
 
+def _aggregate_carrier_plans(model) -> dict[str, Any]:
+    plans = carrier_execution_plans(model)
+    return {
+        "shaped_linear_modules": len(plans),
+        "carrier": "custom autograd schedule over torch.mm/cuBLAS",
+        "single_vendor_kernel_binary_claimed": False,
+        "forward_launches_per_update": sum(plan.forward_launches for plan in plans.values()),
+        "input_gradient_launches_per_update": sum(plan.input_gradient_launches for plan in plans.values()),
+        "weight_gradient_launches_per_update": sum(plan.weight_gradient_launches for plan in plans.values()),
+        "layout_transform_values_per_update": sum(
+            plan.layout_transform_values for plan in plans.values()
+        ),
+        "useful_linear_flops_per_update": sum(
+            plan.useful_forward_flops + plan.useful_input_gradient_flops + plan.useful_weight_gradient_flops
+            for plan in plans.values()
+        ),
+        "executed_linear_flops_per_update": sum(plan.executed_flops for plan in plans.values()),
+        "redundant_padding_flops_per_update": sum(plan.redundant_flops for plan in plans.values()),
+        "per_module": {name: plan.to_dict() for name, plan in plans.items()},
+    }
+
+
 def _training_process(
     config: StrictWorkloadConfig,
     stop_event: mp.Event,
@@ -279,30 +332,51 @@ def _training_process(
     model = _load_model(config).train()
     model.config.use_cache = False
     shaped_names: list[str] = []
-    gradient_scheduler: DeferredWeightGradientScheduler | None = None
+    gradient_scheduler: DeferredWeightGradientScheduler | SharedCarrierGradientScheduler | None = None
     launch_pacer = (
         KernelLaunchPacer(config.kernel_launch_period_us) if config.kernel_launch_period_us else None
     )
+    carrier_config = None
     if config.mode == "shaped-training":
-        if config.weight_gradient_schedule != "inline":
-            gradient_scheduler = DeferredWeightGradientScheduler()
-        shape_config = StrictShapeConfig(
-            backend=config.shaping_backend,
-            forward_m1_per_launch=config.tile_rows,
-            input_gradient_m1_per_launch=config.tile_rows,
-            weight_gradient_m1_per_launch=config.tile_rows,
-            pad_weight_gradient_reduction_to_input_width=True,
-            weight_gradient_schedule=config.weight_gradient_schedule,
-            streaming_weight_gradient_tasks_per_record=(config.streaming_weight_gradient_tasks_per_record),
-            grouped_weight_gradient_min_batch=config.grouped_weight_gradient_min_batch,
-            grouped_weight_gradient_max_batch=config.grouped_weight_gradient_max_batch,
-            launch_pacer=launch_pacer,
-        )
-        shaped_names = replace_linear_modules(
-            model,
-            shape_config,
-            scheduler=gradient_scheduler,
-        )
+        if config.shaping_backend == "shared-carrier":
+            carrier_config = SharedCarrierConfig(
+                row_tile=config.tile_rows,
+                expected_training_rows=(config.training_batch_size * config.training_sequence_length),
+                weight_gradient_layout=config.shared_carrier_weight_gradient_layout,
+            )
+            if config.weight_gradient_schedule != "inline":
+                gradient_scheduler = SharedCarrierGradientScheduler(
+                    row_tile=config.tile_rows,
+                    tasks_per_record=config.streaming_weight_gradient_tasks_per_record,
+                    weight_gradient_layout=config.shared_carrier_weight_gradient_layout,
+                )
+            shaped_names = replace_linear_modules_with_shared_carrier(
+                model,
+                carrier_config,
+                scheduler=gradient_scheduler,
+            )
+        else:
+            if config.weight_gradient_schedule != "inline":
+                gradient_scheduler = DeferredWeightGradientScheduler()
+            shape_config = StrictShapeConfig(
+                backend=config.shaping_backend,
+                forward_m1_per_launch=config.tile_rows,
+                input_gradient_m1_per_launch=config.tile_rows,
+                weight_gradient_m1_per_launch=config.tile_rows,
+                pad_weight_gradient_reduction_to_input_width=True,
+                weight_gradient_schedule=config.weight_gradient_schedule,
+                streaming_weight_gradient_tasks_per_record=(
+                    config.streaming_weight_gradient_tasks_per_record
+                ),
+                grouped_weight_gradient_min_batch=config.grouped_weight_gradient_min_batch,
+                grouped_weight_gradient_max_batch=config.grouped_weight_gradient_max_batch,
+                launch_pacer=launch_pacer,
+            )
+            shaped_names = replace_linear_modules(
+                model,
+                shape_config,
+                scheduler=gradient_scheduler,
+            )
 
     parameter_tensors = [parameter for parameter in model.parameters() if parameter.requires_grad]
     optimizer = InterleavedSGD(
@@ -429,7 +503,11 @@ def _training_process(
         actuator.reset()
         sleep_until_ns = wait_until_ns
 
-    shape_audit = _aggregate_plans(model) if shaped_names else None
+    shape_audit = (
+        _aggregate_carrier_plans(model)
+        if carrier_config is not None
+        else (_aggregate_plans(model) if shaped_names else None)
+    )
     optimizer_audit = asdict(optimizer.audit())
     common = {
         "session_id": config.session_id,
@@ -444,6 +522,7 @@ def _training_process(
         "externally_shifted_next_token_targets": True,
         "model_instances_loaded": 1,
         "shaped_linear_modules": len(shaped_names),
+        "shared_carrier": None if carrier_config is None else carrier_config.metadata(),
         "strict_invariants": config.strict_invariants(),
         "cuda_graph": graph is not None,
         "cuda_allocated_bytes": int(torch.cuda.memory_allocated()),

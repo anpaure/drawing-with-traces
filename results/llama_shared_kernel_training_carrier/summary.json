@@ -1,0 +1,80 @@
+{
+  "status": "physically_rejected_before_detector_scale",
+  "gate_met": false,
+  "grouped_detector_gate_evaluated": false,
+  "reason": "Matching torch.mm dimensions and aggregate launch counts did not produce matching physical traces; no exact vendor-kernel identity was established.",
+  "model": "unsloth/Llama-3.2-1B-Instruct",
+  "hardware": "NVIDIA H100 PCIe",
+  "capture": {
+    "sample_rate_hz": 1500000,
+    "duration_s": 0.1,
+    "samples": 150000,
+    "gain_db": 10
+  },
+  "numerical_validation": {
+    "parameter_values": 1235814400,
+    "loss_absolute_difference": 0.0,
+    "gradient_relative_l2": 0.001462594811677345,
+    "updated_parameter_relative_l2": 2.9911474746179415e-7,
+    "forward_launches": 226,
+    "input_gradient_launches": 226,
+    "weight_gradient_launches": 226,
+    "useful_linear_flops_per_update": 15184856875008,
+    "executed_linear_flops_per_update": 15184856875008,
+    "redundant_linear_flops_per_update": 0,
+    "layout_transform_values_per_update": 0
+  },
+  "throughput_useful_targets_per_second": {
+    "ordinary_training_b2048": 17011.199946926237,
+    "direct_carrier_b2048": 16754.729495114625,
+    "direct_streaming_carrier_b2048": 17267.543361242035,
+    "balanced_copy_inline_b2048": 15790.748226482421,
+    "balanced_copy_streaming_b2048": 16133.71070256505,
+    "balanced_strided_streaming_b2048": 17195.776469519587
+  },
+  "physical_screen": {
+    "best_direct": {
+      "traces": 2,
+      "welch_psd_js_similarity": 0.7892421994154787,
+      "mean_stationary_similarity": 0.9006709651810336,
+      "feature_z_rms_by_horizon_ms": {
+        "5": 2.33145229274775,
+        "10": 2.5470536306747715,
+        "20": 2.690676581147685,
+        "50": 2.9499988686633296,
+        "100": 3.056436767829071
+      }
+    },
+    "balanced_copy": {
+      "traces": 4,
+      "welch_psd_js_similarity": 0.418579170208338,
+      "mean_stationary_similarity": 0.7778826704961515,
+      "feature_z_rms_by_horizon_ms": {
+        "5": 2.854995698522502,
+        "10": 3.2467874096179963,
+        "20": 3.6337507250377143,
+        "50": 4.928811794626841,
+        "100": 5.53758150499155
+      }
+    },
+    "balanced_strided": {
+      "traces": 4,
+      "welch_psd_js_similarity": 0.37294258415482295,
+      "mean_stationary_similarity": 0.7327513070313271,
+      "feature_z_rms_by_horizon_ms": {
+        "5": 4.730582092315538,
+        "10": 5.435098532333476,
+        "20": 6.0923518608674305,
+        "50": 6.680915620700581,
+        "100": 7.577460626773193
+      }
+    }
+  },
+  "strict_invariants": {
+    "inference_cover_tokens": 0,
+    "secondary_model_instances": 0,
+    "filler_kernels": 0,
+    "all_carrier_gemms_are_useful_training_arithmetic": true,
+    "single_vendor_kernel_binary_claimed": false
+  }
+}
