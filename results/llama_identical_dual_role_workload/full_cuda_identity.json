@@ -1,0 +1,35 @@
+{
+  "computation_fingerprint": "5006c9b78afb9e4658995a4ff6094b309938fdc8e1c36f2c19e9a215a8bad8a8",
+  "ready_state_exact": true,
+  "exact_fields": [
+    "updates",
+    "last_loss",
+    "inference_token_checksum",
+    "parameter_probe_delta_linf",
+    "parameter_probe_checksum",
+    "executed_tokens",
+    "useful_training_tokens",
+    "useful_inference_tokens",
+    "cuda_allocated_bytes",
+    "cuda_peak_allocated_bytes"
+  ],
+  "updates": 3,
+  "last_loss": 11.869826316833496,
+  "inference_token_checksum": 450878,
+  "parameter_probe_delta_linf": 1.049041748046875e-05,
+  "parameter_probe_checksum": 1.421226978302002,
+  "cuda_events_per_role": 2382,
+  "cuda_signature_sequence_identical": true,
+  "cuda_signature_sha256": "dca114a3cefb3a2b455737affd02ded8930ba7450d94d295ee32ba0071a2c629",
+  "cuda_busy_ms": {
+    "inference": 298.835095,
+    "training": 299.425635
+  },
+  "period_span_ms": {
+    "inference": 303.553012,
+    "training": 304.122130
+  },
+  "duration_correlation": 0.9999808934599189,
+  "median_absolute_duration_difference_us": 0.12899999999999778,
+  "p99_absolute_duration_difference_us": 4.91790999999988
+}

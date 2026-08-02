@@ -1,0 +1,18 @@
+{
+  "configuration": {
+    "model": "unsloth/Llama-3.2-1B-Instruct",
+    "inference_batch_size": 1024,
+    "training_batch_size": 2048,
+    "sequence_length": 1,
+    "data_ring_size": 64,
+    "dtype": "bfloat16"
+  },
+  "updates": 34,
+  "elapsed_seconds": 10.622419266961515,
+  "updates_per_second": 3.2007774449036144,
+  "approx_executed_model_flops_per_second": 72909008319413.94,
+  "approx_useful_training_flops_per_second": 48606005546275.96,
+  "approx_useful_inference_flops_per_second": 8101000924379.326,
+  "peak_allocated_bytes": 14757289472,
+  "note": "Parameter-count FLOP approximation; optimization baseline, not a hardware-counter measurement."
+}
