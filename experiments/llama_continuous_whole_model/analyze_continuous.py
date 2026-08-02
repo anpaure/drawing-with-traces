@@ -254,7 +254,7 @@ def render_overview(
         inference[0].values[:snippet_samples],
         color="#155EEF",
         lw=0.7,
-        label="Quantized inference",
+        label="BF16 inference",
     )
     axes[0, 0].plot(
         time_ms,

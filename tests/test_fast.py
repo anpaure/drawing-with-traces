@@ -41,6 +41,27 @@ def test_fast_calibration_interpolates_to_legal_tile_widths():
     assert any(command not in calibration().widths for command in commands)
 
 
+def test_refinement_controller_supports_non_width_command_quantum():
+    duty = FastCalibration(
+        widths=np.array([1, 8, 32, 128], dtype=float),
+        feature_name="std",
+        feature_sign=1,
+        measured_feature=np.array([1, 2, 3, 4], dtype=float),
+        monotonic_activity=np.array([1, 2, 3, 4], dtype=float),
+        within_width_std=np.full(4, 0.01),
+    )
+    controller = FastRefinementController(
+        np.array([0.0, 0.25, 0.5, 0.75, 1.0]),
+        duty,
+        minimum_width=1,
+        command_quantum=1,
+    )
+    commands = controller.initial_commands()
+    assert commands[0] == 1
+    assert commands[-1] == 128
+    assert np.any(commands % 32)
+
+
 def test_calibration_widths_are_repeated_in_interleaved_contexts():
     widths = np.array([0, 32, 64, 128, 256])
     commands = interleaved_calibration_commands(widths, repeats=4, seed=7)

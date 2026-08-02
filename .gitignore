@@ -7,5 +7,6 @@ __pycache__/
 build/
 dist/
 runs/
+/artifacts/
 # Raw CUDA event streams are retained on the H100; Git stores the checked compact summary.
 results/llama_continuous_whole_model/kernel_audit/*.json

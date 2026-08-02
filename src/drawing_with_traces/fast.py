@@ -1388,6 +1388,7 @@ class FastRefinementController:
         improvement_tolerance: float = 1e-4,
         total_width: int | None = None,
         minimum_width: int = 0,
+        command_quantum: int = 32,
         correction_smoothing_sigma_points: float = 0.0,
         feedback_reference: str = "best",
     ):
@@ -1420,6 +1421,9 @@ class FastRefinementController:
         self.improvement_tolerance = float(improvement_tolerance)
         self.total_width = total_width
         self.minimum_width = int(minimum_width)
+        if command_quantum < 1:
+            raise ValueError("command_quantum must be positive")
+        self.command_quantum = int(command_quantum)
         self.correction_smoothing_sigma_points = float(
             correction_smoothing_sigma_points
         )
@@ -1430,6 +1434,7 @@ class FastRefinementController:
                 total_width,
                 minimum_width=self.minimum_width,
                 maximum_width=int(calibration.widths[-1]),
+                width_quantum=self.command_quantum,
             )
         self.gain = float(initial_gain)
         self.best_rmse = math.inf
@@ -1448,11 +1453,16 @@ class FastRefinementController:
         )
 
     def initial_commands(self) -> np.ndarray:
-        return self._constrain(self.calibration.commands_for(self.target))
+        return self._constrain(
+            self.calibration.commands_for(self.target, width_quantum=self.command_quantum)
+        )
 
     def _constrain(self, commands: np.ndarray) -> np.ndarray:
         if self.total_width is None:
-            commands = np.rint(np.asarray(commands, dtype=np.float64) / 32) * 32
+            commands = (
+                np.rint(np.asarray(commands, dtype=np.float64) / self.command_quantum)
+                * self.command_quantum
+            )
             return np.clip(
                 commands,
                 self.minimum_width,
@@ -1463,6 +1473,7 @@ class FastRefinementController:
             self.total_width,
             minimum_width=self.minimum_width,
             maximum_width=int(self.calibration.widths[-1]),
+            width_quantum=self.command_quantum,
         )
 
     def observe(
@@ -1509,8 +1520,14 @@ class FastRefinementController:
             raise RuntimeError("refinement feedback is unavailable after observation")
         error = self.target - reference_measured
         corrected_target = np.clip(self.target + self.gain * error, 0, 1)
-        baseline_commands = self.calibration.commands_for(self.target)
-        corrected_commands = self.calibration.commands_for(corrected_target)
+        baseline_commands = self.calibration.commands_for(
+            self.target,
+            width_quantum=self.command_quantum,
+        )
+        corrected_commands = self.calibration.commands_for(
+            corrected_target,
+            width_quantum=self.command_quantum,
+        )
         # True iterative learning control: retain the selected delivered command
         # (best or latest) and add the calibration-derived correction. Recomputing
         # from the baseline on every round discards prior corrections and oscillates.
@@ -1527,7 +1544,7 @@ class FastRefinementController:
         if np.array_equal(commands, self.best_commands) and not self.reached_target:
             # Quantization can otherwise make a nonzero residual a fixed point.
             largest = int(np.argmax(np.abs(error)))
-            direction = 32 if error[largest] > 0 else -32
+            direction = self.command_quantum if error[largest] > 0 else -self.command_quantum
             if self.total_width is None:
                 commands[largest] = int(
                     np.clip(
@@ -1566,6 +1583,7 @@ class FastRefinementController:
             "reached_target": self.reached_target,
             "total_width": self.total_width,
             "minimum_width": self.minimum_width,
+            "command_quantum": self.command_quantum,
             "correction_smoothing_sigma_points": self.correction_smoothing_sigma_points,
             "feedback_reference": self.feedback_reference,
         }
@@ -1617,6 +1635,7 @@ def measured_bin_features(
     *,
     record_index: int | None = None,
     event_name: str = "tile.bin",
+    command_key: str = "requested_width",
 ) -> tuple[dict[str, np.ndarray], np.ndarray, dict]:
     trace, bins, record = _trace_and_bins(
         root,
@@ -1635,7 +1654,11 @@ def measured_bin_features(
             )
         for name, value in _features(segment, center).items():
             by_name.setdefault(name, []).append(value)
-        widths.append(int(event["metadata"]["requested_width"]))
+        if command_key not in event["metadata"]:
+            raise ConfigurationError(
+                f"{event_name} event {event['metadata']['index']} has no {command_key!r} metadata"
+            )
+        widths.append(int(event["metadata"][command_key]))
     return {name: np.asarray(value) for name, value in by_name.items()}, np.asarray(widths), record
 
 
@@ -1645,11 +1668,13 @@ def calibrate_fast(
     record_index: int | None = None,
     event_name: str = "tile.bin",
     preferred_feature: str | None = None,
+    command_key: str = "requested_width",
 ) -> FastCalibration:
     features, commands, _ = measured_bin_features(
         root,
         record_index=record_index,
         event_name=event_name,
+        command_key=command_key,
     )
     widths = np.asarray(sorted(set(commands)), dtype=np.float64)
     x = np.log2(widths + 32)
@@ -1729,6 +1754,8 @@ def save_fast_calibration(root: str | Path, calibration: FastCalibration) -> Pat
 def render_fast_calibration(
     calibration: FastCalibration,
     output: str | Path,
+    *,
+    command_label: str = "Output-column tile width",
 ) -> Path:
     output = Path(output)
     activity = calibration.feature_sign * calibration.measured_feature
@@ -1750,7 +1777,7 @@ def render_fast_calibration(
         label="Monotonic controller map",
     )
     axis.set_xscale("symlog", linthresh=32, base=2)
-    axis.set_xlabel("Output-column tile width")
+    axis.set_xlabel(command_label)
     axis.set_ylabel("Oriented ChipWhisperer feature")
     axis.set_title("Tiled-gradient width calibration")
     axis.grid(True, color="#E4E7EC", linewidth=0.7)

@@ -1,0 +1,92 @@
+{
+  "status": "negative result: no-cover shaping narrows waveform statistics but remains readily detectable",
+  "selected_configuration": {
+    "model": "unsloth/Llama-3.2-1B-Instruct",
+    "dtype": "torch.bfloat16",
+    "parameters": 1235814400,
+    "training_batch_size": 128,
+    "training_sequence_length": 1,
+    "tile_rows": 128,
+    "shaping_backend": "grouped-m1",
+    "weight_gradient_schedule": "streaming-grouped",
+    "streaming_dW_tasks_per_record": 16,
+    "grouped_dW_batch": [
+      4,
+      16
+    ],
+    "optimizer_bucket_size": 8,
+    "cuda_graph": true
+  },
+  "physical_evaluation": {
+    "sample_rate_hz": 1500000.0,
+    "duration_ms": 100.0,
+    "trace_counts": {
+      "inference": 40,
+      "training": 40
+    },
+    "session_counts": {
+      "inference": 5,
+      "training": 5
+    },
+    "all_health_checks_passed": true,
+    "stationary_similarities": {
+      "raw_amplitude_js_similarity": 0.9923782816672085,
+      "normalized_amplitude_js_similarity": 0.9908639821963366,
+      "welch_psd_js_similarity": 0.94176816127061,
+      "mean_similarity": 0.9750034750447184
+    },
+    "session_held_out_detector_balanced_accuracy": {
+      "5.0": 0.9225,
+      "10.0": 0.9207500000000001,
+      "20.0": 0.9575,
+      "50.0": 0.90375,
+      "100.0": 0.9025
+    }
+  },
+  "throughput": {
+    "ordinary_useful_targets_per_second": 5310.771095507018,
+    "shaped_useful_targets_per_second": 578.4700122221894,
+    "retained_fraction": 0.10892392118191324,
+    "slowdown": 9.18071980102429
+  },
+  "arithmetic_audit": {
+    "schedule": "streaming-grouped",
+    "registered_modules": 113,
+    "registered_parameter_tensors": 113,
+    "recorded_invocations": 113,
+    "gemm_launches": 2576,
+    "executed_gemm_launches": 2576,
+    "physical_gemm_launches": 176,
+    "grouped_gemm_launches": 160,
+    "grouped_gemm_tasks": 2560,
+    "useful_gemm_flops": 316351184896,
+    "redundant_gemm_launches": 0,
+    "redundant_gemm_flops": 8043802656768,
+    "executed_gemm_flops": 8360153841664,
+    "parameter_updates_interleaved": 112,
+    "parameter_updates_deferred": 1,
+    "grouped_packing_bytes": 10770972672,
+    "grouped_accumulation_tensors": 2560
+  },
+  "ordinary_comparison": {
+    "loss_absolute_difference": 0.00019168853759765625,
+    "gradient_relative_l2": 0.004759006135466449,
+    "gradient_equal_fraction": 0.38267560808483864,
+    "updated_parameter_relative_l2": 8.273835487850221e-07,
+    "updated_parameter_equal_fraction": 0.9999893624803207
+  },
+  "fusion_validation": {
+    "bitwise_equivalent": true,
+    "gradient_equal_fraction": 1.0,
+    "updated_parameter_equal_fraction": 1.0
+  },
+  "strict_invariants": {
+    "inference_cover_tokens": 0,
+    "secondary_model_instances": 0,
+    "filler_kernels": 0,
+    "all_extra_flops_are_accounted_training_arithmetic": true,
+    "reduction_padding_flops_are_accounted": true,
+    "redundant_gradient_recomputation_flops_are_accounted": true,
+    "optimizer_updates_use_real_current_gradients": true
+  }
+}

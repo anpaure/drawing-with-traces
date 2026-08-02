@@ -1,137 +1,158 @@
-# Can full-parameter Llama training look like inference in a power trace?
+# No-cover inference-shaped Llama training
 
-This branch contains the **continuous whole-model Llama experiment**. It compares real cached inference
-with real full-parameter training as seen by an external current probe. The PNG-drawing project remains
-on [`main`](https://github.com/anpaure/drawing-with-traces/tree/main); the earlier GPT-OSS study is on
-[`experiment/gpt-oss-inference-shaped-training`](https://github.com/anpaure/drawing-with-traces/tree/experiment/gpt-oss-inference-shaped-training).
+Can full-parameter transformer training look like cached inference to an external current probe **without
+running inference as cover**?
 
-![Experiment, result, and limits](results/llama_continuous_whole_model/readme_explainer.png)
+**Not yet.** The best tested schedule makes several marginal signal statistics close, but a session-held-out
+power-only detector still separates training from inference with **90.25–95.75% balanced accuracy**.
 
-## Answer
+![Measured no-cover result](results/llama_strict_inference_shaped_training/best_no_cover/continuous_power_overview.png)
 
-**Partly, at a real cost.** Ordinary training is essentially trivial to distinguish from inference.
-The best tested schedule performs one genuine training update and then 12 genuine NF4 cached-decode
-tokens. It makes short power windows substantially harder to classify, but it does not erase the
-training signal.
+## Result
 
-| External monitor result | Ordinary training | Best schedule |
-|---|---:|---:|
-| 5 ms ridge balanced accuracy | **99.98%** | **62.77%** |
-| 5 ms raw-waveform CNN | — | **71.70%** |
-| 100 ms ridge balanced accuracy | **100.00%** | **77.73%** |
-| Stationary signal similarity to inference | 0.678 | **0.896** |
-| Useful causal-loss targets/s | 356 | **307** |
+| Measured quantity | Best no-cover run |
+|---|---:|
+| Raw-amplitude JS similarity | 0.9924 |
+| Normalized-amplitude JS similarity | 0.9909 |
+| Welch-PSD JS similarity | 0.9418 |
+| Mean stationary similarity | **0.9750** |
+| Detector accuracy, 5 ms | **92.25%** |
+| Detector accuracy, 20 ms | **95.75%** |
+| Detector accuracy, 100 ms | **90.25%** |
+| Useful causal-loss targets/s | **578** |
+| Ordinary-training targets/s | **5,311** |
+| Throughput retained | **10.9%** |
 
-Chance is 50%. Splits hold out complete workload sessions, not random windows from the same trace.
-The 307 targets/s result retains 86% of the original 8-bit-Adam baseline, but only 33% of the faster
-no-cover fused-Adam implementation. The camouflage is useful computation, not free computation.
+Chance detector accuracy is 50%. The detector receives only contiguous ChipWhisperer ADC windows. Each
+fold leaves out one complete inference session and one complete training session; it does not randomly
+split neighboring windows from the same session.
+
+The physical evaluation contains five independent sessions per process and eight healthy 100 ms traces
+per session: 40 inference traces and 40 training traces, sampled at 1.5 MSPS.
 
 ## What actually ran
 
-### Inference reference
+### Reference inference
 
-- `meta-llama/Llama-3.1-8B`, all 32 layers;
-- NF4 double-quantized weights with BF16 compute;
-- changing prompt prefills and genuine autoregressive KV-cached decode.
+- `unsloth/Llama-3.2-1B-Instruct`, 16 layers, BF16, 1.235B parameters;
+- batch 1,024, real KV-cached autoregressive decode;
+- one model instance in the inference worker.
 
-### Training target
+### Shaped training
 
-- the same 32-layer architecture in BF16;
-- all **8,030,261,248 parameters** and all 291 parameter tensors trainable;
-- causal loss, full forward, reverse-mode backward, and AdamW update;
-- changing token slices; every parameter tensor receives a gradient and belongs to the optimizer.
+- the same BF16 checkpoint, all 1.235B parameters trainable;
+- batch 128 × sequence length 1, causal cross-entropy, full forward/backward, and SGD update;
+- one fixed synthetic token batch per session, replayed to isolate scheduler and sensor behavior;
+- 113 dense modules replaced by shaped but mathematically valid linear operators;
+- one model instance in the training worker;
+- **zero inference tokens, zero inference cover, and zero filler kernels**.
 
-### Best schedule
+Every scheduled GEMM contributes to forward, `dX`, exact `dW`, or explicitly reported reduction-padding
+work. Non-GEMM transformer and optimizer operations are still real parts of the same training update.
+This is a systems-side-channel experiment, not a language-model convergence benchmark.
 
-- one complete fused-AdamW training update;
-- then 12 real decode tokens from a second NF4 model with a real KV cache;
-- repeated continuously before the scope is armed.
+## Selected mechanism
 
-The monitor receives only current-probe ADC samples. It does not receive CUDA markers, iteration
-boundaries, labels, loss, model metadata, NVML, or host timing. Every 100 ms capture starts after an
-independent random 0–500 ms armed delay.
+1. Forward and `dX` are submitted as groups of genuine shared-RHS `M=1` products. The
+   `grouped-m1` backend label applies to these two paths, not deferred `dW`.
+2. Each `dW` is formed exactly from its saved activation and output gradient. The reduction dimension is
+   padded to an inference-like width; padding is redundant training arithmetic, not hidden work.
+3. Dependency-ready `dW` tiles stream through `torch._grouped_mm`: 2,576 logical tiles become 176
+   physical GEMM launches (160 grouped launches plus 16 singletons).
+4. Parameter updates are interleaved with backward and fused in eight-tensor buckets.
+5. A complete update is replayed through a CUDA graph to remove Python launch stalls.
 
-![Representative measured power comparison](results/llama_continuous_whole_model/final_eval/fused-cover12/continuous_power_overview.png)
+The important cost is explicit: only **0.316 TFLOP** of each shaped `dW` is useful, while **8.044 TFLOP**
+is reduction-padding overhead. Thus 96.2% of executed `dW` arithmetic is redundant. This is the main
+reason the selected run is 9.18× slower than the ordinary CUDA-graph baseline.
+That baseline uses the same full-parameter SGD rule and batch geometry, but ordinary dense linear
+operators and no shaping.
 
-## What worked—and what failed
+## Why the claim remains negative
 
-1. **Real inference cover worked best.** It changes the whole kernel and physical process, including
-   cadence, quantized GEMMs, memory traffic, and idle gaps.
-2. **Making individual matmuls look like decode did not work.** Exact token-row decomposition made 96%
-   of profiled ATen GEMMs use `M=1`, yet kernel-process similarity fell from 0.411 to 0.342 and useful
-   training throughput fell about 30×.
-3. **Marginal waveform similarity was not enough.** Randomized cover reached the highest stationary
-   similarity (0.931) but was easier to detect than fixed cover-12. Layer-interleaved cover reached
-   0.919 similarity but 96.88% detector accuracy at 100 ms because its cadence was regular.
-4. **Longer observation still helps the defender.** The best ridge result rises from 62.77% at 5 ms to
-   77.73% at 100 ms, and the raw CNN reaches 71.70% at 5 ms.
+The waveform plot can look close while a detector uses stable temporal differences. Profiling one update
+shows 595 dense training kernels taking 177.2 ms, versus 114 dense kernels taking 5.58 ms for one cached
+decode. Training also retains backward attention, reductions, optimizer traffic, packing, and a different
+short-timescale envelope. Marginal amplitude and PSD similarity do not erase those features.
 
-The practical lesson is that matching one kernel shape, spectrum, or amplitude distribution is only a
-proxy. The objective must be evaluated with held-out temporal detectors on the physical channel.
+The independent alternatives tested here did not solve that problem:
 
-## What this proves—and does not prove
+| Variant | Evaluation | Similarity | Useful targets/s | Outcome |
+|---|---|---:|---:|---|
+| Streaming grouped, batch 128 | 5-session final | **0.975** | 578 | Selected, but detector stays >90% |
+| Streaming round-robin, batch 128 | 5-session final | 0.978 | 589 | Slightly better stationary score; worse detector overall |
+| Inference-family cyclic scheduler | 1-session smoke | 0.963 | 600 | Reordering alone did not improve the trace |
+| Replace padding with batch 2,048 useful rows | 1-session smoke | 0.872 | **832** | 43% faster, but PSD similarity collapsed to 0.630 |
+| Eager execution | 1-session smoke | 0.901 | 398 | Natural host gaps created a strong periodic signature |
+| Explicit 800 µs host pacing | 1-session smoke | 0.705 | 236 | AC-coupled transitions became much larger |
+| Append a gradient actuator after updates | 1-session smoke | 0.877 | — | Two separable regimes; not integrated shaping |
 
-**Supported by this experiment**
+Single-session similarities are triage measurements, not substitutes for held-out detector evidence.
+Machine-readable values are in
+[`ablations/summary.json`](results/llama_strict_inference_shaped_training/ablations/summary.json).
 
-- An adaptive scheduler can materially manipulate a power-only workload classifier.
-- Full-parameter transformer training can continue while real inference cover changes its measured
-  signature.
-- Short observation windows are much more vulnerable than long ones.
+## Numerical validation
 
-**Not supported**
+Two different statements are validated and kept separate:
 
-- Backward or AdamW became mathematically equivalent to inference.
-- Training is universally indistinguishable: both tested detectors retain signal.
-- Every sensor is broken. A faster, independent, longer-horizon, or multi-modal monitor may do better.
-- The result transfers unchanged to another GPU, probe, model, serving mix, or software stack.
+- **Fusion equivalence within the shaped algorithm:** scalar versus eight-tensor fused updates have
+  identical loss, every gradient value equal, and every updated parameter value equal across all 1.235B
+  parameters.
+- **Selected grouped-M1 backend versus ordinary BF16 PyTorch:** the operations are algebraically exact,
+  but a different BF16 reduction order gives gradient relative L2 `0.004759`. Updated parameters have
+  relative L2 `8.27e-7` and 99.9989% element equality after one step. This is not claimed to be bitwise
+  ordinary PyTorch.
 
-## Comparison with `jacobcd52/silhouette`
+## Controls and related branches
 
-[`jacobcd52/silhouette`](https://github.com/jacobcd52/silhouette) is a useful implementation of a
-related but different problem. Its strongest documented 2-second controller identifies an A100→NVML
-channel, deconvolves it, and uses iterative learning control to reproduce an arbitrary contour. Its
-reported training-on run reaches 3.05% mean absolute error over the target span and 0.9876 correlation.
+- [`main`](https://github.com/anpaure/drawing-with-traces/tree/main) draws arbitrary contours with real
+  gradient computation. It is a waveform-control experiment, not inference-vs-training camouflage.
+- [`experiment/llama-continuous-whole-model`](https://github.com/anpaure/drawing-with-traces/tree/experiment/llama-continuous-whole-model)
+  runs a second NF4 model and genuine decode tokens between training updates. It is a useful **inference-cover
+  control**, but it does not meet this branch's zero-cover constraint.
+- [`experiment/gpt-oss-inference-shaped-training`](https://github.com/anpaure/drawing-with-traces/tree/experiment/gpt-oss-inference-shaped-training)
+  also contains decode-cover results and should be read as a control for this stricter question.
 
-| | This branch | `silhouette` at commit `7042c4e` |
-|---|---|---|
-| Goal | Make independently defined inference and training harder to classify | Draw a chosen target curve |
-| Sensor | External clamp + ChipWhisperer, 1.5 MSPS | In-process NVML, 49.8 Hz |
-| Workload | Whole Llama training continuously, plus decode cover | ResNet-18 training for 67% of the trace; calibrated filler matmuls elsewhere |
-| Control | Fixed schedules evaluated on held-out sessions | System identification, deconvolution, and target-specific feedback |
-| Primary evidence | Inference-vs-training detector accuracy | Replay MAE/correlation to the chosen contour |
+## Reproduce
 
-`silhouette` is stronger at **closed-loop waveform tracking**. This branch is stronger evidence for
-**workload camouflage against an external observer**. The former does not test whether training looks
-like an independent inference process; the latter does not attempt to draw an arbitrary target.
-See its [controller](https://github.com/jacobcd52/silhouette/blob/7042c4eac5a7456fa38e0d8821189da8db5b0378/power_trace_2s.py),
-[workload engine](https://github.com/jacobcd52/silhouette/blob/7042c4eac5a7456fa38e0d8821189da8db5b0378/s2s.py),
-and [2-second analysis](https://github.com/jacobcd52/silhouette/blob/7042c4eac5a7456fa38e0d8821189da8db5b0378/ANALYSIS_2S.md).
-
-## Reproduce and inspect
-
-The hardware run requires the cached Llama checkpoint, SideCapture, the validated ChipWhisperer fork,
-and the installed H100 sensor chain.
+Hardware execution requires an H100, the cached model, SideCapture, and the validated ChipWhisperer fork.
 
 ```bash
-python experiments/llama_continuous_whole_model/benchmark_schedule.py \
-  --sequence-length 128 --optimizer adamw_fused \
-  --cover-decode-tokens-per-microbatch 12 \
-  --output runs/fused-cover12-benchmark.json
+# Compare the selected backend with ordinary BF16 training.
+python -m experiments.llama_strict_inference_shaped_training.validate_strict \
+  --training-batch-size 128 --sequence-length 1 --tile-rows 128 \
+  --shaping-backend grouped-m1 \
+  --weight-gradient-schedule streaming-grouped \
+  --streaming-dw-tasks-per-record 16 \
+  --grouped-dw-min-batch 4 --grouped-dw-max-batch 16 \
+  --optimizer-bucket-size 8 --output runs/selected-validation.json
 
-python experiments/llama_continuous_whole_model/capture_continuous.py \
-  --mode inference --session-id inference-00 \
-  --output-dir runs/fused-cover12 --captures 8
+# Prove optimizer fusion is bitwise identical within the shaped algorithm.
+python -m experiments.llama_strict_inference_shaped_training.validate_optimizer_fusion \
+  --training-batch-size 128 --sequence-length 1 --tile-rows 128 \
+  --shaping-backend grouped-m1 \
+  --weight-gradient-schedule streaming-grouped \
+  --streaming-dw-tasks-per-record 16 \
+  --grouped-dw-min-batch 4 --grouped-dw-max-batch 16 \
+  --reference-bucket-size 1 --fused-bucket-size 8 \
+  --output runs/fusion-validation.json
 
-python experiments/llama_continuous_whole_model/capture_continuous.py \
-  --mode training --session-id training-00 \
-  --output-dir runs/fused-cover12 --captures 8 \
-  --optimizer adamw_fused --cover-decode-tokens-per-microbatch 12
+# Capture one continuous training session. Repeat with distinct session IDs/seeds.
+python -m experiments.llama_strict_inference_shaped_training.capture_strict \
+  --mode shaped-training --session-id training-s0 --seed 5100 \
+  --output-dir runs/final --captures 8 --duration 100ms --sample-rate 1.5MHz \
+  --training-batch-size 128 --sequence-length 1 --tile-rows 128 \
+  --shaping-backend grouped-m1 \
+  --weight-gradient-schedule streaming-grouped \
+  --streaming-dw-tasks-per-record 16 \
+  --grouped-dw-min-batch 4 --grouped-dw-max-batch 16 \
+  --optimizer-bucket-size 8
 
-python experiments/llama_continuous_whole_model/analyze_continuous.py \
-  --root runs/fused-cover12
+python -m experiments.llama_continuous_whole_model.analyze_continuous \
+  --root runs/final --horizons-ms 5,10,20,50,100
 ```
 
-- [Compact final metrics](results/llama_continuous_whole_model/final_summary.json)
-- [Kernel audit](results/llama_continuous_whole_model/kernel_audit_summary.json)
-- [Hardware and software provenance](results/llama_continuous_whole_model/provenance.json)
-- [Method and file guide](experiments/llama_continuous_whole_model/README.md)
+- [Implementation and file guide](experiments/llama_strict_inference_shaped_training/README.md)
+- [Compact machine-readable summary](results/llama_strict_inference_shaped_training/summary.json)
+- [Hardware and software provenance](results/llama_strict_inference_shaped_training/provenance.json)
+- [Full committed evidence](results/llama_strict_inference_shaped_training/README.md)

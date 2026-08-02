@@ -1,0 +1,157 @@
+{
+  "warning": "Single-session smoke similarities are triage metrics, not substitutes for held-out detector results.",
+  "rows": [
+    {
+      "name": "selected_streaming_grouped_b128_cuda_graph",
+      "evaluation": "5 sessions per process, 40 traces per process",
+      "stationary_similarities": {
+        "raw_amplitude_js_similarity": 0.9923782816672085,
+        "normalized_amplitude_js_similarity": 0.9908639821963366,
+        "welch_psd_js_similarity": 0.94176816127061,
+        "mean_similarity": 0.9750034750447184
+      },
+      "scope_health_ok": true,
+      "useful_loss_targets_per_second": 578.4700122221894,
+      "detector_balanced_accuracy": {
+        "5.0": 0.9225,
+        "10.0": 0.9207500000000001,
+        "20.0": 0.9575,
+        "50.0": 0.90375,
+        "100.0": 0.9025
+      }
+    },
+    {
+      "name": "streaming_round_robin_b128_cuda_graph",
+      "evaluation": "5 sessions per process, 40 traces per process",
+      "stationary_similarities": {
+        "raw_amplitude_js_similarity": 0.9916599982366456,
+        "normalized_amplitude_js_similarity": 0.9900534594997925,
+        "welch_psd_js_similarity": 0.9517832821520189,
+        "mean_similarity": 0.9778322466294856
+      },
+      "scope_health_ok": true,
+      "useful_loss_targets_per_second": 589.2032197907057,
+      "detector_balanced_accuracy": {
+        "5.0": 0.931125,
+        "10.0": 0.9545,
+        "20.0": 0.9680000000000001,
+        "50.0": 0.9425,
+        "100.0": 0.8825
+      }
+    },
+    {
+      "name": "fixed_deferred_b128_cuda_graph",
+      "evaluation": "5 sessions per process, 40 traces per process",
+      "stationary_similarities": {
+        "raw_amplitude_js_similarity": 0.9838928959444686,
+        "normalized_amplitude_js_similarity": 0.9863293969784709,
+        "welch_psd_js_similarity": 0.9124313457138556,
+        "mean_similarity": 0.9608845462122649
+      },
+      "scope_health_ok": true,
+      "useful_loss_targets_per_second": null,
+      "detector_balanced_accuracy": {
+        "5.0": 0.9453750000000001,
+        "10.0": 0.98425,
+        "20.0": 0.9995,
+        "50.0": 1.0,
+        "100.0": 0.9975
+      }
+    },
+    {
+      "name": "inference_cycle_b128_cuda_graph",
+      "evaluation": "single-session smoke, 8 traces per process",
+      "stationary_similarities": {
+        "raw_amplitude_js_similarity": 0.9844835902789878,
+        "normalized_amplitude_js_similarity": 0.9820072246893541,
+        "welch_psd_js_similarity": 0.9230512446028021,
+        "mean_similarity": 0.9631806865237147
+      },
+      "scope_health_ok": true,
+      "useful_loss_targets_per_second": 600.1396973378647,
+      "detector_balanced_accuracy": {
+        "5.0": null,
+        "10.0": null,
+        "20.0": null,
+        "50.0": null,
+        "100.0": null
+      }
+    },
+    {
+      "name": "useful_rows_b2048_cuda_graph",
+      "evaluation": "single-session smoke, 8 traces per process",
+      "stationary_similarities": {
+        "raw_amplitude_js_similarity": 0.9925381911324551,
+        "normalized_amplitude_js_similarity": 0.9945974229213285,
+        "welch_psd_js_similarity": 0.6299359775792095,
+        "mean_similarity": 0.8723571972109978
+      },
+      "scope_health_ok": true,
+      "useful_loss_targets_per_second": 832.2867897579473,
+      "detector_balanced_accuracy": {
+        "5.0": null,
+        "10.0": null,
+        "20.0": null,
+        "50.0": null,
+        "100.0": null
+      }
+    },
+    {
+      "name": "streaming_grouped_b128_eager",
+      "evaluation": "single-session smoke, 8 traces per process",
+      "stationary_similarities": {
+        "raw_amplitude_js_similarity": 0.9538603648326127,
+        "normalized_amplitude_js_similarity": 0.9721691149506744,
+        "welch_psd_js_similarity": 0.7779765796046989,
+        "mean_similarity": 0.9013353531293286
+      },
+      "scope_health_ok": true,
+      "useful_loss_targets_per_second": 398.2540319244816,
+      "detector_balanced_accuracy": {
+        "5.0": null,
+        "10.0": null,
+        "20.0": null,
+        "50.0": null,
+        "100.0": null
+      }
+    },
+    {
+      "name": "streaming_grouped_b128_paced_800us",
+      "evaluation": "single-session smoke, 8 traces per process",
+      "stationary_similarities": {
+        "raw_amplitude_js_similarity": 0.7428505821736058,
+        "normalized_amplitude_js_similarity": 0.8866850088016103,
+        "welch_psd_js_similarity": 0.4840074678717238,
+        "mean_similarity": 0.7045143529489799
+      },
+      "scope_health_ok": true,
+      "useful_loss_targets_per_second": 236.05352620822003,
+      "detector_balanced_accuracy": {
+        "5.0": null,
+        "10.0": null,
+        "20.0": null,
+        "50.0": null,
+        "100.0": null
+      }
+    },
+    {
+      "name": "appended_gradient_actuator_tile128",
+      "evaluation": "single-session smoke, 8 traces per process",
+      "stationary_similarities": {
+        "raw_amplitude_js_similarity": 0.9870316779711512,
+        "normalized_amplitude_js_similarity": 0.9888310513122152,
+        "welch_psd_js_similarity": 0.6558163355258462,
+        "mean_similarity": 0.8772263549364041
+      },
+      "scope_health_ok": true,
+      "useful_loss_targets_per_second": null,
+      "detector_balanced_accuracy": {
+        "5.0": null,
+        "10.0": null,
+        "20.0": null,
+        "50.0": null,
+        "100.0": null
+      }
+    }
+  ]
+}
