@@ -126,6 +126,9 @@ def test_duration_summary_uses_aggregate_not_best_round() -> None:
     assert summary["slowdown"]["inference"] == pytest.approx(5.9 / 3.0)
     assert summary["max_slowdown"] == pytest.approx(5.9 / 3.0)
     assert summary["per_round_slowdown"]["inference"] == [1.8, 1.9, 2.2]
+    assert summary["per_round_seconds"] == {
+        "inference": [1.0, 1.0, 1.0], "training": [1.0, 1.0, 1.0], "mixed": [1.8, 1.9, 2.2]
+    }
 
 
 @pytest.mark.parametrize(
@@ -237,3 +240,43 @@ def test_collection_plan_pairs_share_inputs_but_pairs_are_independent() -> None:
         assert {s["role"] for s in sessions} == {"inference", "training"}
         assert len({s["compute_seed"] for s in sessions}) == 1
         assert len({s["capture_seed"] for s in sessions}) == 1
+
+
+def test_record_audit_rejects_stalled_or_nonfinite_training() -> None:
+    from experiments.llama_balanced_gigapass.audit_records import check_progress
+
+    first = dict(last_loss=10.0, parameter_probe_delta_linf=0.01,
+                 mixed_training_updates=4, mixed_inference_tokens=100)
+    second = {**first, "mixed_training_updates": 8, "mixed_inference_tokens": 200}
+    assert check_progress([first, second])["last_update"] == 8
+    with pytest.raises(ValueError, match="did not advance"):
+        check_progress([first, first])
+    with pytest.raises(ValueError, match="non-finite"):
+        check_progress([first, {**second, "last_loss": float("nan")}])
+
+
+def test_report_refuses_partial_detector_results() -> None:
+    from experiments.llama_balanced_gigapass.render_paired_report import HORIZONS, detector_series
+
+    payload = {"horizons": {str(float(h)): {"pair_count": 12, "folds": [{}] * 12,
+                                          "balanced_accuracy": 0.55} for h in HORIZONS}}
+    assert detector_series(payload, 12) == [0.55] * 5
+    payload["horizons"]["100.0"]["folds"].pop()
+    with pytest.raises(ValueError, match="incomplete"):
+        detector_series(payload, 12)
+
+
+def test_raw_plot_selection_is_independent_of_values() -> None:
+    from types import SimpleNamespace
+    from experiments.llama_balanced_gigapass.render_paired_report import select_pair
+
+    traces = {role: [SimpleNamespace(session_id=f"{role[0]}{pair}", index=i, values=value)
+                     for pair in range(3) for i in range(8)]
+              for role, value in (("inference", -100), ("training", 100))}
+    first, _ = select_pair(traces, seed=20260920)
+    for role in traces:
+        traces[role].reverse()
+        for trace in traces[role]:
+            trace.values *= 123
+    second, _ = select_pair(traces, seed=20260920)
+    assert first == second

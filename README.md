@@ -13,8 +13,8 @@ Small timing excursions around 2× are ordinary run-to-run variation.
 ## What runs
 
 - Llama-3.2-1B-Instruct: 16 layers, 1.236B trainable parameters, BF16, ordinary PyTorch SGD.
-- One inference batch (8,192 or 8,448 rows in the saved calibration) and one training batch
-  (1,024 rows). The scheduler alternates inference sizes to balance measured native service.
+- One inference batch (8,192/8,448 rows for SDPA; 4,352/4,608 for eager) and one training
+  batch (1,024 rows). The scheduler alternates inference sizes to balance measured native service.
 - Separate CUDA streams. Both read the same weights; the update waits for inference to
   finish, and the following cycle waits for the update.
 - A deterministic ring of synthetic adjacent token pairs, sequence length **one**, with
@@ -36,7 +36,7 @@ it does not measure language-model quality.
 | Training tokens/s | 4,150 | 9,095 |
 | Inference tokens/s | 33,516 | 40,076 |
 | Full sequential numerical equivalence | bitwise pass | bitwise pass |
-| Physical detector evaluation | 5 pairs; inconclusive | 12-pair collection in progress |
+| Physical detector evaluation | 5 pairs; inconclusive | 12 pairs collected; CNN evaluation running |
 
 FLOPs use the approximate `2P` per inference token and `6P` per training token convention;
 they are not hardware-counter measurements. Slowdown excludes model load, calibration,
@@ -49,8 +49,16 @@ ridge and 43–50% for a residual CNN. A stricter nested paired-session audit se
 strength and prediction direction on validation sessions and obtains 36–52%.
 **Below-chance accuracy is not automatically a success:** an inverted prediction can be
 informative. Five pairs provide weak evidence, and the detector gate remains unconfirmed
-pending a larger independently collected evaluation. All scores, including this concern,
+pending the larger independently collected evaluation. All scores, including this concern,
 are retained in the result files.
+
+The new eager dataset contains **192 healthy 100 ms captures at 1.5 MSPS**, across 12
+independently seeded matched session pairs. Recorded losses are finite and both training
+and inference counters advance in all 24 sessions. Nested paired ridge accuracy is
+50.6%, 49.7%, 50.0%, 51.3%, and 39.6% at 5/10/20/50/100 ms. The last number is not a
+stronger success: its post-hoc inverse is 60.4%, and the CNN evaluation is still running.
+
+![Seed-selected unaligned raw windows from the new dataset](results/llama_balanced_gigapass/eager_raw_windows.png)
 
 This experiment demonstrates equal computation under two host labels. **It has not shown
 that the mixed workload looks like ordinary inference alone.** Both labeled runs perform
@@ -64,7 +72,7 @@ single-token case. A standard eager-attention screen made dedicated training **2
 and the same fixed mixed work **1.48× faster**. Loss and inference checksums matched; BF16
 gradients differed by relative L2 0.000109. After recalibration, combined useful work rose
 to 166.5 TFLOP/s. Mixed eager execution matched sequential eager execution bit for bit
-across all logits, gradients and parameters. Physical detector revalidation is pending;
+across all logits, gradients and parameters. Physical detector revalidation is in progress;
 the speedup should not be assumed for longer contexts.
 
 ## Run
@@ -103,5 +111,7 @@ tolerance. It retains per-round dispersion. No GPU clocks or power limits are ch
 - [Optimized timing](results/llama_balanced_gigapass/eager_certification.json)
 - [Optimized numerical validation](results/llama_balanced_gigapass/eager_validation.json)
 - [Detector audit](results/llama_balanced_gigapass/nested_detector.json)
+- [New paired detector audit](results/llama_balanced_gigapass/eager_paired/nested_detector.json)
+- [New capture health, training progress and raw-file hashes](results/llama_balanced_gigapass/eager_paired/progress_audit.json)
 - [Earlier exact-computation checkpoint](https://github.com/anpaure/drawing-with-traces/tree/experiment/llama-identical-dual-role-workload)
 - [Original drawing experiment](https://github.com/anpaure/drawing-with-traces/tree/main)

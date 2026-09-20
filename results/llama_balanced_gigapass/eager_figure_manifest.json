@@ -1,0 +1,14 @@
+{
+  "pair": 6,
+  "capture_index": 2,
+  "selection_seed": 20260920,
+  "selection": "uniform over sorted matching capture identifiers; no signal-dependent selection",
+  "raw_window_durations_ms": [
+    1,
+    5,
+    100
+  ],
+  "window_location": "capture center",
+  "sample_rate_hz": 1500000.0,
+  "processing": "none; no time alignment, normalization, filtering or resampling"
+}

@@ -346,6 +346,11 @@ def summarize_durations(
     service_ratio = inference_total / training_total
     return {
         "rounds": len(inference),
+        "per_round_seconds": {
+            "inference": list(inference),
+            "training": list(training),
+            "mixed": list(mixed),
+        },
         "total_seconds": {
             "inference": inference_total,
             "training": training_total,

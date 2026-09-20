@@ -10,8 +10,12 @@ The [branch README](../../README.md) describes the measured claim and limitation
 | `validate.py` | Full-model comparison with ordinary sequential SGD; operation profile |
 | `capture.py` | Continuous ChipWhisperer capture with random trigger delay |
 | `audit_detector.py` | Nested ridge regularization/sign selection; held-out session pairs |
+| `paired_cnn.py` | Raw-ADC CNN with separate training, validation and test session pairs |
+| `collect_pairs.py` | Predeclared capture order; matched seeds within independently seeded pairs |
+| `audit_records.py` | ADC health and hashes; finite recorded losses and advancing workload counters |
 | `screen_attention.py` | Same-state backend comparison and ABBA throughput screen |
 | `render_results.py` | Raw-signal plot, saved metrics, trace SHA-256 manifest |
+| `render_paired_report.py` | Seed-selected unprocessed windows and complete paired-detector report |
 
 ## Scheduling
 
@@ -68,3 +72,22 @@ python -m experiments.llama_balanced_gigapass.render_results \
   --results results/llama_balanced_gigapass
 python -m pytest -q
 ```
+
+For a completed paired collection, run the record audit before rendering:
+
+```bash
+python -m experiments.llama_balanced_gigapass.audit_records \
+  --root artifacts/balanced_eager_pairs12_v1 \
+  --output artifacts/balanced_eager_pairs12_v1/progress_audit.json
+python -m experiments.llama_balanced_gigapass.render_paired_report \
+  --root artifacts/balanced_eager_pairs12_v1 \
+  --benchmark results/llama_balanced_gigapass/eager_certification.json \
+  --output-dir results/llama_balanced_gigapass
+```
+
+`--raw-only` renders before detector evaluation finishes. Trace selection uses only
+capture identifiers and a fixed seed. Windows retain all samples, their original ADC
+scale and original time coordinates; no alignment, filtering or normalization is applied.
+The record audit checks captured samples and associated workload snapshots, not every
+intermediate gradient. The separate full-model numerical validation covers that claim
+for its explicitly checked iterations.
