@@ -1,0 +1,797 @@
+{
+  "schema_version": 1,
+  "status": "frozen",
+  "created_utc": "2026-09-20T18:11:20.640188+00:00",
+  "source_sha256": {
+    "experiments/llama_balanced_gigapass/frozen_detector.py": "297d8f0010d0cc35e4759a432dabf1c8f00c6fc9e47b5bf99ac083572f7e58ed",
+    "experiments/llama_balanced_gigapass/collect_pairs.py": "d483492e12e1ebe11c2d810e176c5c8767f768d4061c751fbbe00e81c948c2ad",
+    "experiments/llama_balanced_gigapass/capture.py": "e602bc9ff510fbfd276e88549545b80a12ec1bbd6b0920ca81c927af228cac16",
+    "experiments/llama_balanced_gigapass/workload.py": "84dfb58d3c3f8cff561877d116e2f8bbe6bcb21126fbefa79da160c4b236f221",
+    "experiments/llama_balanced_gigapass/audit_records.py": "62c633b31279827205545953c54c3fe2a0efacc8d32290b263c81ffedbd141f1",
+    "experiments/llama_continuous_whole_model/cnn_detector.py": "9db2ac04d9b4043382abb9e3eaa0c5ec4ba4f60b88843a07df054b1261acd85b",
+    "experiments/llama_continuous_whole_model/analyze_continuous.py": "1296819b0341b7fc729b7246683bb7aa3967915dc712a3230e03d88bb87acc8d",
+    "experiments/llama_continuous_whole_model/power_features.py": "c7a26b73818da1aec385b59f0343a0e5b8769d4304c775ececfb2711c07032ba"
+  },
+  "torch_version": "2.10.0+cu130",
+  "numpy_version": "2.4.2",
+  "development_root": "/home/amodo/strict_inference_shaped_v2/artifacts/balanced_eager_pairs12_v1",
+  "development_trace_sha256": {
+    "inference/i0/channels/power/shard_000000/capture_000000000.npy": "0df8f511da2945bfc2eb5f257f52fc542864df638b79f933975221266b9e36fa",
+    "inference/i0/channels/power/shard_000000/capture_000000001.npy": "928d06666996ad4c245036e592d786ddce2e077dad4aacd5a4694d2634000c70",
+    "inference/i0/channels/power/shard_000000/capture_000000002.npy": "a28ac408cfddbd5199c1501b4b01d52c72ac3145bc6eaead72d6672a6ae41cf8",
+    "inference/i0/channels/power/shard_000000/capture_000000003.npy": "8eac06bc4c57623fcc70630c359b8a66d406f496c3d86822787c65e03160eaf5",
+    "inference/i0/channels/power/shard_000000/capture_000000004.npy": "34511391f69d3f40ae401333eb210348cc5366fcaa49c58fba0b4667b37eb2a5",
+    "inference/i0/channels/power/shard_000000/capture_000000005.npy": "4fd2706898a01f7bbf2fb31a8aeafc839d2731056609ebf5b3ba52ecf525e846",
+    "inference/i0/channels/power/shard_000000/capture_000000006.npy": "eee2d4cbc50331587da528970d5be21a5a71a71fce8f3a191c2d3a855b57c0d1",
+    "inference/i0/channels/power/shard_000000/capture_000000007.npy": "1c3cd05c046847034ae77070881350ea04ed1a69d10c6a4c1a4e37063e7dc188",
+    "training/t0/channels/power/shard_000000/capture_000000000.npy": "4f146dbb2cb42ebfb2d20a73e1d3699be8949235089a9518e0873d3b67122674",
+    "training/t0/channels/power/shard_000000/capture_000000001.npy": "0efc1afb5ce7045fb48b9506fcb71705841d12f51a4176f659b64275795f5f5b",
+    "training/t0/channels/power/shard_000000/capture_000000002.npy": "5fd51790c8e9bdbf95d92d3b59291e1569a106116328ea1964e0bc034db78b40",
+    "training/t0/channels/power/shard_000000/capture_000000003.npy": "d4cf802620da4c468a82722cd32ba4471fe8938120a69c590d69c7e786cb6ad4",
+    "training/t0/channels/power/shard_000000/capture_000000004.npy": "8998d1bc69720aeb18922407f905d2a09820d150a02ea6b2fd91d677d1986501",
+    "training/t0/channels/power/shard_000000/capture_000000005.npy": "6873377f3430a1520aa5ca7b132ba55f3482f8c9d2ee578e653760ad44d03240",
+    "training/t0/channels/power/shard_000000/capture_000000006.npy": "a87e20df9ebb6d89c126d9f18f2a38719c60b303fe881893cecb4263a4c6f1ec",
+    "training/t0/channels/power/shard_000000/capture_000000007.npy": "e389aa36613bcd23c8b04c388733348235cf3495d5268459af6c98bec6f62517",
+    "training/t1/channels/power/shard_000000/capture_000000000.npy": "b48f240a0d523bc382b7783cab03a56232efa7274a7cde4c96ecd7bf4f86eec0",
+    "training/t1/channels/power/shard_000000/capture_000000001.npy": "5523766af3a96d09593b257a77e66f3600e4cdbb3984df0215c3bfac2290121b",
+    "training/t1/channels/power/shard_000000/capture_000000002.npy": "7269d94263aec940fe709280276138fb0988f5121f4414effb909e22e0845979",
+    "training/t1/channels/power/shard_000000/capture_000000003.npy": "a3a420417478eacb2a8d6b15e4f58531315bdca12574d2913c9305a9ce3df700",
+    "training/t1/channels/power/shard_000000/capture_000000004.npy": "f5e0d6651fcfa13b6af0d62847e53520c32dfafd3d3a9770834c562bdceca110",
+    "training/t1/channels/power/shard_000000/capture_000000005.npy": "9d9a3b4d0f33353e79c4757a3507673c32b91cb3fe30948d0c6e41630ab5d696",
+    "training/t1/channels/power/shard_000000/capture_000000006.npy": "a0f64224cc9228573ebce32e86fd766ccc604c0582bf097758b793cf102052b9",
+    "training/t1/channels/power/shard_000000/capture_000000007.npy": "ebe49df068dbea51aab4265b062608918c602f90e56a9e2f237582b54b068bf4",
+    "inference/i1/channels/power/shard_000000/capture_000000000.npy": "3108b1a24e4a844dec54ffa9d8e8d598fbdb08dada13975675d0374f77caf919",
+    "inference/i1/channels/power/shard_000000/capture_000000001.npy": "c49df3070643e7a8e2b08a6a2d9832a76a52042cf198aa5d3fe90dd75e14cfed",
+    "inference/i1/channels/power/shard_000000/capture_000000002.npy": "ffbf2103241ee5b2ff3ddd983ab2ccf5300098bc48e83349fc080034618354c1",
+    "inference/i1/channels/power/shard_000000/capture_000000003.npy": "fca9847db9989d1ec09586e570a45204b50067102e978b346e8fede35e54ead2",
+    "inference/i1/channels/power/shard_000000/capture_000000004.npy": "bc14085683f7b8d3de65b36347eccd93e132defa1a4e18657a31f0d16c0a7e92",
+    "inference/i1/channels/power/shard_000000/capture_000000005.npy": "23ff9019e481293cbb8809d63d492490576481354caa6f59d5a90dfb5e74f992",
+    "inference/i1/channels/power/shard_000000/capture_000000006.npy": "0706b3f90dd7d4cc13ecc01a907aabf630f15ba4e692e55894135a14ebe80b1d",
+    "inference/i1/channels/power/shard_000000/capture_000000007.npy": "6b9355149de61b18c192d5b1cc2df6fae4939c143648a61c641f8b21060baa7d",
+    "inference/i2/channels/power/shard_000000/capture_000000000.npy": "05f7cd888ccf1885ebee7ddcd73b1346feb159a1d321263c3da923a5ab31cad6",
+    "inference/i2/channels/power/shard_000000/capture_000000001.npy": "adb508bc9ae5c0af42ccd538f5d49e23731533112efaeb01a2a6c9b3b5dbfa30",
+    "inference/i2/channels/power/shard_000000/capture_000000002.npy": "ddce3ca843ecaa0edf988c9edbb3e822541f54b6cb3e8c7d7f3d0a2cb3f0711b",
+    "inference/i2/channels/power/shard_000000/capture_000000003.npy": "58b5b65d8d2fb2d47d65cc08d14302076e86211ff277387b88534a168c6f0e65",
+    "inference/i2/channels/power/shard_000000/capture_000000004.npy": "ef8969e2cd1fc70763f6fc7501ace80ce7704a7a6846202d0e327eec8b1bd062",
+    "inference/i2/channels/power/shard_000000/capture_000000005.npy": "d731fdd532e184987976d12ee45f22ed5b4943d5397c40b137720d6a5769aa11",
+    "inference/i2/channels/power/shard_000000/capture_000000006.npy": "4e4b39c9359803bf31372691021d6fd6e67e0e1517e57e24a8682c3eaffae64e",
+    "inference/i2/channels/power/shard_000000/capture_000000007.npy": "ac38b0717461fb7284ae74a9b76aca009fedfb72ad2a1962b9b22551f476d974",
+    "training/t2/channels/power/shard_000000/capture_000000000.npy": "50c22de9076b8a07d16c2c2c14eb260607dceefc9f2e1cbb3618a05032258cd3",
+    "training/t2/channels/power/shard_000000/capture_000000001.npy": "99ed2bdc50ba665f0b8f9b6fc5b9d642c67600021b85094a0009e5764d9c95ec",
+    "training/t2/channels/power/shard_000000/capture_000000002.npy": "05f34aee38e196b9252507d728e49cd7c4e12c060c22e875cd64b3b45e03a0d1",
+    "training/t2/channels/power/shard_000000/capture_000000003.npy": "e8b0bd4d8760f32f1557b74fe3d67e590ead8aa6159e31e2c721c2b51f3ef543",
+    "training/t2/channels/power/shard_000000/capture_000000004.npy": "6806bd9de8334c96f7a353a5ffe0f57d45fe8f933b5fb91e7f1c0e0f9f056a9f",
+    "training/t2/channels/power/shard_000000/capture_000000005.npy": "e6882d062a076783aaa941d8a92372032a3f85dd3895d4981242bdcf4302c256",
+    "training/t2/channels/power/shard_000000/capture_000000006.npy": "e20b3c727d3504ac94f01481b2880c0d8e68a4f11e96c496ab288ddbfa996af6",
+    "training/t2/channels/power/shard_000000/capture_000000007.npy": "295461c13c7a6b8074bd0d4cfdb421258446f0bc486a367f7aa32c6b7edda789",
+    "inference/i3/channels/power/shard_000000/capture_000000000.npy": "bd8f344006e5c20e69d9bfbf47b59f394b20727177636f23f2a56760b23da391",
+    "inference/i3/channels/power/shard_000000/capture_000000001.npy": "27a9d3b9488eccdf5bc67c2ea4b0f9e11a12f357406b8a32c380d823c3298b6d",
+    "inference/i3/channels/power/shard_000000/capture_000000002.npy": "37614f8ddc674e149c18419d4d5e3e7ad0a08fdf24ad2b714dca2012e9fac1f0",
+    "inference/i3/channels/power/shard_000000/capture_000000003.npy": "76faf36d0f57f14e741e943d76043ea6dff94f4a5b7b97ff4edf788a5885ee3a",
+    "inference/i3/channels/power/shard_000000/capture_000000004.npy": "26fe69baa5fe5bc93e4777cb0caacf6d3a525a7f4c9a91bd1d18eb5215ac8dfa",
+    "inference/i3/channels/power/shard_000000/capture_000000005.npy": "e7315a08d4f3d45d8532357d7b73d3aabd5927f30232fbc5f426f26cd49f7f8c",
+    "inference/i3/channels/power/shard_000000/capture_000000006.npy": "fcd9a1f492bd4689cfaf365038d534358c2f74601088bc18c2f027a0bb19ccc3",
+    "inference/i3/channels/power/shard_000000/capture_000000007.npy": "df1e2c788c9cd110124888fba6c524a4d2ad7ac9f3ff985b31aff045dbcb8f72",
+    "training/t3/channels/power/shard_000000/capture_000000000.npy": "0f82f1a6f9d352ad8443f6e4cf2c950a5ee61e1630768a91e9d7c45179521964",
+    "training/t3/channels/power/shard_000000/capture_000000001.npy": "028da610e3003bbd42f628f9086b04347b1c2dd5939e5f8392de4cad40d877a8",
+    "training/t3/channels/power/shard_000000/capture_000000002.npy": "fd74eaa690d1d811fad04b4bbe0091e10f57368f0020f3d0428fe3a0b7889815",
+    "training/t3/channels/power/shard_000000/capture_000000003.npy": "453e109676841d5f2d35be9c8f3f995242a29c59fcdd3229f9199edcb513001b",
+    "training/t3/channels/power/shard_000000/capture_000000004.npy": "f5074bcd3b1173619812d57c7fa73cbea2c5a9d622b816b853c747a8c433cad1",
+    "training/t3/channels/power/shard_000000/capture_000000005.npy": "2ab06829d59769af5d31df11e84f1a26a4cc6c4f76def8ef5b99ec6bdb691a18",
+    "training/t3/channels/power/shard_000000/capture_000000006.npy": "a2224c000ce3386a4a8540ba02ae50af6fad79e76b53667777d4f2d0891efcc3",
+    "training/t3/channels/power/shard_000000/capture_000000007.npy": "4fc2414fcd1209b704f010f41bf66fff5f8f5d63b8a6fb01b350d846916932e0",
+    "inference/i4/channels/power/shard_000000/capture_000000000.npy": "5eec52855f9aab758f2049d505fea264b377b45a045ff35d1d19bd260104992f",
+    "inference/i4/channels/power/shard_000000/capture_000000001.npy": "8c2e2199b8437a32f71c7b42b45ffd2f95a37f67fdb1ac4f058d1bb19cc591e1",
+    "inference/i4/channels/power/shard_000000/capture_000000002.npy": "ac2c318910b183fddeba09e322134c5bd9b26e63c0dca57983400a5de4c05ac2",
+    "inference/i4/channels/power/shard_000000/capture_000000003.npy": "9dfb5bcf9e099eb395764fcb83796977d1d0744942fc5ede24244bbb7fa85a39",
+    "inference/i4/channels/power/shard_000000/capture_000000004.npy": "5c68c51fa809d9ae4828062a9656e1e2b3b85f3485dc9bd9a1b2c603f974a8c6",
+    "inference/i4/channels/power/shard_000000/capture_000000005.npy": "b9ae75a58c841a4c0b1bd0b96f8ff081cff59fe568bb0338e1d0d19f8d600e7f",
+    "inference/i4/channels/power/shard_000000/capture_000000006.npy": "135d08975e2d4a437728965a07d0cd8015db460caa801b0f1afc910199558e2e",
+    "inference/i4/channels/power/shard_000000/capture_000000007.npy": "bd63ea8374bb075d4b2466a1f8fdb50e6b76967444f444a23b43f90075e318c5",
+    "training/t4/channels/power/shard_000000/capture_000000000.npy": "7166e5d8559db9d76ada6d76dae9a1134bfae8d370ef3564fd68e99a2edaa902",
+    "training/t4/channels/power/shard_000000/capture_000000001.npy": "1312cebc4b1ee0deae03d771ad556fb5372b3477bab5f05d1be3834a45ad5c24",
+    "training/t4/channels/power/shard_000000/capture_000000002.npy": "393b6cd8221f69acedf9edaf8b5d1b1fde50a9b386be35edd4275125d84fad42",
+    "training/t4/channels/power/shard_000000/capture_000000003.npy": "4483de1d9858970996e5b03abe9718f86ea164d3178b340abc5cf92081c1498d",
+    "training/t4/channels/power/shard_000000/capture_000000004.npy": "2c95183513e3da086a3b2cf9fb762c04c15e0a0e73e5c3e9d306fdfedd741c62",
+    "training/t4/channels/power/shard_000000/capture_000000005.npy": "80c6b24966dc5389f83e18428b14a95526c90858c9f193dac9b993154477e884",
+    "training/t4/channels/power/shard_000000/capture_000000006.npy": "f91b7df4321509aa506ad61e39896cb203429f8691c66ff0bb87bffd90eb840a",
+    "training/t4/channels/power/shard_000000/capture_000000007.npy": "d048bdf68d83991186f75c10c1f10d0d82b1ec108219eb9f7a8469f1cf609ec4",
+    "training/t5/channels/power/shard_000000/capture_000000000.npy": "ea2a638c73247b8a3870f5db36a5945d5580677576feda75ba881ce92a5295c6",
+    "training/t5/channels/power/shard_000000/capture_000000001.npy": "7eae23b6ba0f77e176b0f66304c41ff5a44a086a7b7c84ad791673c7a7a266d9",
+    "training/t5/channels/power/shard_000000/capture_000000002.npy": "3d81a020b3fbf3b81b731943a987e8ff2f82dc0e88777caf79069c98d6c585f2",
+    "training/t5/channels/power/shard_000000/capture_000000003.npy": "6a8f5195f91cf994b415f4319c5e033a1f2cf83c434d371196ff505d8ae34156",
+    "training/t5/channels/power/shard_000000/capture_000000004.npy": "fb4515205090d561a7a7354af81028ca04256f9d2386a7edf0360faddf9e605b",
+    "training/t5/channels/power/shard_000000/capture_000000005.npy": "bad91066f8694beeb76922557d285d56e369ba6b4bd0ae92372d2a916ad8887c",
+    "training/t5/channels/power/shard_000000/capture_000000006.npy": "7c245396bb7f17a38e25ca7c47195bcfb62141d387fb3f2e303e8aa6d65d6908",
+    "training/t5/channels/power/shard_000000/capture_000000007.npy": "91f0434a9528ccff4a51c186846bcc2e424690aad4440329f05e3671f5f95eca",
+    "inference/i5/channels/power/shard_000000/capture_000000000.npy": "ba81b0fa4ab71a990a27b038656e26b021cf7a9d81b844cdd1de405ac1a0f04d",
+    "inference/i5/channels/power/shard_000000/capture_000000001.npy": "d74b2023112716d8f6cc554731270417173cc364441ef33cf5dbb29a684e39eb",
+    "inference/i5/channels/power/shard_000000/capture_000000002.npy": "c41818895076d0084a5fabd85daa9e6d155d90a093d14adb6de651500889f8d4",
+    "inference/i5/channels/power/shard_000000/capture_000000003.npy": "e56855a9fe26ede5131fbe6514c51110869dd92e9bde5760ccbeb44aeb0819d4",
+    "inference/i5/channels/power/shard_000000/capture_000000004.npy": "f082545b680512ff488aca96ec7d22494b5596fb813bf383c8e46ea39f983397",
+    "inference/i5/channels/power/shard_000000/capture_000000005.npy": "998dd675b37972813638c5a7aa14b7070edd047bb75257750ea0bd74dc0cd70d",
+    "inference/i5/channels/power/shard_000000/capture_000000006.npy": "1dc0018ecdc27dd6964af9559c9287eb25fd1a79eb651a868476b9baee51d512",
+    "inference/i5/channels/power/shard_000000/capture_000000007.npy": "81c97327c60cc4b1af1f377549a4fb1896a69a5191b5890a9588c5aa82050dd7",
+    "inference/i6/channels/power/shard_000000/capture_000000000.npy": "8599cc5ae59d1bd78758ca1b69adc4ad771e9d80f3119f1ee00b35be03cb0ac8",
+    "inference/i6/channels/power/shard_000000/capture_000000001.npy": "4b182666cd6a1cc5ffd99f1a98839450ba191e0050e21fe854fd5988372381bd",
+    "inference/i6/channels/power/shard_000000/capture_000000002.npy": "6fb79da26ea64e38b1f6b7ef61aaa2b24c0fbd04c31343786342223900a5457b",
+    "inference/i6/channels/power/shard_000000/capture_000000003.npy": "6d30ecaa96e129d49b259a557e89587dd21067287b487d4969196e06ca8ad325",
+    "inference/i6/channels/power/shard_000000/capture_000000004.npy": "ef5e74bb4ea60de608e3b5a94a15a8cd3c7a8cce8768c3fdda7d6d2280966752",
+    "inference/i6/channels/power/shard_000000/capture_000000005.npy": "fc3a686b94b917a1cb4ed9dbdac83e5ebfb2d15db13deb207ecd8d355d61844f",
+    "inference/i6/channels/power/shard_000000/capture_000000006.npy": "dd758ca496d09029b2b00a404e47f51a78c6b1e6f0b02d96c7822fc9dfdd1b33",
+    "inference/i6/channels/power/shard_000000/capture_000000007.npy": "e1d74a3449d077ddd089747cb2bfa2c5d9057295749d2361975d346bcee095d4",
+    "training/t6/channels/power/shard_000000/capture_000000000.npy": "93694832615d89af46df645f84a8410473350db45ad53151cadfcfbb550aa489",
+    "training/t6/channels/power/shard_000000/capture_000000001.npy": "c3f41af3e64aa74c2ff794d27e60712f8330b8126df4a37261a70790a079ac88",
+    "training/t6/channels/power/shard_000000/capture_000000002.npy": "15277150b80e99ffb546dbbffb72d12aa01ecffa2a4e92fafd940eb05247dacc",
+    "training/t6/channels/power/shard_000000/capture_000000003.npy": "738cf18ddc471e191c47d0ca3480139903a3c57650b69347a17e6de4bcade579",
+    "training/t6/channels/power/shard_000000/capture_000000004.npy": "e7fba4a6f3fa2e28f20ae5f838f8b1301bb77a0f9ae3d985ba885fcf73fdd8d2",
+    "training/t6/channels/power/shard_000000/capture_000000005.npy": "d35d61b2a8976f256c63cb375ac074e549a0fb5982f40afe2e9b3adde6d2514c",
+    "training/t6/channels/power/shard_000000/capture_000000006.npy": "dd6153c592c459894a93a0e2bc6237c00f1468fb4956c93da20f55ac0b6723b2",
+    "training/t6/channels/power/shard_000000/capture_000000007.npy": "78582372e13901abf5a6594223b649f74d5644c3030959882f9809989f44a2a7",
+    "inference/i7/channels/power/shard_000000/capture_000000000.npy": "4a8e3757b489dfe005ba5c80ed71b495f27d3400871f2ec9c099ac1b43e1a211",
+    "inference/i7/channels/power/shard_000000/capture_000000001.npy": "cdf264823e53daa2c43eb921347a42621ee11eaa635afdbda890bac39d098cd4",
+    "inference/i7/channels/power/shard_000000/capture_000000002.npy": "f7132ebd1f26e25e2031e88e0b8a029efd845e3a10f6d97d6b9821479083d758",
+    "inference/i7/channels/power/shard_000000/capture_000000003.npy": "6351f72b87d5b87fbb4612ffdb191f70db0a9f0737cd4971438db8fb37dc9eb7",
+    "inference/i7/channels/power/shard_000000/capture_000000004.npy": "a78c7c27fc2293c2aa3d13f9bce981d8fcec71cc33bcd3d48aa96a7fd8b1a75e",
+    "inference/i7/channels/power/shard_000000/capture_000000005.npy": "d0ca041ca532c311a39d8bde7af7b447b2dab57545866313ea25bba621104019",
+    "inference/i7/channels/power/shard_000000/capture_000000006.npy": "1cc02decebc5cdc27fcfc925d3eb770c6c7e6ee0b90de7f95807f68b04954d3f",
+    "inference/i7/channels/power/shard_000000/capture_000000007.npy": "f60e5f9e57a8aeac9f412c0fc0a5ee0a3e7a64675648473d2bcd0e72a4563974",
+    "training/t7/channels/power/shard_000000/capture_000000000.npy": "e27551575362629a34b4ca07427451ef92d35c3e25db8ce5dabf68add201c08b",
+    "training/t7/channels/power/shard_000000/capture_000000001.npy": "94bb9bd39665586c811d1f19a9315dc2af975d0598cf90c17a23453911e1ee87",
+    "training/t7/channels/power/shard_000000/capture_000000002.npy": "f36db4ccdb560b7c22ddb08683bc4a613784ce2cebeaca3c178031769b61bec8",
+    "training/t7/channels/power/shard_000000/capture_000000003.npy": "d1c3ad6c79a22d764a5ed3681e3de02af4f9133f68ada899e6f3b81725d39722",
+    "training/t7/channels/power/shard_000000/capture_000000004.npy": "ee4e77134802883e317a1f0deb9da502b12b75440cf352b133219dd5749d992f",
+    "training/t7/channels/power/shard_000000/capture_000000005.npy": "8aa072852c4500630122621b0a80cfce50e41752ec81bd30aad626965d69bd3d",
+    "training/t7/channels/power/shard_000000/capture_000000006.npy": "b233c31de0727bcfccfc328a364c6f1e98bbf57948ae1e6f12fe0be8d8790007",
+    "training/t7/channels/power/shard_000000/capture_000000007.npy": "9fcde24a2045545665008616b7e7369979fcbac316ccf4dd1e16ae4eea192053",
+    "training/t8/channels/power/shard_000000/capture_000000000.npy": "28cbdbb3f73d39ac2390681f76e0353be9bac3b898b60124f9244e6d994706e0",
+    "training/t8/channels/power/shard_000000/capture_000000001.npy": "e6af022ca728b4f7ca973a544af1b5abd18e6624f1c6304bff8b2af6a2121fcf",
+    "training/t8/channels/power/shard_000000/capture_000000002.npy": "ceb4526986a12be0b4998a81ad6a956bc9d4028e1906d8ed9488847bcbc7fe71",
+    "training/t8/channels/power/shard_000000/capture_000000003.npy": "0727f46adcd62370f7909e2b4f46e8e797f1240152f9845f140b16999095feb7",
+    "training/t8/channels/power/shard_000000/capture_000000004.npy": "51976300d1b60f15275f9809b2b40f11130a33021de1e8bcf693b3d68b5c29a0",
+    "training/t8/channels/power/shard_000000/capture_000000005.npy": "77d436f14e243854481460538d91774b0144ce9643451532e38d4afce281cced",
+    "training/t8/channels/power/shard_000000/capture_000000006.npy": "1dcad7eb340316d0d2003f2acfaac71eb4fbb44108028f73b04b5faa518aa767",
+    "training/t8/channels/power/shard_000000/capture_000000007.npy": "da708cc6f04741f90dc986565aaf5668952f892633409c0ebde755dcba2d5452",
+    "inference/i8/channels/power/shard_000000/capture_000000000.npy": "5bb612fba45983dfda4b6aa91d9a116b706f790636528f9257614751a17b9d50",
+    "inference/i8/channels/power/shard_000000/capture_000000001.npy": "3938db96be01d9685725aacc0d6931d8d2fd9a1cab95f056235ba74969f64f99",
+    "inference/i8/channels/power/shard_000000/capture_000000002.npy": "aa6860184be8f69d2af949c196d52865afbcea65cde8c4fafcc8ac45568abdac",
+    "inference/i8/channels/power/shard_000000/capture_000000003.npy": "c139d4e4a3400d15800668541e9714efff6707a1913de290554974beed5782f2",
+    "inference/i8/channels/power/shard_000000/capture_000000004.npy": "ff8c78166f6b38a7f538243a3de27e369340df70ddf401a73b63328f48e125fd",
+    "inference/i8/channels/power/shard_000000/capture_000000005.npy": "145d9cb056a1dd72a39d668ababfede10f7c480a2f5bff5e26b55cb3bdc92ef4",
+    "inference/i8/channels/power/shard_000000/capture_000000006.npy": "92b94f16b3d4cfa4da3a71e0a8a1749fdb02a06a9d08a3cb1f38a3c4e4e66dda",
+    "inference/i8/channels/power/shard_000000/capture_000000007.npy": "e4496ab61ad29f915a755dc66973629069f95982f6201a1ea1720c56bf88bf52",
+    "training/t9/channels/power/shard_000000/capture_000000000.npy": "7a311886ee99e161948f9e152fa7932fc11ec114a2d42f629c1ba9ccbffb4cfe",
+    "training/t9/channels/power/shard_000000/capture_000000001.npy": "2bd2bc0d6e2eac6963d4fb5575bde27b681870a5305ade5713a548f9d1c14bde",
+    "training/t9/channels/power/shard_000000/capture_000000002.npy": "451b1e5da5ec5ff90db6049e17f0e2477988b36da65a743cba9639d5fa1c6e55",
+    "training/t9/channels/power/shard_000000/capture_000000003.npy": "4997f62015ec355535b0a59bb4660682369b6d14b0138179e1f76adb4e7557f1",
+    "training/t9/channels/power/shard_000000/capture_000000004.npy": "77f5c85a092f9f135edfd83817c99b7ea23990acf8351ae305d72bfc486cfd53",
+    "training/t9/channels/power/shard_000000/capture_000000005.npy": "3f995a9e5393336f3c663df11416041043f225aa68444fe36359df860b3a2adf",
+    "training/t9/channels/power/shard_000000/capture_000000006.npy": "db96c7a0e95d9fa30a6627700f11edfc9afb0503e972febaf4f775084c6ca6d7",
+    "training/t9/channels/power/shard_000000/capture_000000007.npy": "1ff110437d736e9800771fa5eac42f8179eb632c147a3381b62621d9f4fe6856",
+    "inference/i9/channels/power/shard_000000/capture_000000000.npy": "f709d5171041c24c323cfb1ce7a29d24702d41f5f3d7f874ed9ae8642851b54d",
+    "inference/i9/channels/power/shard_000000/capture_000000001.npy": "da7ce57a9bd9016f06460cec270ed50498663799acd13eda3b9fb37e98f4dd00",
+    "inference/i9/channels/power/shard_000000/capture_000000002.npy": "8bac683a7f1b2e97f96609f01fabf37f1d9fbcff02d01188874164216f4a23be",
+    "inference/i9/channels/power/shard_000000/capture_000000003.npy": "f8136e070ad7a35daae0a027f7eeae53a188dc75788b255a11356a247b25544b",
+    "inference/i9/channels/power/shard_000000/capture_000000004.npy": "cf575d75ce2d487bba23469b50fe95811bb66c3a638faa7214d5bf57ec0564e8",
+    "inference/i9/channels/power/shard_000000/capture_000000005.npy": "5e30f515e0f652a46bbc1dc6d53d91f72a78814605fda3a3762e397197fe68a4",
+    "inference/i9/channels/power/shard_000000/capture_000000006.npy": "78d7f07fd25d6a204bda45fd7006bc48a24e42ae1b6c4a53371af5f65395c32b",
+    "inference/i9/channels/power/shard_000000/capture_000000007.npy": "9bd79ea5367917f169966344c63b58b566ea7d7908b78e27cb6aa776440cca4c",
+    "inference/i10/channels/power/shard_000000/capture_000000000.npy": "f249a6d3db0ad2ccc78b56bf6b3b8f0b61044cfca51c2e4b8326dff457dfce7d",
+    "inference/i10/channels/power/shard_000000/capture_000000001.npy": "16e9545a7981822f8e90c98710971f31939ec91a40d22dd99aeb93ac624a6181",
+    "inference/i10/channels/power/shard_000000/capture_000000002.npy": "3197ea90874596a286c5b8ac8682a03b5d1d8887bac86bcbbc9567095b5906d9",
+    "inference/i10/channels/power/shard_000000/capture_000000003.npy": "3aa03b850e51fda8accc64d736bd641df52de02384d1818096d61f50f5bc1317",
+    "inference/i10/channels/power/shard_000000/capture_000000004.npy": "09f913eab3e05b4812ee72ccd769031446d263afb5d2a7c19da1d4ff7ebab22e",
+    "inference/i10/channels/power/shard_000000/capture_000000005.npy": "40b85ab6917d987b16d0ac6f756fbd0e1fa0494c6bd1f377b1f6ed1af84d69f5",
+    "inference/i10/channels/power/shard_000000/capture_000000006.npy": "98f386974e778ccd0d3bd68e03b24550ea10395c4e73365271a80b6cdfc1fe49",
+    "inference/i10/channels/power/shard_000000/capture_000000007.npy": "2ba6727228f664a4aa83856b8a38f2a585df56b67c13c290aa65492f30efdd4a",
+    "training/t10/channels/power/shard_000000/capture_000000000.npy": "17ab1e5d4997c30da4a2f735ee83ba075ed2fafb467ac29b0a085f25314ee1a5",
+    "training/t10/channels/power/shard_000000/capture_000000001.npy": "5e69476e36efd6ac30397ed972aa6c3d80c13237b14fc27816c5246a6b2e4310",
+    "training/t10/channels/power/shard_000000/capture_000000002.npy": "26bc376af48ba9ecddf5ab366e113a5e22ea20120d1d356293c69354e6e06241",
+    "training/t10/channels/power/shard_000000/capture_000000003.npy": "ae8cf6deeb1bca49ff8a5193ba3d09f0c12c45b8c781deab1a8e0614fc341551",
+    "training/t10/channels/power/shard_000000/capture_000000004.npy": "ac478c38d7cb95443dc0bea4391dcf0d4017ba17c703a00982006aac49df6c12",
+    "training/t10/channels/power/shard_000000/capture_000000005.npy": "b6f3946cd63178d7b62a5e7851f0e8be311ccd5a56488bb57c4141cbb3bdff47",
+    "training/t10/channels/power/shard_000000/capture_000000006.npy": "97722426106c300112597e0f864315a3a443031c34f2a39d067eac4eb88b0fc6",
+    "training/t10/channels/power/shard_000000/capture_000000007.npy": "fe83858e70a8f8129f146a1867573daf4de49c8a6e4d89f008d51a0732c1a0e8",
+    "inference/i11/channels/power/shard_000000/capture_000000000.npy": "c3f7ad984a136053481aa50223b7aadfca1e84cc7ff65aa4fde22e24a553374b",
+    "inference/i11/channels/power/shard_000000/capture_000000001.npy": "87e887b1b3609d9f2d9f539e3e8c3f41667ffde0beae0b60879ab64be9db96bf",
+    "inference/i11/channels/power/shard_000000/capture_000000002.npy": "f276a554e87c5dc15e10063c2777de200a96b7b2c21d54abfbf1cce717b4fcf0",
+    "inference/i11/channels/power/shard_000000/capture_000000003.npy": "23a3b67ec6f1d8bcdc4e6f345e9006f032762b545ec833bcba03a954e3b0281a",
+    "inference/i11/channels/power/shard_000000/capture_000000004.npy": "e6ee736b29c1c60f35f166b46dda91a655feb9fa7056aec64420025bfc94eef7",
+    "inference/i11/channels/power/shard_000000/capture_000000005.npy": "82a72dbc4896eff52914de5f1a8b270592cff9cfa632d22a31385cf81973a414",
+    "inference/i11/channels/power/shard_000000/capture_000000006.npy": "bf9c4a22199b9521cba02991f914d189a284cd51b5b83d7aa3dc13547c6453ef",
+    "inference/i11/channels/power/shard_000000/capture_000000007.npy": "3edc3cb2225d51f43409d572e2ab64d7e72148ad01e9e93abf85ff709a59a20b",
+    "training/t11/channels/power/shard_000000/capture_000000000.npy": "2d6aa56ac043f7062cf7b3ef4943ebb22e536416e34a3ec54e79cf13e0280dec",
+    "training/t11/channels/power/shard_000000/capture_000000001.npy": "9d0d264f18a2155880953a784c05ae82fe2c44373050e144b92fc33d4669fe99",
+    "training/t11/channels/power/shard_000000/capture_000000002.npy": "5b73d41d6978d3d5746aa23db3032750e16d6b792d217733b929b6c9f940e859",
+    "training/t11/channels/power/shard_000000/capture_000000003.npy": "a112802dfd9566acae13fd81f429785cf307526b57f8f52bf0f90c905f0b9165",
+    "training/t11/channels/power/shard_000000/capture_000000004.npy": "730f23558bc721c99b273521c43c3eafe8b0b416faba9a1d0486a79a9c4611c3",
+    "training/t11/channels/power/shard_000000/capture_000000005.npy": "64336e36cd7bb334afb5ca46fd2af3e4e4d3bb3d16f8318ff911aeba4f55fcdb",
+    "training/t11/channels/power/shard_000000/capture_000000006.npy": "8542fa3cb7b474dd313900954bb0030a0041b002375c32482cf94bb8cf0e040e",
+    "training/t11/channels/power/shard_000000/capture_000000007.npy": "327e1f13a0fa1b991e12be0d689a746ade2022e32b8d048cad0a06c3238714de"
+  },
+  "development_compute_seeds": [
+    20261920,
+    20261921,
+    20261922,
+    20261923,
+    20261924,
+    20261925,
+    20261926,
+    20261927,
+    20261928,
+    20261929,
+    20261930,
+    20261931
+  ],
+  "training_pairs": [
+    0,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    11
+  ],
+  "validation_pairs": [
+    1,
+    4,
+    9,
+    10
+  ],
+  "test_plan": {
+    "pairs": 48,
+    "captures_per_session": 8,
+    "seed": 20271001,
+    "attention_backend": "eager",
+    "calibration": {
+      "calibration": {
+        "training_batch_size": 1024,
+        "training_native_seconds": 0.05715653381347656,
+        "candidates": [
+          {
+            "batch_size": 2048,
+            "native_seconds": 0.026517527903597307,
+            "ratio_to_training": 0.46394569674455866,
+            "paired_samples": 4
+          },
+          {
+            "batch_size": 2304,
+            "native_seconds": 0.029416922638357063,
+            "ratio_to_training": 0.5146729634507865,
+            "paired_samples": 4
+          },
+          {
+            "batch_size": 2560,
+            "native_seconds": 0.03271515631806641,
+            "ratio_to_training": 0.5723782415642692,
+            "paired_samples": 4
+          },
+          {
+            "batch_size": 2816,
+            "native_seconds": 0.03637528663125298,
+            "ratio_to_training": 0.6364151953293622,
+            "paired_samples": 4
+          },
+          {
+            "batch_size": 3072,
+            "native_seconds": 0.03928391578563558,
+            "ratio_to_training": 0.6873040257100596,
+            "paired_samples": 4
+          },
+          {
+            "batch_size": 3328,
+            "native_seconds": 0.041694067973516956,
+            "ratio_to_training": 0.7294715965383854,
+            "paired_samples": 4
+          },
+          {
+            "batch_size": 3584,
+            "native_seconds": 0.04444598948957272,
+            "ratio_to_training": 0.7776186994581729,
+            "paired_samples": 4
+          },
+          {
+            "batch_size": 3840,
+            "native_seconds": 0.04791273349723343,
+            "ratio_to_training": 0.8382722026774899,
+            "paired_samples": 4
+          },
+          {
+            "batch_size": 4096,
+            "native_seconds": 0.05090573393384314,
+            "ratio_to_training": 0.8906371771942618,
+            "paired_samples": 4
+          },
+          {
+            "batch_size": 4352,
+            "native_seconds": 0.054881142560131914,
+            "ratio_to_training": 0.9601901812175996,
+            "paired_samples": 4
+          },
+          {
+            "batch_size": 4608,
+            "native_seconds": 0.058472531930351714,
+            "ratio_to_training": 1.02302445633197,
+            "paired_samples": 4
+          },
+          {
+            "batch_size": 4864,
+            "native_seconds": 0.060560492782379266,
+            "ratio_to_training": 1.0595550279520294,
+            "paired_samples": 4
+          },
+          {
+            "batch_size": 5120,
+            "native_seconds": 0.06423390657991376,
+            "ratio_to_training": 1.1238243870689106,
+            "paired_samples": 4
+          },
+          {
+            "batch_size": 5376,
+            "native_seconds": 0.06643326974075836,
+            "ratio_to_training": 1.1623040325985357,
+            "paired_samples": 4
+          },
+          {
+            "batch_size": 5632,
+            "native_seconds": 0.0712067388240699,
+            "ratio_to_training": 1.2458197527590544,
+            "paired_samples": 4
+          },
+          {
+            "batch_size": 5888,
+            "native_seconds": 0.07412879451707098,
+            "ratio_to_training": 1.2969434913422382,
+            "paired_samples": 4
+          },
+          {
+            "batch_size": 6144,
+            "native_seconds": 0.07688712440961354,
+            "ratio_to_training": 1.345202714015608,
+            "paired_samples": 4
+          }
+        ],
+        "lower_batch_size": 4352,
+        "upper_batch_size": 4608
+      }
+    }
+  },
+  "protocol": {
+    "seed": 20260921,
+    "epochs": 15,
+    "cnn_ensemble_size": 3,
+    "cnn_channels": 32,
+    "batch_size": 32,
+    "learning_rate": 0.002,
+    "weight_decay": 0.001,
+    "ridge_strengths": [
+      0.1,
+      1,
+      10,
+      100
+    ],
+    "accuracy_target": 0.6,
+    "family_wise_alpha": 0.05,
+    "primary_comparisons": 10,
+    "bootstrap_replicates": 20000,
+    "bootstrap_unit": "independent matched session pair",
+    "bootstrap_note": "approximate percentile bounds; not a distribution-free guarantee",
+    "selection": "fixed training epochs; strength, direction and threshold use validation only"
+  },
+  "file_sha256": {
+    "ridge_5ms.npz": "90697c7db5bf46826730bc6a107fd363ed3526c8850f7b52b7cd443ef3b1d8d9",
+    "cnn_5ms_0.pt": "2f616fd06b0f6f889e3e1fd76e60810d2dfe5acfc7313d4c631d6734734463ef",
+    "cnn_5ms_1.pt": "7fcfcad1f57ff4f0278ad80bfb6094636c6f228b70e476e723f73799ed41e642",
+    "cnn_5ms_2.pt": "47f010fb1634c24b0afca4d7f939df53ab0567bd133b8abaa45c5a629e43ed34",
+    "ridge_10ms.npz": "bfa3164bd0beedad8e74f25dae1ce362042d75dce479d4091b90e1e6794ebdec",
+    "cnn_10ms_0.pt": "241d4b1746a5b2ea6b7b293b90ba722ec00a95cb723895621638261a79b9ce17",
+    "cnn_10ms_1.pt": "e771e14ed2f276aa75ebd5256a708fa395e094f36292afe23897c6454591bf44",
+    "cnn_10ms_2.pt": "71b5b67b567e1177784c4ee208927763748b805419ee3262301f4ba7e9db492d",
+    "ridge_20ms.npz": "8913f37252a682e6a8a24364b12811b6d677f5a7e2a777c1de28aa012c84a073",
+    "cnn_20ms_0.pt": "eee54dcddd8512e6e4a2e6ba3a56e199a02d4c352e16f1f110d49ba1020b905e",
+    "cnn_20ms_1.pt": "cfcdfd8fd174ad8e68eba3fa133bc6ea4f09e591738578238ef9b228b1c97cd1",
+    "cnn_20ms_2.pt": "de2782ef08b0d5f4c0a252346d41c4c74004c3e9970cb6fe56df20ee1fdbe05a",
+    "ridge_50ms.npz": "1f1cf5a769443150893e89fa632980792b42ae36fba12fde8844adc7ee755408",
+    "cnn_50ms_0.pt": "c92465ef97843dd2956f455cef34143dc1bd05a9f7a8afdb269bc7dc1fd90acd",
+    "cnn_50ms_1.pt": "09eb20d0ab39f56cb3d676b32792c0e5ff2c8ddfe5a372ee5143fd125483fe09",
+    "cnn_50ms_2.pt": "2a988a0f06fe593db84aded089b44f67e553776736810c0277c1b26a889d6ab9",
+    "ridge_100ms.npz": "ee7c475072b4833913a42a4e026aa6b4d66f9daa0993eb55c4334320941d1188",
+    "cnn_100ms_0.pt": "eccd6c83344e83bc84254714dff61c68eb72b87235b39484a93a0a4a08264eb0",
+    "cnn_100ms_1.pt": "6d79a19fbc4e4ead76b6ea0019b0a784ca277f13fee2e97a080a5380471153ca",
+    "cnn_100ms_2.pt": "9ec08ab76c70314fcca88f982a4dcb1116f7df3b784a4803890e06047d677342"
+  },
+  "horizons": {
+    "5": {
+      "ridge": {
+        "file": "ridge_5ms.npz",
+        "strength": 10,
+        "decision": {
+          "sign": -1,
+          "threshold": 0.13203522403978443,
+          "validation_accuracy": 0.51875
+        }
+      },
+      "cnn": {
+        "files": [
+          "cnn_5ms_0.pt",
+          "cnn_5ms_1.pt",
+          "cnn_5ms_2.pt"
+        ],
+        "mean": 0.00451386723836263,
+        "std": 0.016170217306186355,
+        "decision": {
+          "sign": 1,
+          "threshold": 0.24182290956377983,
+          "validation_accuracy": 0.54375
+        },
+        "training_loss": [
+          [
+            0.6929636910557747,
+            0.6798399321734905,
+            0.6742630854249001,
+            0.6641443982720375,
+            0.664806104451418,
+            0.6644963026046753,
+            0.657651724666357,
+            0.6555090956389904,
+            0.6452355094254016,
+            0.6478845313191414,
+            0.6340618580579758,
+            0.6499214500188828,
+            0.6379544056952,
+            0.6244261555373669,
+            0.6160904120653867
+          ],
+          [
+            0.6974092192947865,
+            0.6934254303574562,
+            0.6903469502925873,
+            0.6735211975872517,
+            0.6580885663628578,
+            0.653599388152361,
+            0.6531995363533497,
+            0.6498118467628956,
+            0.6477861180901527,
+            0.639459628611803,
+            0.6349251627922058,
+            0.632783692702651,
+            0.6238382063806057,
+            0.6229330755770206,
+            0.6089963994920253
+          ],
+          [
+            0.6939129151403904,
+            0.6857430689036846,
+            0.6758340001106262,
+            0.6587113797664642,
+            0.6592590749263764,
+            0.6443308990448713,
+            0.6485709309577942,
+            0.6375000052154064,
+            0.6408141918480397,
+            0.6347677998244763,
+            0.6263307601213455,
+            0.6228934735059738,
+            0.613852570950985,
+            0.5968875896185637,
+            0.5976516503840685
+          ]
+        ]
+      }
+    },
+    "10": {
+      "ridge": {
+        "file": "ridge_10ms.npz",
+        "strength": 1,
+        "decision": {
+          "sign": 1,
+          "threshold": 0.1902999062607209,
+          "validation_accuracy": 0.5375
+        }
+      },
+      "cnn": {
+        "files": [
+          "cnn_10ms_0.pt",
+          "cnn_10ms_1.pt",
+          "cnn_10ms_2.pt"
+        ],
+        "mean": 0.00451386723836263,
+        "std": 0.016170217306186355,
+        "decision": {
+          "sign": 1,
+          "threshold": 2.3282784670591354,
+          "validation_accuracy": 0.55625
+        },
+        "training_loss": [
+          [
+            0.6961512118577957,
+            0.6900436475872993,
+            0.6835305869579316,
+            0.6740112289786339,
+            0.6751670345664025,
+            0.6694051399827003,
+            0.6572332248091698,
+            0.6485515087842941,
+            0.6449236914515495,
+            0.6321575149893761,
+            0.6291514292359353,
+            0.6251598641276359,
+            0.615510880947113,
+            0.5992001987993717,
+            0.5795162260532379
+          ],
+          [
+            0.694988414645195,
+            0.6769965589046478,
+            0.6706955343484878,
+            0.6644423305988312,
+            0.6588872283697128,
+            0.6599750190973281,
+            0.6443539232015609,
+            0.6391414940357208,
+            0.6454256236553192,
+            0.6233708888292313,
+            0.6346027359366417,
+            0.6216150864958763,
+            0.6220531776547432,
+            0.6064430013298988,
+            0.5965579360723495
+          ],
+          [
+            0.6999857798218727,
+            0.6923973441123963,
+            0.6881287232041359,
+            0.679660651087761,
+            0.6730742141604423,
+            0.6802462831139564,
+            0.6633945450186729,
+            0.6599797278642654,
+            0.6630016013979911,
+            0.6587547495961189,
+            0.6478383302688598,
+            0.649194122850895,
+            0.6416344359517098,
+            0.6288016557693481,
+            0.6324691101908684
+          ]
+        ]
+      }
+    },
+    "20": {
+      "ridge": {
+        "file": "ridge_20ms.npz",
+        "strength": 0.1,
+        "decision": {
+          "sign": -1,
+          "threshold": -0.09768130685966134,
+          "validation_accuracy": 0.54375
+        }
+      },
+      "cnn": {
+        "files": [
+          "cnn_20ms_0.pt",
+          "cnn_20ms_1.pt",
+          "cnn_20ms_2.pt"
+        ],
+        "mean": 0.00451386723836263,
+        "std": 0.016170217306186355,
+        "decision": {
+          "sign": 1,
+          "threshold": 1.5324155539274216,
+          "validation_accuracy": 0.54375
+        },
+        "training_loss": [
+          [
+            0.7022797644138337,
+            0.6920907318592071,
+            0.6901947528123855,
+            0.6826243579387665,
+            0.6769608646631241,
+            0.6741829484701156,
+            0.6619153648614884,
+            0.6501182019710541,
+            0.6516558915376663,
+            0.6663978815078735,
+            0.6541606277227402,
+            0.6474966704845428,
+            0.6275333970785141,
+            0.6437686741352081,
+            0.6458674162626267
+          ],
+          [
+            0.6995884507894516,
+            0.6862109780311585,
+            0.6764647364616394,
+            0.6735543072223663,
+            0.6561712265014649,
+            0.6581328243017197,
+            0.6590057134628295,
+            0.6438988983631134,
+            0.6496496200561523,
+            0.6490242868661881,
+            0.630460575222969,
+            0.6190615475177765,
+            0.6162971079349517,
+            0.614818662405014,
+            0.6214248299598694
+          ],
+          [
+            0.6993975430727005,
+            0.6936402231454849,
+            0.6813385516405106,
+            0.6777980268001557,
+            0.6714526325464248,
+            0.6597550332546234,
+            0.6609627932310105,
+            0.6570218950510025,
+            0.6458812028169632,
+            0.6329893350601197,
+            0.6296202719211579,
+            0.6216850817203522,
+            0.6322423100471497,
+            0.6147850841283798,
+            0.6098776176571846
+          ]
+        ]
+      }
+    },
+    "50": {
+      "ridge": {
+        "file": "ridge_50ms.npz",
+        "strength": 0.1,
+        "decision": {
+          "sign": 1,
+          "threshold": -0.08844426414557469,
+          "validation_accuracy": 0.578125
+        }
+      },
+      "cnn": {
+        "files": [
+          "cnn_50ms_0.pt",
+          "cnn_50ms_1.pt",
+          "cnn_50ms_2.pt"
+        ],
+        "mean": 0.00451386723836263,
+        "std": 0.016170217306186355,
+        "decision": {
+          "sign": -1,
+          "threshold": 0.06342011410742998,
+          "validation_accuracy": 0.578125
+        },
+        "training_loss": [
+          [
+            0.7006774172186852,
+            0.6910370215773582,
+            0.6872414946556091,
+            0.6828435882925987,
+            0.6787045821547508,
+            0.6673917770385742,
+            0.6644848138093948,
+            0.6520177498459816,
+            0.6353992372751236,
+            0.6014960035681725,
+            0.5716166943311691,
+            0.5273065231740475,
+            0.4719924107193947,
+            0.3811888247728348,
+            0.301963746547699
+          ],
+          [
+            0.6922303587198257,
+            0.6888012140989304,
+            0.6911090686917305,
+            0.6861868277192116,
+            0.6884618997573853,
+            0.6847302466630936,
+            0.6800945401191711,
+            0.6734686717391014,
+            0.6797345206141472,
+            0.665351040661335,
+            0.6459393203258514,
+            0.6119710728526115,
+            0.62443408370018,
+            0.5992521420121193,
+            0.6058468446135521
+          ],
+          [
+            0.6977636367082596,
+            0.7004324272274971,
+            0.6937806233763695,
+            0.6860528141260147,
+            0.6833581477403641,
+            0.6747275441884995,
+            0.6737238317728043,
+            0.6641101464629173,
+            0.6623618230223656,
+            0.6406801864504814,
+            0.6417039036750793,
+            0.6381377056241035,
+            0.6331432163715363,
+            0.6260774880647659,
+            0.6057242974638939
+          ]
+        ]
+      }
+    },
+    "100": {
+      "ridge": {
+        "file": "ridge_100ms.npz",
+        "strength": 0.1,
+        "decision": {
+          "sign": 1,
+          "threshold": 0.6394978629273478,
+          "validation_accuracy": 0.65625
+        }
+      },
+      "cnn": {
+        "files": [
+          "cnn_100ms_0.pt",
+          "cnn_100ms_1.pt",
+          "cnn_100ms_2.pt"
+        ],
+        "mean": 0.00451386723836263,
+        "std": 0.016170217306186355,
+        "decision": {
+          "sign": 1,
+          "threshold": 1.163111299276352,
+          "validation_accuracy": 0.5625
+        },
+        "training_loss": [
+          [
+            0.6966525912284851,
+            0.6849750876426697,
+            0.6850939393043518,
+            0.6749832779169083,
+            0.6690004020929337,
+            0.6622736603021622,
+            0.6680912673473358,
+            0.6453942805528641,
+            0.637180894613266,
+            0.6136167347431183,
+            0.5904229283332825,
+            0.5596133768558502,
+            0.5252603143453598,
+            0.504114955663681,
+            0.4482978656888008
+          ],
+          [
+            0.6989712864160538,
+            0.693325474858284,
+            0.6848876625299454,
+            0.6842589229345322,
+            0.6777764558792114,
+            0.6748935878276825,
+            0.6842301040887833,
+            0.6840924918651581,
+            0.6797192543745041,
+            0.6688035428524017,
+            0.6497892737388611,
+            0.6408135145902634,
+            0.6349035501480103,
+            0.6138535887002945,
+            0.6065710335969925
+          ],
+          [
+            0.7024261653423309,
+            0.6878940463066101,
+            0.6778354793787003,
+            0.6705388128757477,
+            0.6501138806343079,
+            0.6786152273416519,
+            0.6482231318950653,
+            0.6376154273748398,
+            0.6100159883499146,
+            0.5680348426103592,
+            0.5429118126630783,
+            0.4864412620663643,
+            0.41940460354089737,
+            0.39658723026514053,
+            0.2881040498614311
+          ]
+        ]
+      }
+    }
+  },
+  "frozen_utc": "2026-09-20T18:12:50.774240+00:00"
+}
