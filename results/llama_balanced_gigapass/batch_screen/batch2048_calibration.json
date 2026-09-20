@@ -1,0 +1,112 @@
+{
+  "calibration": {
+    "training_batch_size": 2048,
+    "training_native_seconds": 0.1032200164794922,
+    "candidates": [
+      {
+        "batch_size": 4096,
+        "native_seconds": 0.05649749503596084,
+        "ratio_to_training": 0.5473501842269691,
+        "paired_samples": 4
+      },
+      {
+        "batch_size": 4608,
+        "native_seconds": 0.06541600804093667,
+        "ratio_to_training": 0.6337531253343053,
+        "paired_samples": 4
+      },
+      {
+        "batch_size": 5120,
+        "native_seconds": 0.07154159494099302,
+        "ratio_to_training": 0.6930980771080087,
+        "paired_samples": 4
+      },
+      {
+        "batch_size": 5632,
+        "native_seconds": 0.07990239714155933,
+        "ratio_to_training": 0.7740978917343457,
+        "paired_samples": 4
+      },
+      {
+        "batch_size": 6144,
+        "native_seconds": 0.08481543360446438,
+        "ratio_to_training": 0.8216956022412141,
+        "paired_samples": 4
+      },
+      {
+        "batch_size": 6656,
+        "native_seconds": 0.09152844719380203,
+        "ratio_to_training": 0.8867315692783962,
+        "paired_samples": 4
+      },
+      {
+        "batch_size": 7168,
+        "native_seconds": 0.09726947336492224,
+        "ratio_to_training": 0.942350880018003,
+        "paired_samples": 4
+      },
+      {
+        "batch_size": 7680,
+        "native_seconds": 0.10469054457101622,
+        "ratio_to_training": 1.0142465399801228,
+        "paired_samples": 4
+      },
+      {
+        "batch_size": 8192,
+        "native_seconds": 0.1124221218972226,
+        "ratio_to_training": 1.089150396711656,
+        "paired_samples": 4
+      },
+      {
+        "batch_size": 8704,
+        "native_seconds": 0.11955771681993208,
+        "ratio_to_training": 1.1582803500490224,
+        "paired_samples": 4
+      },
+      {
+        "batch_size": 9216,
+        "native_seconds": 0.12472158692137052,
+        "ratio_to_training": 1.2083081477336353,
+        "paired_samples": 4
+      },
+      {
+        "batch_size": 9728,
+        "native_seconds": 0.13324770782332615,
+        "ratio_to_training": 1.2909095771148213,
+        "paired_samples": 4
+      },
+      {
+        "batch_size": 10240,
+        "native_seconds": 0.14045692619666247,
+        "ratio_to_training": 1.3607527976375446,
+        "paired_samples": 4
+      },
+      {
+        "batch_size": 10752,
+        "native_seconds": 0.14560458190274678,
+        "ratio_to_training": 1.410623509556168,
+        "paired_samples": 4
+      },
+      {
+        "batch_size": 11264,
+        "native_seconds": 0.15488600232818636,
+        "ratio_to_training": 1.5005423135052414,
+        "paired_samples": 4
+      },
+      {
+        "batch_size": 11776,
+        "native_seconds": 0.16042133937499614,
+        "ratio_to_training": 1.5541688990804292,
+        "paired_samples": 4
+      },
+      {
+        "batch_size": 12288,
+        "native_seconds": 0.16556080355726474,
+        "ratio_to_training": 1.6039602511607662,
+        "paired_samples": 4
+      }
+    ],
+    "lower_batch_size": 7168,
+    "upper_batch_size": 7680
+  }
+}

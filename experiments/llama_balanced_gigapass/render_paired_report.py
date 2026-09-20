@@ -90,11 +90,12 @@ def main() -> None:
     cnn = json.loads((args.root / "paired_cnn.json").read_text())
     timing = json.loads(args.benchmark.read_text())
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.7), layout="constrained")
-    for payload, label, color in ((ridge, "Nested ridge", "#008837"), (cnn, "Raw-waveform CNN", "#7b3294")):
-        values = detector_series(payload, audit["pairs"])
+    series = [(detector_series(payload, audit["pairs"]), label, color) for payload, label, color in
+              ((ridge, "Nested ridge", "#008837"), (cnn, "Raw-waveform CNN", "#7b3294"))]
+    for index, (values, label, color) in enumerate(series):
         axes[0].plot(HORIZONS, 100 * np.asarray(values), marker="o", color=color, label=label)
-        for h, value in zip(HORIZONS, values):
-            axes[0].annotate(f"{value:.1%}", (h, 100 * value), xytext=(0, 10 if label == "Nested ridge" else -16),
+        for h, value, other in zip(HORIZONS, values, series[1 - index][0]):
+            axes[0].annotate(f"{value:.1%}", (h, 100 * value), xytext=(0, 10 if value >= other else -16),
                              textcoords="offset points", ha="center", fontsize=9, color=color)
     axes[0].axhline(50, color="black", lw=1, ls=":", label="Chance")
     axes[0].axhline(60, color="#b2182b", lw=1, ls="--", label="60% accuracy threshold")

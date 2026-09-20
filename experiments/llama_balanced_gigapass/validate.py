@@ -9,6 +9,15 @@ from pathlib import Path
 from .workload import BalancedGigaPassConfig, BalancedGigaPassEngine, load_calibration
 
 
+def validation_config(calibration_path: Path, attention_backend: str) -> BalancedGigaPassConfig:
+    calibration = load_calibration(calibration_path)
+    return BalancedGigaPassConfig(
+        calibration_override=calibration,
+        training_batch_size=calibration.training_batch_size,
+        attention_backend=attention_backend,
+    )
+
+
 def validate(engine, cycles: int) -> dict:
     import torch
 
@@ -129,10 +138,7 @@ def main() -> None:
     args = parser.parse_args()
     if args.cycles < 1:
         raise ValueError("cycles must be positive")
-    config = BalancedGigaPassConfig(
-        calibration_override=load_calibration(args.calibration),
-        attention_backend=args.attention_backend,
-    )
+    config = validation_config(args.calibration, args.attention_backend)
     engine = BalancedGigaPassEngine(config)
     try:
         engine.setup()

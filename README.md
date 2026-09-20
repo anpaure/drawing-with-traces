@@ -8,7 +8,7 @@ and **1.931× training slowdown**, compared with running each workload alone. Th
 baseline reached 1.0013:1 service and approximately 1.96× slowdown per side.
 Small timing excursions around 2× are ordinary run-to-run variation.
 
-![Measured raw signals, detector results, and throughput](results/llama_balanced_gigapass/overview.png)
+![Independent detector evaluation and separate throughput measurement](results/llama_balanced_gigapass/eager_summary.png)
 
 ## What runs
 
@@ -36,7 +36,7 @@ it does not measure language-model quality.
 | Training tokens/s | 4,150 | 9,095 |
 | Inference tokens/s | 33,516 | 40,076 |
 | Full sequential numerical equivalence | bitwise pass | bitwise pass |
-| Physical detector evaluation | 5 pairs; inconclusive | 12 pairs collected; CNN evaluation running |
+| Physical detector evaluation | 5 pairs; inconclusive | 12 pairs / 192 healthy captures; see below |
 
 FLOPs use the approximate `2P` per inference token and `6P` per training token convention;
 they are not hardware-counter measurements. Slowdown excludes model load, calibration,
@@ -48,15 +48,26 @@ The detector sees raw ADC windows only. Earlier crossed-session scores were 36�
 ridge and 43–50% for a residual CNN. A stricter nested paired-session audit selects ridge
 strength and prediction direction on validation sessions and obtains 36–52%.
 **Below-chance accuracy is not automatically a success:** an inverted prediction can be
-informative. Five pairs provide weak evidence, and the detector gate remains unconfirmed
-pending the larger independently collected evaluation. All scores, including this concern,
-are retained in the result files.
+informative. The earlier five-pair results are retained, not selected as the best outcome.
 
 The new eager dataset contains **192 healthy 100 ms captures at 1.5 MSPS**, across 12
 independently seeded matched session pairs. Recorded losses are finite and both training
-and inference counters advance in all 24 sessions. Nested paired ridge accuracy is
-50.6%, 49.7%, 50.0%, 51.3%, and 39.6% at 5/10/20/50/100 ms. The last number is not a
-stronger success: its post-hoc inverse is 60.4%, and the CNN evaluation is still running.
+and inference counters advance in all 24 sessions. Entire session pairs are held out;
+prediction direction is chosen using validation pairs, never test labels.
+
+| Window | Nested ridge accuracy | Raw CNN accuracy |
+|---|---:|---:|
+| 5 ms | 50.6% | 43.9% |
+| 10 ms | 49.7% | 46.4% |
+| 20 ms | 50.0% | 58.4% |
+| 50 ms | 51.3% | 38.8% |
+| 100 ms | 39.6% | 40.6% |
+
+All reported mean accuracies are below 60%, but this is **not a robust indistinguishability
+certificate**. Results vary substantially between pairs. Post-hoc inversion of the 100 ms
+ridge and 50 ms CNN gives 60.4% and 61.2%, respectively; those are diagnostics, not new
+independent test scores. The full folds and both original/validation-selected directions
+are saved. More independent sessions and stronger detectors can change the conclusion.
 
 ![Seed-selected unaligned raw windows from the new dataset](results/llama_balanced_gigapass/eager_raw_windows.png)
 
@@ -72,8 +83,14 @@ single-token case. A standard eager-attention screen made dedicated training **2
 and the same fixed mixed work **1.48× faster**. Loss and inference checksums matched; BF16
 gradients differed by relative L2 0.000109. After recalibration, combined useful work rose
 to 166.5 TFLOP/s. Mixed eager execution matched sequential eager execution bit for bit
-across all logits, gradients and parameters. Physical detector revalidation is in progress;
-the speedup should not be assumed for longer contexts.
+across all logits, gradients and parameters. Its physical detector results are reported
+above; the speedup should not be assumed for longer contexts.
+
+A [larger-batch screen](results/llama_balanced_gigapass/batch_screen/README.md) measured
+165.8 and 169.9 TFLOP/s at training batches 2,048 and 4,096. That small combined-throughput
+difference is not yet a reliable gain. The 4,096-row candidate passed full sequential
+numerical validation but has not received a separate physical detector evaluation;
+the capture-tested 1,024-row configuration remains the baseline.
 
 ## Run
 
@@ -112,6 +129,7 @@ tolerance. It retains per-round dispersion. No GPU clocks or power limits are ch
 - [Optimized numerical validation](results/llama_balanced_gigapass/eager_validation.json)
 - [Detector audit](results/llama_balanced_gigapass/nested_detector.json)
 - [New paired detector audit](results/llama_balanced_gigapass/eager_paired/nested_detector.json)
+- [New raw-waveform CNN evaluation](results/llama_balanced_gigapass/eager_paired/paired_cnn.json)
 - [New capture health, training progress and raw-file hashes](results/llama_balanced_gigapass/eager_paired/progress_audit.json)
 - [Earlier exact-computation checkpoint](https://github.com/anpaure/drawing-with-traces/tree/experiment/llama-identical-dual-role-workload)
 - [Original drawing experiment](https://github.com/anpaure/drawing-with-traces/tree/main)

@@ -280,3 +280,17 @@ def test_raw_plot_selection_is_independent_of_values() -> None:
             trace.values *= 123
     second, _ = select_pair(traces, seed=20260920)
     assert first == second
+
+
+def test_validation_uses_training_batch_from_calibration(tmp_path) -> None:
+    import json
+    from dataclasses import replace
+    from experiments.llama_balanced_gigapass.validate import validation_config
+
+    measured = replace(calibration(), training_batch_size=4096)
+    path = tmp_path / "calibration.json"
+    path.write_text(json.dumps({"calibration": measured.to_dict()}))
+    config = validation_config(path, "eager")
+    assert config.training_batch_size == 4096
+    assert config.attention_backend == "eager"
+    assert config.calibration_override == measured
