@@ -26,3 +26,13 @@ python -m experiments.llama_balanced_gigapass.frozen_detector evaluate \
 Evaluation requires the complete audited test set, its matching frozen-manifest
 binding, and the source version recorded by the bundle. Source changes are rejected
 rather than silently using different preprocessing or inference logic.
+
+## Hardware observation during collection
+
+The [18:39:38 UTC driver snapshot](diagnostics/thermal_observation_20260920_183938_utc.txt)
+reports software thermal slowdown **active**, GPU temperature 91°C, and SM clock
+1,080 MHz versus a reported maximum of 1,755 MHz. This is a point observation, not
+a reconstruction of the earlier timing runs or a claim of proportional performance
+loss. The cumulative throttle counters span earlier activity and are not per-run
+measurements. No clocks, power limits, cooling settings or detector decisions were
+changed in response, and no traces are filtered using this observation.
