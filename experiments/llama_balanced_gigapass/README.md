@@ -17,6 +17,7 @@ The [branch README](../../README.md) describes the measured claim and limitation
 | `render_results.py` | Raw-signal plot, saved metrics, trace SHA-256 manifest |
 | `render_paired_report.py` | Seed-selected unprocessed windows and complete paired-detector report |
 | `frozen_detector.py` | Freeze validation-selected attackers before a new independent physical test |
+| `contextual_amp.py` | Separate 128-token/FP32-master candidate; full AMP validation and timing |
 
 ## Scheduling
 
@@ -61,6 +62,10 @@ held-out result. The orientation diagnostic is labeled as a diagnostic.
 The next [prospective evaluation](PROSPECTIVE_EVALUATION.md) freezes detector files,
 normalization, directions and thresholds before collecting 48 new session pairs.
 It is not a re-score of the development set or an early-stopped capture run.
+
+The [contextual AMP candidate](CONTEXTUAL_AMP.md) is prepared separately, with its
+hardware screen queued after the frozen run. It does not mutate the frozen source
+files and has no claimed physical-detector result yet.
 
 ## Evidence
 
