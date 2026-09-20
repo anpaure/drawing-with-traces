@@ -69,6 +69,11 @@ ridge and 50 ms CNN gives 60.4% and 61.2%, respectively; those are diagnostics, 
 independent test scores. The full folds and both original/validation-selected directions
 are saved. More independent sessions and stronger detectors can change the conclusion.
 
+A [prospective 48-pair test](experiments/llama_balanced_gigapass/PROSPECTIVE_EVALUATION.md)
+is now underway, with detector weights and decisions frozen before new capture begins.
+It leaves the workload unchanged and reports uncertainty across matched session pairs.
+No prospective result is claimed yet.
+
 ![Seed-selected unaligned raw windows from the new dataset](results/llama_balanced_gigapass/eager_raw_windows.png)
 
 This experiment demonstrates equal computation under two host labels. **It has not shown

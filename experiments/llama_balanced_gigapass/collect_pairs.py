@@ -35,14 +35,25 @@ def main() -> None:
     parser.add_argument("--pairs", type=int, default=12)
     parser.add_argument("--captures", type=int, default=8)
     parser.add_argument("--seed", type=int, default=20260920)
+    parser.add_argument("--detector-bundle", type=Path,
+                        help="Bind a new collection to verified, previously frozen attackers")
     args = parser.parse_args()
-    # Never overwrite or silently resume a partly collected evaluation.
-    args.root.mkdir(parents=True, exist_ok=False)
+    if args.captures < 2:
+        raise ValueError("at least two captures per session are needed to verify workload progress")
     plan = collection_plan(args.pairs, args.seed)
+    calibration = json.loads(args.calibration.read_text())
+    calibration_state = calibration.get("calibration", calibration)
     payload = {"plan": plan, "pairs": args.pairs, "captures_per_session": args.captures,
                "attention_backend": args.attention_backend, "seed": args.seed,
-               "calibration": json.loads(args.calibration.read_text()),
+               "calibration": calibration,
                "status": "collecting"}
+    if args.detector_bundle is not None:
+        from .frozen_detector import check_test_contract, digest, verify_bundle
+        manifest = verify_bundle(args.detector_bundle)
+        check_test_contract(manifest, payload)
+        payload["frozen_detector_manifest_sha256"] = digest(args.detector_bundle / "manifest.json")
+    # Never overwrite or silently resume a partly collected evaluation.
+    args.root.mkdir(parents=True, exist_ok=False)
     plan_path = args.root / "collection_plan.json"
     plan_path.write_text(json.dumps(payload, indent=2) + "\n")
     for session in plan:
@@ -50,6 +61,7 @@ def main() -> None:
                    "--output-dir", str(args.root), "--role", session["role"],
                    "--session-id", session["session_id"], "--captures", str(args.captures),
                    "--attention-backend", args.attention_backend,
+                   "--training-batch-size", str(calibration_state["training_batch_size"]),
                    "--calibration-input", str(args.calibration),
                    "--compute-seed", str(session["compute_seed"]),
                    "--capture-seed", str(session["capture_seed"])]

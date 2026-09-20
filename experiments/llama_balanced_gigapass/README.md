@@ -16,6 +16,7 @@ The [branch README](../../README.md) describes the measured claim and limitation
 | `screen_attention.py` | Same-state backend comparison and ABBA throughput screen |
 | `render_results.py` | Raw-signal plot, saved metrics, trace SHA-256 manifest |
 | `render_paired_report.py` | Seed-selected unprocessed windows and complete paired-detector report |
+| `frozen_detector.py` | Freeze validation-selected attackers before a new independent physical test |
 
 ## Scheduling
 
@@ -56,6 +57,10 @@ pairs are excluded from normalization, fitting, regularization selection, and
 prediction-direction selection. Outer-test labels are used only for scoring.
 Never flip predictions based on their test accuracy and report that as an independent
 held-out result. The orientation diagnostic is labeled as a diagnostic.
+
+The next [prospective evaluation](PROSPECTIVE_EVALUATION.md) freezes detector files,
+normalization, directions and thresholds before collecting 48 new session pairs.
+It is not a re-score of the development set or an early-stopped capture run.
 
 ## Evidence
 
