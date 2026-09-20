@@ -1,0 +1,215 @@
+{
+  "note": "Profiling overhead is excluded from throughput results; CUDA self times may overlap.",
+  "operations": [
+    {
+      "name": "aten::_flash_attention_backward",
+      "calls": 32,
+      "cuda_self_us": 136879.70500000022,
+      "cpu_self_us": 1205.6289999992805
+    },
+    {
+      "name": "aten::mm",
+      "calls": 904,
+      "cuda_self_us": 122972.78799999977,
+      "cpu_self_us": 16956.749000000775
+    },
+    {
+      "name": "void pytorch_flash::flash_bwd_dq_dk_dv_loop_seqk_parallel_kernel<Flash_bwd_kernel_traits<64, 128, 128, 8, 4, 4, 4, false, false, cutlass::bfloat16_t, Flash_kernel_traits<64, 128, 128, 8, cutlass::bfloat16_t> >, false, false, false, false, false, true, false>(pytorch_flash::Flash_bwd_params)",
+      "calls": 32,
+      "cuda_self_us": 97089.27399999998,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "aten::_flash_attention_forward",
+      "calls": 64,
+      "cuda_self_us": 74102.11100000003,
+      "cpu_self_us": 1114.7950000001051
+    },
+    {
+      "name": "void pytorch_flash::flash_fwd_kernel<Flash_fwd_kernel_traits<64, 128, 128, 4, false, false, cutlass::bfloat16_t, Flash_kernel_traits<64, 128, 128, 4, cutlass::bfloat16_t> >, false, false, false, false, false, true, false, false>(pytorch_flash::Flash_fwd_params)",
+      "calls": 64,
+      "cuda_self_us": 74102.11100000003,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "nvjet_sm90_tst_128x256_64x4_2x1_v_bz_coopA_TNN",
+      "calls": 128,
+      "cuda_self_us": 45296.73399999992,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "aten::mul",
+      "calls": 1312,
+      "cuda_self_us": 35381.57400000024,
+      "cpu_self_us": 8049.869000000166
+    },
+    {
+      "name": "Command Buffer Full",
+      "calls": 452,
+      "cuda_self_us": 34496.49999999965,
+      "cpu_self_us": 152244.05799999912
+    },
+    {
+      "name": "nvjet_sm90_tst_192x192_64x4_1x2_h_bz_coopB_TNN",
+      "calls": 33,
+      "cuda_self_us": 26876.561000000074,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "void pytorch_flash::flash_bwd_dot_do_o_kernel<true, Flash_bwd_kernel_traits<64, 128, 128, 8, 4, 4, 4, false, false, cutlass::bfloat16_t, Flash_kernel_traits<64, 128, 128, 8, cutlass::bfloat16_t> > >(pytorch_flash::Flash_bwd_params)",
+      "calls": 32,
+      "cuda_self_us": 19962.338000000076,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "void pytorch_flash::flash_bwd_convert_dq_kernel<Flash_bwd_kernel_traits<64, 128, 128, 8, 4, 4, 4, false, false, cutlass::bfloat16_t, Flash_kernel_traits<64, 128, 128, 8, cutlass::bfloat16_t> > >(pytorch_flash::Flash_bwd_params, int)",
+      "calls": 32,
+      "cuda_self_us": 19828.093000000168,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "void at::native::vectorized_elementwise_kernel<8, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul> >(int, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul>)",
+      "calls": 838,
+      "cuda_self_us": 17184.063999999154,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "void at::native::elementwise_kernel<128, 4, at::native::gpu_kernel_impl_nocast<at::native::BinaryFunctor<c10::BFloat16, c10::BFloat16, c10::BFloat16, at::native::binary_internal::MulFunctor<float> > >(at::TensorIteratorBase&, at::native::BinaryFunctor<c10::BFloat16, c10::BFloat16, c10::BFloat16, at::native::binary_internal::MulFunctor<float> > const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::BinaryFunctor<c10::BFloat16, c10::BFloat16, c10::BFloat16, at::native::binary_internal::MulFunctor<float> > >(at::TensorIteratorBase&, at::native::BinaryFunctor<c10::BFloat16, c10::BFloat16, c10::BFloat16, at::native::binary_internal::MulFunctor<float> > const&)::{lambda(int)#1})",
+      "calls": 582,
+      "cuda_self_us": 15097.15500000014,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "aten::copy_",
+      "calls": 610,
+      "cuda_self_us": 15061.86900000035,
+      "cpu_self_us": 2408.1180000001355
+    },
+    {
+      "name": "Optimizer.zero_grad#SGD.zero_grad",
+      "calls": 2,
+      "cuda_self_us": 14337.312000000013,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "void at::native::vectorized_elementwise_kernel<8, at::native::BinaryFunctor<c10::BFloat16, c10::BFloat16, c10::BFloat16, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 3ul> >(int, at::native::BinaryFunctor<c10::BFloat16, c10::BFloat16, c10::BFloat16, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 3ul>)",
+      "calls": 194,
+      "cuda_self_us": 10495.124999999854,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "aten::add",
+      "calls": 458,
+      "cuda_self_us": 9432.582000000173,
+      "cpu_self_us": 2921.5309999998894
+    },
+    {
+      "name": "Optimizer.step#SGD.step",
+      "calls": 2,
+      "cuda_self_us": 8852.739000000001,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "aten::add_",
+      "calls": 582,
+      "cuda_self_us": 8718.88199999914,
+      "cpu_self_us": 2421.951999999932
+    },
+    {
+      "name": "nvjet_sm90_tst_192x192_64x4_2x1_v_bz_coopB_TNN",
+      "calls": 1,
+      "cuda_self_us": 8714.209000000003,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "aten::_foreach_add_",
+      "calls": 2,
+      "cuda_self_us": 8624.124999999913,
+      "cpu_self_us": 484.43299999905867
+    },
+    {
+      "name": "void at::native::(anonymous namespace)::multi_tensor_apply_kernel<at::native::(anonymous namespace)::TensorListMetadata<2>, at::native::(anonymous namespace)::BinaryOpListAlphaFunctor<c10::BFloat16, 2, 2, 0>, std::plus<float>, float>(at::native::(anonymous namespace)::TensorListMetadata<2>, at::native::(anonymous namespace)::BinaryOpListAlphaFunctor<c10::BFloat16, 2, 2, 0>, std::plus<float>, float)",
+      "calls": 120,
+      "cuda_self_us": 8624.124999999913,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "void at::native::unrolled_elementwise_kernel<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, std::array<char*, 2ul>, 4, TrivialOffsetCalculator<1, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithCast<1>, at::native::memory::StoreWithCast<1> >(int, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}, std::array<char*, 2ul>, TrivialOffsetCalculator<1, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithCast<1>, at::native::memory::StoreWithCast<1>)",
+      "calls": 204,
+      "cuda_self_us": 8418.274000000409,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::BinaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> > >(at::TensorIteratorBase&, at::native::BinaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> > const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::BinaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> > >(at::TensorIteratorBase&, at::native::BinaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> > const&)::{lambda(int)#1})",
+      "calls": 198,
+      "cuda_self_us": 8117.9490000002315,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "aten::pow",
+      "calls": 264,
+      "cuda_self_us": 7092.815000000248,
+      "cpu_self_us": 2129.0560000000014
+    },
+    {
+      "name": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::pow_tensor_scalar_kernel_impl<float, float>(at::TensorIteratorBase&, float)::{lambda(float)#1}, std::array<char*, 2ul> >(int, at::native::(anonymous namespace)::pow_tensor_scalar_kernel_impl<float, float>(at::TensorIteratorBase&, float)::{lambda(float)#1}, std::array<char*, 2ul>)",
+      "calls": 132,
+      "cuda_self_us": 7005.776000000258,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "nvjet_sm90_tst_128x160_64x5_2x1_v_bz_NNT",
+      "calls": 192,
+      "cuda_self_us": 6672.818000000319,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "aten::cat",
+      "calls": 136,
+      "cuda_self_us": 6110.203999999955,
+      "cpu_self_us": 1006.4989999998647
+    },
+    {
+      "name": "void at::native::(anonymous namespace)::CatArrayBatchedCopy<at::native::(anonymous namespace)::OpaqueType<2u>, unsigned int, 4, 64, 64>(at::native::(anonymous namespace)::OpaqueType<2u>*, at::native::(anonymous namespace)::CatArrInputTensorMetadata<at::native::(anonymous namespace)::OpaqueType<2u>, unsigned int, 64, 64>, at::native::(anonymous namespace)::TensorSizeStride<unsigned int, 4u>, int, unsigned int)",
+      "calls": 128,
+      "cuda_self_us": 6083.901999999969,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "aten::silu",
+      "calls": 64,
+      "cuda_self_us": 5825.3789999999535,
+      "cpu_self_us": 444.0189999999616
+    },
+    {
+      "name": "void at::native::vectorized_elementwise_kernel<8, at::native::(anonymous namespace)::silu_kernel(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#6}::operator()() const::{lambda(c10::BFloat16)#1}, std::array<char*, 2ul> >(int, at::native::(anonymous namespace)::silu_kernel(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#6}::operator()() const::{lambda(c10::BFloat16)#1}, std::array<char*, 2ul>)",
+      "calls": 64,
+      "cuda_self_us": 5825.3789999999535,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "nvjet_sm90_tst_320x128_64x3_1x2_h_bz_coopB_TNT",
+      "calls": 64,
+      "cuda_self_us": 5798.4600000000355,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "nvjet_sm90_tst_176x128_64x5_2x4_h_bz_TNN",
+      "calls": 96,
+      "cuda_self_us": 5727.33100000002,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "void at::native::vectorized_elementwise_kernel<8, at::native::bfloat16_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda(float)#1}, std::array<char*, 2ul> >(int, at::native::bfloat16_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda(float)#1}, std::array<char*, 2ul>)",
+      "calls": 208,
+      "cuda_self_us": 5711.938000000195,
+      "cpu_self_us": 0
+    },
+    {
+      "name": "nvjet_sm90_tst_128x256_64x4_2x1_v_bz_coopA_NTN",
+      "calls": 64,
+      "cuda_self_us": 5136.792999999874,
+      "cpu_self_us": 0
+    }
+  ]
+}

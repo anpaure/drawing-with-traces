@@ -1,0 +1,155 @@
+{
+  "passed": true,
+  "cycles": 2,
+  "inference_schedule": [
+    8192,
+    8448
+  ],
+  "all_parameters_bit_equal": true,
+  "all_gradients_bit_equal": true,
+  "all_inference_logits_bit_equal": true,
+  "all_parameters_and_gradients_finite": true,
+  "last_loss_bit_equal": true,
+  "reference_losses": [
+    11.68882942199707,
+    11.724983215332031
+  ],
+  "changed_parameter_elements": 94770,
+  "parameter_elements_checked": 1235814400,
+  "mismatched_parameter_names": [],
+  "reference": "ordinary sequential PyTorch forward, cross-entropy, backward, foreach SGD",
+  "engine": {
+    "computation_fingerprint": "cb1eeed1d27f4329f4a2c01d67d069f5066119c925ae83344b189d8f65709622",
+    "model": "unsloth/Llama-3.2-1B-Instruct",
+    "layers": 16,
+    "parameters": 1235814400,
+    "dtype": "torch.bfloat16",
+    "training_batch_size": 1024,
+    "sequence_length": 1,
+    "calibration": {
+      "training_batch_size": 1024,
+      "training_native_seconds": 0.12363314208984374,
+      "candidates": [
+        {
+          "batch_size": 6144,
+          "native_seconds": 0.0910040098265916,
+          "ratio_to_training": 0.7360810239738089,
+          "paired_samples": 4
+        },
+        {
+          "batch_size": 6400,
+          "native_seconds": 0.09569522288235753,
+          "ratio_to_training": 0.7740256476925594,
+          "paired_samples": 4
+        },
+        {
+          "batch_size": 6656,
+          "native_seconds": 0.09775214621299469,
+          "ratio_to_training": 0.79066296108497,
+          "paired_samples": 4
+        },
+        {
+          "batch_size": 6912,
+          "native_seconds": 0.10390996410664508,
+          "ratio_to_training": 0.8404701389141602,
+          "paired_samples": 4
+        },
+        {
+          "batch_size": 7168,
+          "native_seconds": 0.10567760341760525,
+          "ratio_to_training": 0.8547675941197849,
+          "paired_samples": 4
+        },
+        {
+          "batch_size": 7424,
+          "native_seconds": 0.1133164130485175,
+          "ratio_to_training": 0.9165536937188807,
+          "paired_samples": 4
+        },
+        {
+          "batch_size": 7680,
+          "native_seconds": 0.112293321702004,
+          "ratio_to_training": 0.9082784745566108,
+          "paired_samples": 4
+        },
+        {
+          "batch_size": 7936,
+          "native_seconds": 0.1208566202368017,
+          "ratio_to_training": 0.9775422527802103,
+          "paired_samples": 4
+        },
+        {
+          "batch_size": 8192,
+          "native_seconds": 0.12269595945689984,
+          "ratio_to_training": 0.9924196488328118,
+          "paired_samples": 4
+        },
+        {
+          "batch_size": 8448,
+          "native_seconds": 0.12581100675129217,
+          "ratio_to_training": 1.0176155408221024,
+          "paired_samples": 4
+        },
+        {
+          "batch_size": 8704,
+          "native_seconds": 0.12963359347787504,
+          "ratio_to_training": 1.0485343273381402,
+          "paired_samples": 4
+        },
+        {
+          "batch_size": 8960,
+          "native_seconds": 0.13264682931102767,
+          "ratio_to_training": 1.0729067228157456,
+          "paired_samples": 4
+        },
+        {
+          "batch_size": 9216,
+          "native_seconds": 0.137707101106344,
+          "ratio_to_training": 1.1138364582392701,
+          "paired_samples": 4
+        },
+        {
+          "batch_size": 9472,
+          "native_seconds": 0.14200948078343506,
+          "ratio_to_training": 1.1486360241514957,
+          "paired_samples": 4
+        },
+        {
+          "batch_size": 9728,
+          "native_seconds": 0.145154816148175,
+          "ratio_to_training": 1.174076899563804,
+          "paired_samples": 4
+        },
+        {
+          "batch_size": 9984,
+          "native_seconds": 0.14949122434537843,
+          "ratio_to_training": 1.2091517033251789,
+          "paired_samples": 4
+        },
+        {
+          "batch_size": 10240,
+          "native_seconds": 0.15290911534437726,
+          "ratio_to_training": 1.2367971302812863,
+          "paired_samples": 4
+        }
+      ],
+      "lower_batch_size": 8192,
+      "upper_batch_size": 8448
+    },
+    "calibration_refinement_history": [],
+    "optimizer": {
+      "type": "torch.optim.SGD",
+      "learning_rate": 0.0003,
+      "foreach": true
+    },
+    "gpu_program": "concurrent inference forward + training forward/loss/backward; optimizer waits for inference; next cycle waits for optimizer",
+    "dependency_order": [
+      "both streams wait for previous optimizer update",
+      "inference forward and training forward/backward may overlap",
+      "optimizer update waits for inference completion",
+      "next cycle waits for optimizer completion"
+    ],
+    "role_visible_to_engine": false,
+    "filler_kernels": 0
+  }
+}

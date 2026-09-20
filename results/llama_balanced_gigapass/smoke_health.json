@@ -1,0 +1,26 @@
+[
+  {
+    "path": "artifacts/balanced_gigapass_capture_smoke/inference/smoke-i0/channels/power/shard_000000/capture_000000000.npy",
+    "samples": 150000,
+    "finite": true,
+    "minimum": -0.108642578125,
+    "maximum": 0.10888671875,
+    "mean": 0.004458818359375,
+    "std": 0.019419071049186852,
+    "ptp": 0.217529296875,
+    "zero_fraction": 0.0071,
+    "unique": 662
+  },
+  {
+    "path": "artifacts/balanced_gigapass_capture_smoke/inference/smoke-i0/channels/power/shard_000000/capture_000000001.npy",
+    "samples": 150000,
+    "finite": true,
+    "minimum": -0.103759765625,
+    "maximum": 0.10595703125,
+    "mean": 0.004340260416666667,
+    "std": 0.01543097093420578,
+    "ptp": 0.209716796875,
+    "zero_fraction": 0.00966,
+    "unique": 631
+  }
+]
